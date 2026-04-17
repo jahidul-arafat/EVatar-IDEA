@@ -1,0 +1,3314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVAtAR-IDEA Playground — Full Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:#0e1117; --ink2:#2d3340; --ink3:#6b7280; --ink4:#9ca3af;
+  --paper:#f8f7f4; --paper2:#f1efe9; --paper3:#e5e2da; --paper4:#d4cfc5;
+  --accent:#c8510a; --ap:rgba(200,81,10,.1); --ag:rgba(200,81,10,.25);
+  --blue:#1a4f8a; --bp:rgba(26,79,138,.1);
+  --green:#1a6b3c; --gp:rgba(26,107,60,.1);
+  --red:#8a1a2e; --rp:rgba(138,26,46,.1);
+  --amber:#7a5200; --amp:rgba(122,82,0,.1);
+  --purple:#4a1a7a; --pp:rgba(74,26,122,.1);
+  --teal:#1a5c6b; --tp:rgba(26,92,107,.1);
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+  --serif:'DM Serif Display',Georgia,serif;
+}
+html, body {
+  min-height: 100vh;
+  background: var(--paper);
+  font-family: var(--sans);
+  color: var(--ink);
+  font-size: 14px;
+}
+
+/* ── Eyebrow / tag pills ── */
+.etag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:4px;border:1.5px solid;letter-spacing:.06em;}
+
+/* ── Slide-header classes ── */
+.slide-header{padding:18px 24px 10px;flex-shrink:0;}
+.eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+.enum{font-family:var(--mono);font-size:10px;color:var(--ink4);letter-spacing:.06em;}
+.slide-h1{font-family:var(--serif);font-size:26px;line-height:1.1;color:var(--ink);
+  margin-bottom:2px;letter-spacing:-.01em;}
+.slide-sub{font-size:12.5px;color:var(--ink3);line-height:1.65;}
+
+/* ── Wrapper ── */
+#pg-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+/* ── Header ── */
+#pg-header {
+  padding: 16px 24px 0;
+  flex-shrink: 0;
+}
+.pg-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  color: var(--ink4); background: var(--paper2); border: 1px solid var(--paper3);
+  border-radius: 6px; padding: 4px 10px; margin-bottom: 10px;
+}
+#pg-header h1 {
+  font-family: var(--serif); font-size: 28px; font-weight: 700;
+  color: var(--ink); margin-bottom: 4px;
+}
+#pg-header p {
+  font-size: 13px; color: var(--ink3); margin-bottom: 12px;
+}
+
+/* ── Main content area ── */
+#pg-content {
+  flex: 1;
+  padding: 0 24px 80px;
+  min-height: 0;
+}
+
+/* ── Footer ── */
+#pg-footer {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--paper); border-top: 1px solid var(--paper3);
+  padding: 10px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  z-index: 100;
+}
+
+/* ── Playground stage CSS ── */
+
+/* Stage nav */
+.pgstg{flex:1;display:flex;align-items:center;gap:7px;padding:7px 12px;cursor:pointer;border-right:1px solid rgba(255,255,255,.15);transition:background .15s}
+.pgstg:last-child{border-right:none}
+.pgstg.active{background:#1a4f8a}
+.pgstg.done{background:rgba(26,107,60,.1)}
+.pgstg.locked{opacity:.4;pointer-events:none}
+.pgstg-n{width:22px;height:22px;border-radius:50%;font-family:var(--mono);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pgstg.active .pgstg-n{background:#fff;color:#1a4f8a}
+.pgstg.done .pgstg-n{background:#1a6b3c;color:#fff}
+.pgstg.locked .pgstg-n{border:1.5px solid currentColor;color:var(--ink4)}
+.pgstg-info{display:flex;flex-direction:column;gap:1px}
+.pgstg-main{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em}
+.pgstg.active .pgstg-main{color:#fff}
+.pgstg.done .pgstg-main{color:#1a6b3c}
+.pgstg.locked .pgstg-main{color:var(--ink4)}
+.pgstg-sub{font-size:9px;color:rgba(255,255,255,.6)}
+.pgstg.done .pgstg-sub,.pgstg.locked .pgstg-sub{color:var(--ink4)}
+/* Panels */
+.pgpanel{display:none;flex-direction:column;gap:8px;flex:1;min-height:0;overflow:hidden}
+.pgpanel.on{display:flex}
+/* Guide box */
+.pgguide{background:rgba(26,79,138,.06);border:1px solid rgba(26,79,138,.18);border-radius:8px;padding:8px 12px;font-size:11px;color:#1a4f8a;line-height:1.55;flex-shrink:0}
+/* Words */
+.pgword{display:inline-flex;align-items:center;gap:3px;padding:5px 9px;margin:3px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;border:1.5px solid transparent;background:var(--paper2);transition:all .15s;position:relative}
+.pgword:hover{border-color:#1a4f8a;background:rgba(26,79,138,.06)}
+.pgword.tagged{border-color:#c8510a;background:rgba(200,81,10,.07)}
+.pgtchip{font-family:var(--mono);font-size:10px;background:#c8510a;color:#fff;padding:2px 7px;border-radius:4px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.pgtchip .rx{cursor:pointer;font-size:11px;line-height:1;opacity:.75}
+.pgtchip .rx:hover{opacity:1}
+/* Individual display */
+.pgindbox{font-family:var(--mono);font-size:11px;color:#c8510a;background:rgba(200,81,10,.05);border:1px solid rgba(200,81,10,.2);border-radius:7px;padding:9px 12px;word-break:break-all;min-height:30px}
+/* F(p) bar */
+.pgbar{height:14px;background:var(--paper3);border-radius:7px;overflow:hidden}
+.pgbarfill{height:100%;border-radius:7px;transition:width .9s cubic-bezier(.22,1,.36,1)}
+/* Individual card */
+.pgind{border:1.5px solid var(--paper3);border-radius:8px;padding:8px 10px;transition:border-color .3s,background .3s}
+.pgind.best{border-color:#1a6b3c;background:rgba(26,107,60,.06)}
+.pgind.evolving{border-color:#c8510a;animation:pgpulse .7s ease infinite alternate}
+@keyframes pgpulse{from{opacity:.65}to{opacity:1}}
+/* tag opt button */
+.pgtagbtn{font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:5px;border:1px solid currentColor;background:none;cursor:pointer;transition:background .12s;white-space:nowrap}
+
+
+/* ── Slide-inline CSS ── */
+
+/* Stage nav */
+.pgstg{flex:1;display:flex;align-items:center;gap:7px;padding:7px 12px;cursor:pointer;border-right:1px solid rgba(255,255,255,.15);transition:background .15s}
+.pgstg:last-child{border-right:none}
+.pgstg.active{background:#1a4f8a}
+.pgstg.done{background:rgba(26,107,60,.1)}
+.pgstg.locked{opacity:.4;pointer-events:none}
+.pgstg-n{width:22px;height:22px;border-radius:50%;font-family:var(--mono);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pgstg.active .pgstg-n{background:#fff;color:#1a4f8a}
+.pgstg.done .pgstg-n{background:#1a6b3c;color:#fff}
+.pgstg.locked .pgstg-n{border:1.5px solid currentColor;color:var(--ink4)}
+.pgstg-info{display:flex;flex-direction:column;gap:1px}
+.pgstg-main{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em}
+.pgstg.active .pgstg-main{color:#fff}
+.pgstg.done .pgstg-main{color:#1a6b3c}
+.pgstg.locked .pgstg-main{color:var(--ink4)}
+.pgstg-sub{font-size:9px;color:rgba(255,255,255,.6)}
+.pgstg.done .pgstg-sub,.pgstg.locked .pgstg-sub{color:var(--ink4)}
+/* Panels */
+.pgpanel{display:none;flex-direction:column;gap:8px;flex:1;min-height:0;overflow:hidden}
+.pgpanel.on{display:flex}
+/* Guide box */
+.pgguide{background:rgba(26,79,138,.06);border:1px solid rgba(26,79,138,.18);border-radius:8px;padding:8px 12px;font-size:11px;color:#1a4f8a;line-height:1.55;flex-shrink:0}
+/* Words */
+.pgword{display:inline-flex;align-items:center;gap:3px;padding:5px 9px;margin:3px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;border:1.5px solid transparent;background:var(--paper2);transition:all .15s;position:relative}
+.pgword:hover{border-color:#1a4f8a;background:rgba(26,79,138,.06)}
+.pgword.tagged{border-color:#c8510a;background:rgba(200,81,10,.07)}
+.pgtchip{font-family:var(--mono);font-size:10px;background:#c8510a;color:#fff;padding:2px 7px;border-radius:4px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.pgtchip .rx{cursor:pointer;font-size:11px;line-height:1;opacity:.75}
+.pgtchip .rx:hover{opacity:1}
+/* Individual display */
+.pgindbox{font-family:var(--mono);font-size:11px;color:#c8510a;background:rgba(200,81,10,.05);border:1px solid rgba(200,81,10,.2);border-radius:7px;padding:9px 12px;word-break:break-all;min-height:30px}
+/* F(p) bar */
+.pgbar{height:14px;background:var(--paper3);border-radius:7px;overflow:hidden}
+.pgbarfill{height:100%;border-radius:7px;transition:width .9s cubic-bezier(.22,1,.36,1)}
+/* Individual card */
+.pgind{border:1.5px solid var(--paper3);border-radius:8px;padding:8px 10px;transition:border-color .3s,background .3s}
+.pgind.best{border-color:#1a6b3c;background:rgba(26,107,60,.06)}
+.pgind.evolving{border-color:#c8510a;animation:pgpulse .7s ease infinite alternate}
+@keyframes pgpulse{from{opacity:.65}to{opacity:1}}
+/* tag opt button */
+.pgtagbtn{font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:5px;border:1px solid currentColor;background:none;cursor:pointer;transition:background .12s;white-space:nowrap}
+
+
+/* ── Pre-run explainer ── */
+#pg-prerun{display:flex;flex-direction:column;gap:10px;flex:1;justify-content:center;align-items:center;padding:10px 0}
+.pg-explainer-card{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:9px;border:1px solid var(--paper3);background:var(--paper);max-width:680px;width:100%}
+.pg-exp-icon{font-size:22px;flex-shrink:0;line-height:1.3}
+/* ── GA running view ── */
+#pg-ga-run{display:none;flex-direction:column;gap:6px;flex:1;min-height:0;overflow:hidden}
+#pgp3.pgpanel.on{overflow:hidden;}
+#pgp3 #pg-prerun[style*="none"]{flex:0 !important;height:0 !important;overflow:hidden !important;padding:0 !important;margin:0 !important;gap:0 !important;}
+/* Gen timeline strip */
+#pg-gen-strip{display:flex;gap:4px;align-items:center;padding:6px 10px;background:var(--paper2);border-radius:8px;flex-shrink:0}
+.pg-gen-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--paper3);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink4);flex-shrink:0;transition:all .35s}
+.pg-gen-dot.done{background:#1a4f8a;border-color:#1a4f8a;color:#fff}
+.pg-gen-dot.active{background:#c8510a;border-color:#c8510a;color:#fff;transform:scale(1.2)}
+.pg-gen-line{flex:1;height:2px;background:var(--paper3);transition:background .35s}
+.pg-gen-line.done{background:#1a4f8a}
+/* Main GA body: 3 columns */
+#pg-ga-body{display:flex;gap:10px;flex:1;min-height:0;overflow:hidden}
+/* Left: sentence preview */
+#pg-sent-panel{width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden}
+/* Middle: best candidate evolution */
+#pg-evo-panel{flex:1;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden}
+/* Right: meme space */
+#pg-meme-panel{width:220px;flex-shrink:0;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden}
+/* Sentence word display */
+.pg-sword{display:inline-block;padding:3px 7px;margin:2px;border-radius:5px;font-size:12px;background:var(--paper2);position:relative;transition:all .3s}
+.pg-sword.active-tag{background:rgba(200,81,10,.12);border:1.5px solid #c8510a}
+.pg-stag-label{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:8px;color:#c8510a;background:#fff;border:1px solid rgba(200,81,10,.3);border-radius:4px;padding:1px 5px;white-space:nowrap;pointer-events:none}
+/* F(p) score display */
+.pg-fp-big{font-family:var(--mono);font-size:32px;font-weight:700;transition:color .4s}
+/* Evolution trail */
+#pg-evo-trail{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px;min-height:0}
+.pg-trail-row{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:7px;border:1px solid var(--paper3);font-size:10.5px;transition:all .3s;opacity:0;transform:translateX(-8px)}
+.pg-trail-row.show{opacity:1;transform:translateX(0)}
+/* Convergence mini chart */
+#pg-conv-mini{flex-shrink:0}
+/* Meme list */
+#pg-meme-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px;min-height:0}
+.pg-meme-item{border-radius:6px;padding:5px 8px;border:1px solid rgba(122,82,0,.2);background:rgba(122,82,0,.04);transition:all .3s;opacity:0;transform:translateY(6px)}
+.pg-meme-item.show{opacity:1;transform:translateY(0)}
+
+
+/* ── Failure taxonomy table ── */
+.pg-ftax-cell{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-bottom:1px solid var(--paper3);cursor:pointer;transition:background .15s;position:relative;}
+.pg-ftax-cell:last-child{border-bottom:none;}
+.pg-ftax-code{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink4);}
+.pg-ftax-label{font-size:11px;color:var(--ink);font-weight:600;}
+.pg-ftax-rule{font-size:9.5px;color:var(--ink4);line-height:1.4;}
+.pg-ftax-status{font-family:var(--mono);font-size:10px;font-weight:700;}
+.pg-ftax-cell.ok{background:rgba(26,107,60,.05);}
+.pg-ftax-cell.ok .pg-ftax-code{color:#1a6b3c;}
+.pg-ftax-cell.ok .pg-ftax-status{color:#1a6b3c;}
+.pg-ftax-cell.warn{background:rgba(245,158,11,.07);}
+.pg-ftax-cell.warn .pg-ftax-code{color:#b45309;}
+.pg-ftax-cell.warn .pg-ftax-status{color:#b45309;}
+.pg-ftax-cell.fail{background:rgba(138,26,46,.06);}
+.pg-ftax-cell.fail .pg-ftax-code{color:#8a1a2e;}
+.pg-ftax-cell.fail .pg-ftax-status{color:#8a1a2e;}
+.pg-ftax-cell.na{background:var(--paper);}
+.pg-ftax-cell.na .pg-ftax-status{color:var(--ink4);}
+.pg-ftax-cell:hover{filter:brightness(.97);}
+/* ── Clickable tooltip popup ── */
+#ftax-tooltip{
+  position:fixed;z-index:9999;width:280px;
+  background:#0e1117;color:#f1efe9;
+  border-radius:10px;padding:12px 14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.35);
+  font-size:11px;line-height:1.6;
+  pointer-events:none;opacity:0;
+  transition:opacity .15s;
+}
+#ftax-tooltip.show{opacity:1;pointer-events:auto;}
+#ftax-tooltip .tt-code{font-family:var(--mono);font-size:12px;font-weight:700;margin-bottom:4px;}
+#ftax-tooltip .tt-title{font-size:12px;font-weight:700;margin-bottom:6px;}
+#ftax-tooltip .tt-body{font-size:10.5px;color:rgba(255,255,255,.75);line-height:1.65;}
+#ftax-tooltip .tt-criterion{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.12);font-family:var(--mono);font-size:9.5px;color:rgba(255,255,255,.5);}
+#ftax-tooltip .tt-close{position:absolute;top:8px;right:10px;font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.08);}
+#ftax-tooltip .tt-close:hover{background:rgba(255,255,255,.16);}
+
+.pgpanel {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+.pgpanel.on { display: flex; }
+
+/* ══ PIPELINE SIDEBAR ═══════════════════════════════════════════ */
+#pg-pipeline-sidebar {
+  width: 210px;
+  flex-shrink: 0;
+  background: #0e1117;
+  border-left: 1px solid rgba(255,255,255,.07);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 14px;
+  overflow-y: auto;
+  order: 2;
+}
+#pg-main-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+  min-width: 0;
+}
+.pipe-stage {
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.03);
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+}
+.pipe-stage:hover { background: rgba(255,255,255,.07); }
+.pipe-stage.active { border-color: rgba(200,81,10,.6); background: rgba(200,81,10,.1); }
+.pipe-stage.done   { border-color: rgba(26,107,60,.4);  background: rgba(26,107,60,.06); }
+.pipe-stage.active::before { content:'▶'; font-size:8px; color:#c8510a; position:absolute; top:9px; right:9px; }
+.pipe-stage-header { display:flex; align-items:center; gap:8px; }
+.pipe-dot { width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,.2); flex-shrink:0; transition:background .2s; }
+.pipe-stage.active .pipe-dot { background:#c8510a; box-shadow:0 0 0 3px rgba(200,81,10,.25); }
+.pipe-stage.done .pipe-dot   { background:#1a6b3c; }
+.pipe-code { font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:.1em; color:rgba(255,255,255,.35); }
+.pipe-stage.active .pipe-code { color:#c8510a; }
+.pipe-stage.done .pipe-code   { color:#2a9a5c; }
+.pipe-name { font-size:11px; font-weight:700; color:rgba(255,255,255,.6); margin-top:1px; }
+.pipe-stage.active .pipe-name { color:#fff; }
+.pipe-stage.done .pipe-name   { color:rgba(255,255,255,.75); }
+.pipe-detail { display:none; flex-direction:column; gap:5px; margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,.06); }
+.pipe-stage.active .pipe-detail { display:flex; }
+.pipe-what { font-size:10px; color:rgba(255,255,255,.55); line-height:1.55; }
+.pipe-actor { display:flex; align-items:center; gap:5px; font-size:9.5px; color:rgba(255,255,255,.45); font-family:var(--mono); }
+.pipe-actor-icon { font-size:12px; }
+.pipe-score { font-size:9px; font-family:var(--mono); color:rgba(255,255,255,.3); line-height:1.5; padding:4px 7px; background:rgba(255,255,255,.04); border-radius:5px; border:1px solid rgba(255,255,255,.06); }
+.pipe-paper { display:flex; align-items:center; gap:5px; font-size:9.5px; color:rgba(255,255,255,.4); margin-top:2px; flex-wrap:wrap; }
+.pipe-paper-badge { font-family:var(--mono); font-size:8px; font-weight:700; padding:1px 6px; border-radius:3px; }
+.pipe-paper-badge.p1 { background:rgba(200,81,10,.25); color:#e8920a; }
+.pipe-paper-badge.p2 { background:rgba(26,107,60,.25); color:#2a9a5c; }
+.pipe-paper-badge.p3 { background:rgba(26,92,107,.25); color:#2a9a8c; }
+.pipe-connector { width:1px; height:12px; background:rgba(255,255,255,.1); margin:2px auto; }
+.pipe-infra { border-radius:7px; border:1px dashed rgba(255,255,255,.1); background:rgba(255,255,255,.02); padding:7px 10px; }
+.pipe-infra-label { display:flex; align-items:center; gap:8px; }
+.pipe-infra-note { font-size:8.5px; font-family:var(--mono); color:rgba(255,255,255,.25); margin-top:4px; line-height:1.5; }
+
+/* ── GA inner loop diagram nodes ── */
+.loop-node{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px;border-radius:8px;border:1px solid;flex-shrink:0;min-width:90px;text-align:center;}
+.loop-icon{font-size:18px;line-height:1;}
+.loop-label{font-size:10px;font-weight:700;color:var(--ink);line-height:1.3;}
+.loop-sub{font-family:var(--mono);font-size:8.5px;color:var(--ink4);}
+.loop-arrow{font-size:14px;color:var(--ink4);padding:0 4px;flex-shrink:0;align-self:center;}
+
+/* ══ END PIPELINE SIDEBAR CSS ══════════════════════════════════ */
+
+/* ══ INTRO DECK ═══════════════════════════════════════════════ */
+#pg-intro{
+  position:fixed;inset:0;z-index:5000;
+  background:var(--ink);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+#pg-intro.hidden{display:none;}
+
+/* slide container */
+.intro-slides{
+  flex:1;min-height:0;
+  display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1);
+}
+.intro-slide{
+  flex:0 0 100%;width:100%;
+  display:flex;flex-direction:column;
+  padding:48px 64px 32px;
+  position:relative;overflow:hidden;
+}
+
+/* slide colour themes */
+.is-dark  { background:#0e1117; }
+.is-red   { background:#1a0008; }
+.is-navy  { background:#030d1f; }
+.is-green { background:#031209; }
+.is-amber { background:#100800; }
+.is-teal  { background:#010f12; }
+
+/* typography */
+.intro-eyebrow{
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;
+  opacity:.5;margin-bottom:16px;text-transform:uppercase;color:#fff;
+}
+.intro-title{
+  font-family:var(--serif);font-size:clamp(28px,4vw,52px);
+  font-weight:700;line-height:1.1;color:#fff;margin-bottom:20px;
+  letter-spacing:-.02em;
+}
+.intro-title span{opacity:.55;}
+.intro-body{
+  font-size:15px;line-height:1.75;color:rgba(255,255,255,.65);
+  max-width:680px;flex-shrink:0;
+}
+.intro-body strong{color:rgba(255,255,255,.9);}
+
+/* decorative accent line */
+.intro-accent{
+  width:48px;height:3px;border-radius:2px;margin-bottom:24px;
+}
+
+/* big number / stat */
+.intro-stat{
+  font-family:var(--mono);font-size:80px;font-weight:700;
+  line-height:1;letter-spacing:-.04em;opacity:.08;
+  position:absolute;right:64px;bottom:80px;color:#fff;
+  pointer-events:none;user-select:none;
+}
+
+/* prototype cards */
+.proto-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+  margin-top:24px;
+}
+.proto-card{
+  border-radius:10px;padding:16px 18px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  display:flex;flex-direction:column;gap:8px;
+}
+.proto-badge{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  letter-spacing:.1em;padding:3px 10px;border-radius:4px;
+  display:inline-flex;width:fit-content;
+}
+.proto-card h4{font-size:14px;font-weight:700;color:#fff;margin:0;}
+.proto-card p{font-size:12px;color:rgba(255,255,255,.55);margin:0;line-height:1.6;}
+
+/* paper cards */
+.paper-grid{display:flex;flex-direction:column;gap:10px;margin-top:20px;}
+.paper-row{
+  border-radius:8px;padding:12px 16px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.03);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.paper-num{
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  color:rgba(255,255,255,.3);flex-shrink:0;width:28px;
+  padding-top:2px;
+}
+.paper-row h4{font-size:13px;font-weight:700;color:rgba(255,255,255,.85);margin:0 0 3px;}
+.paper-row p{font-size:11.5px;color:rgba(255,255,255,.45);margin:0;line-height:1.5;}
+
+/* experience cards */
+.exp-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+  margin-top:20px;
+}
+.exp-card{
+  border-radius:10px;padding:14px 16px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.03);
+}
+.exp-card .stage-num{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  letter-spacing:.1em;opacity:.5;margin-bottom:6px;color:#fff;
+}
+.exp-card h4{font-size:13px;font-weight:700;color:#fff;margin:0 0 4px;}
+.exp-card p{font-size:11.5px;color:rgba(255,255,255,.5);margin:0;line-height:1.5;}
+.exp-card .proto-link{
+  display:inline-block;margin-top:6px;
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  padding:2px 8px;border-radius:4px;letter-spacing:.06em;
+}
+
+/* progress dots */
+.intro-dots{
+  display:flex;gap:7px;justify-content:center;
+  padding:14px 0;flex-shrink:0;
+}
+.intro-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.2);transition:all .3s;cursor:pointer;
+}
+.intro-dot.on{background:#fff;width:20px;border-radius:3px;}
+
+/* nav */
+.intro-nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 64px 20px;flex-shrink:0;
+}
+.intro-btn{
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  padding:9px 22px;border-radius:8px;cursor:pointer;
+  transition:all .15s;border:none;letter-spacing:.04em;
+}
+.intro-btn.prev{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);}
+.intro-btn.prev:hover{background:rgba(255,255,255,.14);}
+.intro-btn.next{background:#fff;color:#0e1117;}
+.intro-btn.next:hover{transform:translateX(2px);}
+.intro-btn.enter{
+  background:linear-gradient(135deg,#c8510a,#e8720a);
+  color:#fff;padding:11px 32px;font-size:13px;
+  box-shadow:0 4px 20px rgba(200,81,10,.4);
+}
+.intro-btn.enter:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(200,81,10,.5);}
+.intro-slide-counter{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.3);}
+/* ── Algorithm view tabs ── */
+.algo-tab{font-family:var(--mono);font-size:11px;font-weight:700;padding:6px 14px;border-radius:7px;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.55);transition:all .15s;letter-spacing:.04em;}
+.algo-tab.active{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.35);}
+.algo-tab:hover:not(.active){background:rgba(255,255,255,.08);}
+.algo-view{flex:1;min-height:0;}
+</style>
+</head>
+<body>
+<!-- ══ INTRO DECK ══════════════════════════════════════════════ -->
+<div id="pg-intro">
+  <div class="intro-slides" id="intro-slides">
+
+    <!-- SLIDE 1: Project Title -->
+    <div class="intro-slide is-dark">
+      <div class="intro-eyebrow">Auburn University · CSSE · PhD Research Proposal</div>
+      <div class="intro-accent" style="background:#c8510a"></div>
+      <div class="intro-title">EVAtAR-IDEA<br><span>Interactive Distributed Evolutionary</span><br><span>Algorithm for Scripted Avatar Video</span></div>
+      <div class="intro-body">
+        A PhD research framework by <strong>Jahidul Arafat</strong>, supervised by <strong>Prof. Gerry Dozier</strong>.<br>
+        Domain: <strong>Interactive Distributed Evolutionary Computation (IDEC)</strong> · Auburn University CSSE.
+      </div>
+      <div class="intro-stat">EVAtAR</div>
+    </div>
+
+    <!-- SLIDE 2: Problem in the Real World -->
+    <div class="intro-slide is-red">
+      <div class="intro-eyebrow">The Problem</div>
+      <div class="intro-accent" style="background:#e8720a"></div>
+      <div class="intro-title">Scripted avatar videos<br><span>look flat, robotic,</span><br><span>and emotionally absent.</span></div>
+      <div class="intro-body">
+        During production of <strong>4–10 minute Aubria lecture videos</strong>, every sentence required manual
+        expression tag placement. Each attempt broke something — a frozen face, a misaligned expression peak,
+        an emotion that fired too late or clashed with adjacent tags.<br><br>
+        The result: <strong>200+ hours of manual iteration</strong> across
+        <strong>100+ re-renders</strong> to produce a single polished video.
+        Every re-render consumed HeyGen credits — making the process not just time-consuming
+        but <strong>financially costly at scale</strong>.<br><br>
+        The root cause: <strong>no systematic method</strong> exists for deciding which expression tags to place,
+        where in the sentence, and for how long — leading to eight documented failure modes
+        (F1–F8) that consistently degrade the avatar's facial expression quality.
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+        <div style="background:rgba(232,114,10,.12);border:1px solid rgba(232,114,10,.3);border-radius:8px;padding:9px 16px;display:flex;flex-direction:column;gap:2px;">
+          <span style="font-family:var(--mono);font-size:22px;font-weight:700;color:#e8920a;line-height:1;">200+</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.45);">hours of manual iteration</span>
+        </div>
+        <div style="background:rgba(232,114,10,.12);border:1px solid rgba(232,114,10,.3);border-radius:8px;padding:9px 16px;display:flex;flex-direction:column;gap:2px;">
+          <span style="font-family:var(--mono);font-size:22px;font-weight:700;color:#e8920a;line-height:1;">100×</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.45);">re-renders per video</span>
+        </div>
+        <div style="background:rgba(232,114,10,.12);border:1px solid rgba(232,114,10,.3);border-radius:8px;padding:9px 16px;display:flex;flex-direction:column;gap:2px;">
+          <span style="font-family:var(--mono);font-size:22px;font-weight:700;color:#e8920a;line-height:1;">4–10 min</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.45);">video length per lecture</span>
+        </div>
+        <div style="background:rgba(232,114,10,.12);border:1px solid rgba(232,114,10,.3);border-radius:8px;padding:9px 16px;display:flex;flex-direction:column;gap:2px;">
+          <span style="font-family:var(--mono);font-size:22px;font-weight:700;color:#e8920a;line-height:1;">$166+</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.45);">token cost per video</span>
+        </div>
+      </div>
+      <div class="intro-stat">100×</div>
+    </div>
+
+    <!-- SLIDE 3: Objective -->
+    <div class="intro-slide is-navy">
+      <div class="intro-eyebrow">Research Objective</div>
+      <div class="intro-accent" style="background:#4a8adf"></div>
+      <div class="intro-title">Optimise expression tag<br><span>sequences automatically</span><br><span>using evolutionary search.</span></div>
+      <div class="intro-body">
+        EVAtAR-IDEA treats the placement of expression tags as a <strong>combinatorial optimisation problem</strong>.
+        An Interactive Distributed Evolutionary Algorithm (IDEA) searches a vocabulary of 21 confirmed tokens
+        across position, type, and duration dimensions to maximise a composite perceptual fitness score
+        <strong>F(p) = 0.5·f1 + 0.3·f2 + 0.2·f3</strong> — where f1 is AffectNet accuracy, f2 is timing alignment, and f3 is expression consistency.
+        <br><br>
+        Pre-registered threshold: <strong>F(p*) ≥ 0.75 · Wilcoxon p &lt; 0.05 · Cohen d ≥ 0.5</strong>
+      </div>
+      <div class="intro-stat">F(p)</div>
+    </div>
+
+    <!-- SLIDE 4: The Three Prototypes -->
+    <div class="intro-slide is-green">
+      <div class="intro-eyebrow">Three Prototypes · Three Papers</div>
+      <div class="intro-accent" style="background:#2a9a5c"></div>
+      <div class="intro-title">Building EVAtAR-IDEA<br><span>across three research</span><br><span>prototypes.</span></div>
+      <div class="proto-grid">
+        <div class="proto-card">
+          <div class="proto-badge" style="background:rgba(200,81,10,.2);color:#e8920a;">P1 · BASELINE</div>
+          <h4>Corpus & Failure Taxonomy</h4>
+          <p>Collect 50 labelled sentences across 8 emotion classes. Define F1–F8 failure taxonomy. Measure F(p_manual) for human-placed tags. Build D1 dataset.</p>
+          <div style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.35);margin-top:4px">Paper 1 · Vocabulary Study</div>
+        </div>
+        <div class="proto-card">
+          <div class="proto-badge" style="background:rgba(26,107,60,.25);color:#2a9a5c;">P2 · GA OPTIMISATION</div>
+          <h4>EVAtAR-IDEA Engine</h4>
+          <p>Run IDEA with pop=8, gen=8, tournament k=3. Meme space stores F(p*)≥0.70 solutions. Compare F(p*) vs F(p_manual) across 50 sentences.</p>
+          <div style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.35);margin-top:4px">Paper 2 · Optimisation Study</div>
+        </div>
+        <div class="proto-card">
+          <div class="proto-badge" style="background:rgba(26,92,107,.25);color:#2a9a8c;">P3 · CROSS-PLATFORM</div>
+          <h4>Portability Study</h4>
+          <p>Test same p* sequences on HeyGen, D-ID, and Akool. Measure F(p) degradation across platforms. Evaluate architecture-specific failure modes.</p>
+          <div style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.35);margin-top:4px">Paper 3 · Portability Study</div>
+        </div>
+      </div>
+      <div class="intro-stat">P1→P3</div>
+    </div>
+
+    <!-- SLIDE 5: What You're About to Experience -->
+    <div class="intro-slide is-amber">
+      <div class="intro-eyebrow">What You Are About to Experience</div>
+      <div class="intro-accent" style="background:#c8510a"></div>
+      <div class="intro-title">A live simulation of<br><span>the full EVAtAR-IDEA</span><br><span>pipeline.</span></div>
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="stage-num">STAGE 1 → P1</div>
+          <h4>Select a Script Sentence</h4>
+          <p>Choose from 30 sentences across 8 emotion categories — the same corpus structure used in P1 data collection.</p>
+          <div class="proto-link" style="background:rgba(200,81,10,.15);color:#e8920a;">P1 Corpus</div>
+        </div>
+        <div class="exp-card">
+          <div class="stage-num">STAGE 2 → P1</div>
+          <h4>Place Tags Manually</h4>
+          <p>Build your own tag sequence. The live F1–F8 taxonomy table shows every failure mode in real time as you work.</p>
+          <div class="proto-link" style="background:rgba(200,81,10,.15);color:#e8920a;">P1 Baseline</div>
+        </div>
+        <div class="exp-card">
+          <div class="stage-num">STAGE 3 → P2</div>
+          <h4>Watch the GA Evolve</h4>
+          <p>Run 1–5 independent GA trials. Each run stores its G1–G8 evolution trail. Meme space retains the last run's best solutions.</p>
+          <div class="proto-link" style="background:rgba(26,107,60,.15);color:#2a9a5c;">P2 Optimisation</div>
+        </div>
+        <div class="exp-card">
+          <div class="stage-num">STAGE 4 → P2 + P3</div>
+          <h4>Compare Results</h4>
+          <p>Pre-registered threshold check, multi-run variance, cross-platform projection (HeyGen★★★ / D-ID★★ / Akool★), and D1 CSV export.</p>
+          <div class="proto-link" style="background:rgba(26,92,107,.15);color:#2a9a8c;">P2 + P3</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Full Pipeline + Algorithm -->
+    <div class="intro-slide is-dark" style="padding:24px 40px 16px;">
+      <div class="intro-eyebrow">EVAtAR-IDEA · Before You Enter the Playground</div>
+      <div class="intro-accent" style="background:#1a4f8a"></div>
+
+      <!-- Toggle: Pipeline / Pseudocode / Descriptive -->
+      <div style="display:flex;gap:6px;margin-bottom:16px;flex-shrink:0;">
+        <button class="algo-tab active" id="atab-pipe" onclick="algoTab('pipe')">🗺 Full Pipeline</button>
+        <button class="algo-tab" id="atab-pseudo" onclick="algoTab('pseudo')">⌨ Pseudocode</button>
+        <button class="algo-tab" id="atab-desc" onclick="algoTab('desc')">📖 Plain English</button>
+      </div>
+
+      <!-- ── VIEW 1: Pipeline SVG ── -->
+      <div id="algo-view-pipe" class="algo-view" style="flex:1;overflow-y:auto;display:flex;">
+        <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:100%;">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="rgba(255,255,255,0.4)"/>
+            </marker>
+            <marker id="arr-orange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#c8510a"/>
+            </marker>
+            <marker id="arr-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#1a6b3c"/>
+            </marker>
+          </defs>
+
+          <!-- ── OUTER CONTAINER LABEL ── -->
+          <rect x="10" y="10" width="880" height="400" rx="12" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+          <text x="22" y="26" font-family="DM Mono,monospace" font-size="10" fill="rgba(255,255,255,0.3)" letter-spacing="2">EVAtAR-IDEA FULL PIPELINE — P1 → P2 → P3</text>
+
+          <!-- ══ P1 SECTION ══ -->
+          <rect x="22" y="34" width="240" height="340" rx="8" fill="rgba(200,81,10,0.07)" stroke="rgba(200,81,10,0.3)" stroke-width="1"/>
+          <text x="142" y="52" font-family="DM Mono,monospace" font-size="10" font-weight="700" fill="#e8920a" text-anchor="middle" letter-spacing="2">P1 · PAPER 1</text>
+
+          <!-- Script box -->
+          <rect x="42" y="62" width="200" height="44" rx="7" fill="rgba(200,81,10,0.15)" stroke="rgba(200,81,10,0.5)" stroke-width="1.5"/>
+          <text x="142" y="80" font-family="DM Sans,sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">📋 Script Corpus</text>
+          <text x="142" y="96" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,0.55)" text-anchor="middle">50 sentences · 8 emotion classes</text>
+
+          <!-- Arrow down -->
+          <line x1="142" y1="106" x2="142" y2="124" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Human label box -->
+          <rect x="42" y="124" width="200" height="44" rx="7" fill="rgba(200,81,10,0.12)" stroke="rgba(200,81,10,0.4)" stroke-width="1.5"/>
+          <text x="142" y="142" font-family="DM Sans,sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">👤 Human Labels Tags</text>
+          <text x="142" y="158" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,0.55)" text-anchor="middle">p_manual · word × tag × duration</text>
+
+          <!-- Arrow down -->
+          <line x1="142" y1="168" x2="142" y2="186" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- F(p_manual) box -->
+          <rect x="42" y="186" width="200" height="44" rx="7" fill="rgba(74,26,122,0.18)" stroke="rgba(74,26,122,0.5)" stroke-width="1.5"/>
+          <text x="142" y="204" font-family="DM Sans,sans-serif" font-size="11" font-weight="700" fill="#c8a8ff" text-anchor="middle">🔬 DeepFace Scores Clip</text>
+          <text x="142" y="220" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,0.55)" text-anchor="middle">F(p_manual) · f1·f2·f3 baseline</text>
+
+          <!-- F1-F8 box -->
+          <rect x="42" y="248" width="200" height="44" rx="7" fill="rgba(200,81,10,0.08)" stroke="rgba(200,81,10,0.25)" stroke-width="1"/>
+          <text x="142" y="266" font-family="DM Sans,sans-serif" font-size="11" font-weight="700" fill="rgba(255,255,255,0.8)" text-anchor="middle">📊 Failure Taxonomy F1–F8</text>
+          <text x="142" y="282" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,0.45)" text-anchor="middle">D1 dataset · OSF pre-registration</text>
+
+          <text x="142" y="356" font-family="DM Mono,monospace" font-size="9" fill="#e8920a" text-anchor="middle">→ Paper 1: Vocabulary Study</text>
+
+          <!-- ══ P2 SECTION ══ -->
+          <rect x="278" y="34" width="380" height="340" rx="8" fill="rgba(26,107,60,0.07)" stroke="rgba(26,107,60,0.3)" stroke-width="1"/>
+          <text x="468" y="52" font-family="DM Mono,monospace" font-size="10" font-weight="700" fill="#2a9a5c" text-anchor="middle" letter-spacing="2">P2 · PAPER 2 — EVAtAR-IDEA GA LOOP</text>
+
+          <!-- GA loop container -->
+          <rect x="292" y="62" width="352" height="260" rx="8" fill="rgba(26,79,138,0.06)" stroke="rgba(26,79,138,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="468" y="76" font-family="DM Mono,monospace" font-size="8" fill="rgba(255,255,255,0.3)" text-anchor="middle" letter-spacing="1">INNER LOOP — ×8 GENERATIONS · POP=8</text>
+
+          <!-- Step 1: Init population -->
+          <rect x="308" y="84" width="155" height="40" rx="6" fill="rgba(26,79,138,0.2)" stroke="rgba(26,79,138,0.5)" stroke-width="1.5"/>
+          <text x="385" y="100" font-family="DM Sans,sans-serif" font-size="10" font-weight="700" fill="#7ab3ff" text-anchor="middle">🎲 Init Population</text>
+          <text x="385" y="114" font-family="DM Mono,monospace" font-size="8" fill="rgba(255,255,255,0.45)" text-anchor="middle">8 random sequences · 21-token vocab</text>
+
+          <!-- Arrow right to meme seed -->
+          <line x1="463" y1="104" x2="481" y2="104" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Meme seed -->
+          <rect x="481" y="84" width="148" height="40" rx="6" fill="rgba(122,82,0,0.2)" stroke="rgba(122,82,0,0.5)" stroke-width="1.5"/>
+          <text x="555" y="100" font-family="DM Sans,sans-serif" font-size="10" font-weight="700" fill="#fbbf24" text-anchor="middle">🧠 Seed from Meme</text>
+          <text x="555" y="114" font-family="DM Mono,monospace" font-size="8" fill="rgba(255,255,255,0.45)" text-anchor="middle">if F(p*)≥0.70 exists → reuse</text>
+
+          <!-- Arrow down from init -->
+          <line x1="385" y1="124" x2="385" y2="142" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- HeyGen render -->
+          <rect x="308" y="142" width="155" height="40" rx="6" fill="rgba(138,26,46,0.2)" stroke="rgba(138,26,46,0.5)" stroke-width="1.5"/>
+          <text x="385" y="158" font-family="DM Sans,sans-serif" font-size="10" font-weight="700" fill="#fca5a5" text-anchor="middle">🎬 HeyGen Renders</text>
+          <text x="385" y="172" font-family="DM Mono,monospace" font-size="8" fill="rgba(255,255,255,0.45)" text-anchor="middle">8 clips · ~60s each · token cost</text>
+
+          <!-- Arrow down -->
+          <line x1="385" y1="182" x2="385" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- DeepFace score -->
+          <rect x="308" y="200" width="155" height="40" rx="6" fill="rgba(74,26,122,0.2)" stroke="rgba(74,26,122,0.5)" stroke-width="1.5"/>
+          <text x="385" y="216" font-family="DM Sans,sans-serif" font-size="10" font-weight="700" fill="#c4b5fd" text-anchor="middle">🔬 DeepFace Scores</text>
+          <text x="385" y="230" font-family="DM Mono,monospace" font-size="8" fill="rgba(255,255,255,0.45)" text-anchor="middle">F(p)=0.5·f1+0.3·f2+0.2·f3</text>
+
+          <!-- Arrow down -->
+          <line x1="385" y1="240" x2="385" y2="258" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Tournament select -->
+          <rect x="308" y="258" width="155" height="40" rx="6" fill="rgba(26,107,60,0.2)" stroke="rgba(26,107,60,0.5)" stroke-width="1.5"/>
+          <text x="385" y="274" font-family="DM Sans,sans-serif" font-size="10" font-weight="700" fill="#86efac" text-anchor="middle">🏆 Tournament Select</text>
+          <text x="385" y="288" font-family="DM Mono,monospace" font-size="8" fill="rgba(255,255,255,0.45)" text-anchor="middle">k=3 · mutate · constraint repair</text>
+
+          <!-- Loop back arrow -->
+          <path d="M 463 278 Q 490 278 490 200 Q 490 125 463 125" fill="none" stroke="rgba(26,79,138,0.5)" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+          <text x="498" y="200" font-family="DM Mono,monospace" font-size="8" fill="rgba(26,79,138,0.8)" text-anchor="middle" transform="rotate(-90,498,200)">next gen</text>
+
+          <!-- Meme store arrow -->
+          <line x1="555" y1="124" x2="555" y2="258" stroke="rgba(122,82,0,0.3)" stroke-width="1" stroke-dasharray="3,2"/>
+          <rect x="487" y="258" width="136" height="40" rx="6" fill="rgba(122,82,0,0.15)" stroke="rgba(122,82,0,0.4)" stroke-width="1"/>
+          <text x="555" y="274" font-family="DM Sans,sans-serif" font-size="10" font-weight="700" fill="#fbbf24" text-anchor="middle">💾 Store to Meme</text>
+          <text x="555" y="288" font-family="DM Mono,monospace" font-size="8" fill="rgba(255,255,255,0.45)" text-anchor="middle">if F(p*)≥0.70 threshold</text>
+
+          <!-- P2 output -->
+          <text x="468" y="356" font-family="DM Mono,monospace" font-size="9" fill="#2a9a5c" text-anchor="middle">→ Paper 2: Optimisation Study · Wilcoxon · Cohen d</text>
+
+          <!-- ══ ARROWS P1→P2 ══ -->
+          <line x1="242" y1="200" x2="292" y2="200" stroke="rgba(255,255,255,0.4)" stroke-width="2" marker-end="url(#arr)"/>
+          <text x="267" y="196" font-family="DM Mono,monospace" font-size="8" fill="rgba(255,255,255,0.4)" text-anchor="middle">baseline</text>
+
+          <!-- ══ P3 SECTION ══ -->
+          <rect x="674" y="34" width="208" height="340" rx="8" fill="rgba(26,92,107,0.07)" stroke="rgba(26,92,107,0.3)" stroke-width="1"/>
+          <text x="778" y="52" font-family="DM Mono,monospace" font-size="10" font-weight="700" fill="#2a9a8c" text-anchor="middle" letter-spacing="2">P3 · PAPER 3</text>
+
+          <!-- HeyGen -->
+          <rect x="690" y="62" width="176" height="44" rx="7" fill="rgba(138,26,46,0.12)" stroke="rgba(138,26,46,0.4)" stroke-width="1.5"/>
+          <text x="778" y="80" font-family="DM Sans,sans-serif" font-size="11" font-weight="700" fill="#fca5a5" text-anchor="middle">🎬 HeyGen ★★★</text>
+          <text x="778" y="96" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,0.5)" text-anchor="middle">inline tags · full control</text>
+
+          <line x1="778" y1="106" x2="778" y2="118" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- DID -->
+          <rect x="690" y="118" width="176" height="44" rx="7" fill="rgba(26,79,138,0.12)" stroke="rgba(26,79,138,0.4)" stroke-width="1"/>
+          <text x="778" y="136" font-family="DM Sans,sans-serif" font-size="11" font-weight="700" fill="#7ab3ff" text-anchor="middle">D-ID ★★</text>
+          <text x="778" y="152" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,0.45)" text-anchor="middle">NL hints · ~15–25% degradation</text>
+
+          <line x1="778" y1="162" x2="778" y2="174" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Akool -->
+          <rect x="690" y="174" width="176" height="44" rx="7" fill="rgba(122,82,0,0.1)" stroke="rgba(122,82,0,0.35)" stroke-width="1"/>
+          <text x="778" y="192" font-family="DM Sans,sans-serif" font-size="11" font-weight="700" fill="#fbbf24" text-anchor="middle">Akool ★</text>
+          <text x="778" y="208" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,0.45)" text-anchor="middle">audio-driven · no tag control</text>
+
+          <line x1="778" y1="218" x2="778" y2="232" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- Cross-platform F(p) -->
+          <rect x="690" y="232" width="176" height="44" rx="7" fill="rgba(26,92,107,0.15)" stroke="rgba(26,92,107,0.4)" stroke-width="1.5"/>
+          <text x="778" y="250" font-family="DM Sans,sans-serif" font-size="11" font-weight="700" fill="#67e8f9" text-anchor="middle">📊 Cross-Platform F(p)</text>
+          <text x="778" y="266" font-family="DM Mono,monospace" font-size="9" fill="rgba(255,255,255,0.45)" text-anchor="middle">same p* · 3 platforms compared</text>
+
+          <!-- P3 output -->
+          <text x="778" y="356" font-family="DM Mono,monospace" font-size="9" fill="#2a9a8c" text-anchor="middle">→ Paper 3: Portability Study</text>
+
+          <!-- ══ ARROW P2→P3 ══ -->
+          <line x1="658" y1="200" x2="690" y2="200" stroke="rgba(255,255,255,0.4)" stroke-width="2" marker-end="url(#arr)"/>
+          <text x="674" y="195" font-family="DM Mono,monospace" font-size="8" fill="rgba(255,255,255,0.4)" text-anchor="middle">p*</text>
+
+          <!-- F(p*) threshold line label -->
+          <line x1="308" y1="378" x2="650" y2="378" stroke="rgba(26,107,60,0.3)" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="468" y="392" font-family="DM Mono,monospace" font-size="8" fill="rgba(26,107,60,0.7)" text-anchor="middle">Pre-registered: F(p*)≥0.75 · Wilcoxon p&lt;0.05 · Cohen d≥0.5</text>
+        </svg>
+      </div>
+
+      <!-- ── VIEW 2: Pseudocode ── -->
+      <div id="algo-view-pseudo" class="algo-view" style="display:none;flex:1;overflow-y:auto;">
+        <pre style="font-family:var(--mono);font-size:11px;line-height:1.9;color:rgba(255,255,255,0.85);margin:0;white-space:pre-wrap;">
+<span style="color:#e8920a;font-weight:700;">ALGORITHM</span> EVAtAR-IDEA(script_corpus S, vocab V, pop_size=8, max_gen=8)
+
+<span style="color:#7ab3ff;">// ── P1: Baseline Measurement ────────────────────────────────</span>
+<span style="color:#2a9a5c;">FOR EACH</span> sentence s <span style="color:#2a9a5c;">IN</span> S:
+    p_manual ← HumanLabelTags(s, V)           <span style="color:#5a6a7a;">// Stage 2: researcher places tags</span>
+    clip     ← HeyGen.Render(s, p_manual)     <span style="color:#5a6a7a;">// HeyGen API call</span>
+    F_manual ← DeepFace.Score(clip, s.emotion) <span style="color:#5a6a7a;">// f1·f2·f3 computed</span>
+    D1.append(s, p_manual, F_manual)           <span style="color:#5a6a7a;">// build dataset</span>
+<span style="color:#e8920a;">PRE-REGISTER</span> threshold: F(p*)≥0.75, Wilcoxon p&lt;0.05, Cohen d≥0.5
+
+<span style="color:#7ab3ff;">// ── P2: GA Optimisation ─────────────────────────────────────</span>
+<span style="color:#2a9a5c;">FOR EACH</span> sentence s <span style="color:#2a9a5c;">IN</span> S:
+    pop ← InitPopulation(pop_size, V)         <span style="color:#5a6a7a;">// 8 random candidate sequences</span>
+    <span style="color:#2a9a5c;">IF</span> MemeSpace[s.emotion].exists():
+        pop[0:3] ← MemeSpace[s.emotion].top3  <span style="color:#5a6a7a;">// seed from stored solutions</span>
+
+    <span style="color:#2a9a5c;">FOR</span> gen = 1 <span style="color:#2a9a5c;">TO</span> max_gen:
+        <span style="color:#2a9a5c;">FOR EACH</span> candidate p <span style="color:#2a9a5c;">IN</span> pop:
+            clip    ← HeyGen.Render(s, p)      <span style="color:#5a6a7a;">// render via API</span>
+            F(p)    ← DeepFace.Score(clip)     <span style="color:#5a6a7a;">// AffectNet 8-class scoring</span>
+            <span style="color:#2a9a5c;">IF</span> F(p) ≥ 0.70:
+                MemeSpace[s.emotion].store(p, F(p))
+        survivors ← Tournament(pop, k=3)       <span style="color:#5a6a7a;">// select best candidates</span>
+        pop       ← Mutate(survivors, V)       <span style="color:#5a6a7a;">// shift_pos · change_tag · add · remove · change_dur</span>
+        pop       ← ConstraintRepair(pop)      <span style="color:#5a6a7a;">// fix F2 stacking, F3 late onset</span>
+
+    p* ← argmax F(p) <span style="color:#2a9a5c;">IN</span> pop                  <span style="color:#5a6a7a;">// best candidate sequence</span>
+    D2.append(s, p*, F(p*), F_manual, delta)
+
+<span style="color:#e8920a;">COMPARE</span> F(p*) vs F(p_manual) via Wilcoxon signed-rank + Cohen d
+
+<span style="color:#7ab3ff;">// ── P3: Cross-Platform ──────────────────────────────────────</span>
+<span style="color:#2a9a5c;">FOR EACH</span> sentence s, optimised p* <span style="color:#2a9a5c;">IN</span> D2:
+    F_heygen ← DeepFace.Score(HeyGen.Render(s, p*))
+    F_did    ← DeepFace.Score(DID.Render(s, p*))    <span style="color:#5a6a7a;">// NL translation of tags</span>
+    F_akool  ← DeepFace.Score(Akool.Render(s, p*))  <span style="color:#5a6a7a;">// audio-driven only</span>
+    D3.append(s, F_heygen, F_did, F_akool)
+<span style="color:#e8920a;">REPORT</span> cross-platform degradation · T2 failure differences
+        </pre>
+      </div>
+
+      <!-- ── VIEW 3: Plain English ── -->
+      <div id="algo-view-desc" class="algo-view" style="display:none;flex:1;overflow-y:auto;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-right:4px;">
+
+          <div style="background:rgba(200,81,10,.08);border:1px solid rgba(200,81,10,.25);border-radius:9px;padding:13px 15px;">
+            <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:#e8920a;letter-spacing:.12em;margin-bottom:8px;">P1 — BASELINE MEASUREMENT</div>
+            <p style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.7;margin:0;">
+              For each of 50 sentences, a human researcher (Jahidul) places expression tags word-by-word.
+              HeyGen renders the clip. DeepFace analyses it frame-by-frame using the AffectNet 8-class model.
+              The score F(p_manual) = 0.5·f1 + 0.3·f2 + 0.2·f3 is recorded.
+              This builds the D1 dataset and establishes what an expert human can achieve — the baseline the GA must beat.
+              Eight failure modes (F1–F8) are documented and used to define the constraint repair handler.
+            </p>
+            <div style="font-family:var(--mono);font-size:9px;color:#e8920a;margin-top:8px;">→ Paper 1 · Vocabulary &amp; Corpus Study</div>
+          </div>
+
+          <div style="background:rgba(26,107,60,.08);border:1px solid rgba(26,107,60,.25);border-radius:9px;padding:13px 15px;">
+            <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:#2a9a5c;letter-spacing:.12em;margin-bottom:8px;">P2 — GA OPTIMISATION (EVAtAR-IDEA)</div>
+            <p style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.7;margin:0;">
+              For each sentence, EVAtAR-IDEA creates 8 candidate tag sequences from the 21-token vocabulary.
+              Each candidate is rendered by HeyGen and scored by DeepFace — exactly the same pipeline as P1.
+              The best-scoring candidates survive, get mutated (position shifted, tag swapped, timing changed),
+              and compete again. After 8 generations, the winner p* is compared to p_manual.
+              Solutions above 0.70 are stored in the Meme Space and reused as starting points for sentences
+              of the same emotion — so the system gets faster over time.
+            </p>
+            <div style="font-family:var(--mono);font-size:9px;color:#2a9a5c;margin-top:8px;">→ Paper 2 · Optimisation Study · Pre-reg: F(p*)≥0.75 · Wilcoxon · Cohen d</div>
+          </div>
+
+          <div style="background:rgba(26,92,107,.08);border:1px solid rgba(26,92,107,.25);border-radius:9px;padding:13px 15px;grid-column:1/-1;">
+            <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:#2a9a8c;letter-spacing:.12em;margin-bottom:8px;">P3 — CROSS-PLATFORM PORTABILITY</div>
+            <p style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.7;margin:0;">
+              The optimised p* sequences from P2 are tested on three avatar platforms.
+              <strong style="color:rgba(255,255,255,.9);">HeyGen ★★★</strong> supports inline expression tags with precise control — best F(p) scores.
+              <strong style="color:rgba(255,255,255,.9);">D-ID ★★</strong> uses natural-language motion hints instead of tags — expected ~15–25% score degradation.
+              <strong style="color:rgba(255,255,255,.9);">Akool ★</strong> is audio-driven only with no expression control — lower bound on F(p).
+              The same p* sequence and the same DeepFace scoring pipeline are used for all three.
+              This shows whether EVAtAR-IDEA's optimisation is platform-specific or generalisable.
+            </p>
+            <div style="font-family:var(--mono);font-size:9px;color:#2a9a8c;margin-top:8px;">→ Paper 3 · Portability Study · Same p* · Three renders · F(p) degradation analysis</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <!-- dots -->
+  <div class="intro-dots" id="intro-dots">
+    <div class="intro-dot on" onclick="introGoTo(0)"></div>
+    <div class="intro-dot" onclick="introGoTo(1)"></div>
+    <div class="intro-dot" onclick="introGoTo(2)"></div>
+    <div class="intro-dot" onclick="introGoTo(3)"></div>
+    <div class="intro-dot" onclick="introGoTo(4)"></div>
+    <div class="intro-dot" onclick="introGoTo(5)"></div>
+  </div>
+
+  <!-- nav -->
+  <div class="intro-nav">
+    <button class="intro-btn prev" id="intro-prev" onclick="introNav(-1)" style="visibility:hidden">← Prev</button>
+    <span class="intro-slide-counter" id="intro-counter">1 / 6</span>
+    <button class="intro-btn next" id="intro-next" onclick="introNav(1)">Next →</button>
+  </div>
+</div>
+
+<div id="pg-app">
+
+  <!-- Header -->
+  <div id="pg-header">
+    <div class="pg-badge">🧬 Playground Engine &nbsp;·&nbsp; Fully Simulated &nbsp;·&nbsp; Real Architecture &nbsp;·&nbsp; No API Cost</div>
+    <h1>EVAtAR-IDEA Playground — Experience the Full Pipeline.</h1>
+    <p>Select a script · place expression tags · watch the GA evolve · compare F(p) scores.</p>
+    <a href="evatar-idea.html" style="font-family:var(--mono);font-size:10px;color:var(--ink4);text-decoration:none;opacity:.7;display:inline-block;margin-bottom:4px;">← Back to Presentation</a>
+  </div>
+
+  <!-- Content (panels injected here) -->
+  <div id="pg-content">
+
+<div class="prog"><div class="prog-fill" style="width:80%"></div></div>
+<div class="id-bar" style="background:#1a4f8a"></div>
+<div class="slide-header" style="padding-bottom:5px">
+  <div class="eyebrow a1">
+    <span class="etag" style="color:#1a4f8a;border-color:#1a4f8a">Playground Engine</span>
+    <span class="enum">Fully Simulated · Real Architecture · No API Cost</span>
+  </div>
+  <h2 class="slide-h1 a2">EVAtAR-IDEA Playground — Experience the Full Pipeline.</h2>
+  <p class="slide-sub a3">Select a script · place expression tags · watch the GA evolve · compare F(p) scores.</p>
+</div>
+
+<div class="slide-body" style="padding-bottom:68px;overflow:hidden;display:flex;flex-direction:row;gap:0;">
+
+<!-- ══ PIPELINE SIDEBAR ═══════════════════════════════════════ -->
+<div id="pg-pipeline-sidebar">
+
+  <!-- Title -->
+  <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.4);margin-bottom:14px;">FULL PIPELINE</div>
+
+  <!-- ── Stage 1 ── -->
+  <div class="pipe-stage" id="pipe-s1" onclick="pgPipeClick(1)">
+    <div class="pipe-stage-header">
+      <div class="pipe-dot" id="pipe-dot1"></div>
+      <div class="pipe-label">
+        <div class="pipe-code">STAGE 1 · P1</div>
+        <div class="pipe-name">Select Script</div>
+      </div>
+    </div>
+    <div class="pipe-detail" id="pipe-detail1">
+      <div class="pipe-what">You pick a sentence + emotion label from the P1 corpus.</div>
+      <div class="pipe-actor">
+        <span class="pipe-actor-icon">👤</span> Human labels the sentence
+      </div>
+      <div class="pipe-paper">
+        <span class="pipe-paper-badge p1">P1</span> Paper 1 · Vocabulary &amp; Corpus Study
+      </div>
+    </div>
+  </div>
+
+  <div class="pipe-connector"></div>
+
+  <!-- ── Stage 2 ── -->
+  <div class="pipe-stage" id="pipe-s2" onclick="pgPipeClick(2)">
+    <div class="pipe-stage-header">
+      <div class="pipe-dot" id="pipe-dot2"></div>
+      <div class="pipe-label">
+        <div class="pipe-code">STAGE 2 · P1</div>
+        <div class="pipe-name">Manual Tag Placement</div>
+      </div>
+    </div>
+    <div class="pipe-detail" id="pipe-detail2">
+      <div class="pipe-what">You place expression tags word-by-word. Live F1–F8 failure taxonomy updates in real time.</div>
+      <div class="pipe-actor">
+        <span class="pipe-actor-icon">👤</span> Human builds sequence p_manual
+      </div>
+      <div class="pipe-score">F(p_manual) = 0.5·f1 + 0.3·f2 + 0.2·f3</div>
+      <div class="pipe-paper">
+        <span class="pipe-paper-badge p1">P1</span> Paper 1 · Baseline Measurement · D1 Dataset
+      </div>
+    </div>
+  </div>
+
+  <div class="pipe-connector"></div>
+
+  <!-- ── Real pipeline step: HeyGen renders ── -->
+  <div class="pipe-infra" id="pipe-heygen">
+    <div class="pipe-infra-label">
+      <span style="font-size:13px;">🎬</span>
+      <div>
+        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.5);font-family:var(--mono);">PRODUCTION</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.7);">HeyGen Aubria renders video</div>
+      </div>
+    </div>
+    <div class="pipe-infra-note">Real system: API call + render time + token cost</div>
+  </div>
+
+  <div class="pipe-connector"></div>
+
+  <!-- ── Real pipeline step: DeepFace scores ── -->
+  <div class="pipe-infra" id="pipe-deepface">
+    <div class="pipe-infra-label">
+      <span style="font-size:13px;">🔬</span>
+      <div>
+        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.5);font-family:var(--mono);">ASSESSMENT</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.7);">DeepFace + AffectNet scores clip</div>
+      </div>
+    </div>
+    <div class="pipe-infra-note">f1=P(emotion class) · f2=timing alignment · f3=consistency</div>
+  </div>
+
+  <div class="pipe-connector"></div>
+
+  <!-- ── Stage 3 ── -->
+  <div class="pipe-stage" id="pipe-s3" onclick="pgPipeClick(3)">
+    <div class="pipe-stage-header">
+      <div class="pipe-dot" id="pipe-dot3"></div>
+      <div class="pipe-label">
+        <div class="pipe-code">STAGE 3 · P2</div>
+        <div class="pipe-name">GA Optimisation</div>
+      </div>
+    </div>
+    <div class="pipe-detail" id="pipe-detail3">
+      <div class="pipe-what">IDEA searches 21-token vocabulary. Each generation: generate sequences → render via HeyGen → score via DeepFace → select best → mutate.</div>
+      <div class="pipe-score">Real: 64 HeyGen renders + 64 DeepFace runs per sentence<br>Playground: simulated with mock F(p) values</div>
+      <div class="pipe-actor">
+        <span class="pipe-actor-icon">🧬</span> EVAtAR-IDEA finds p*
+      </div>
+      <div class="pipe-paper">
+        <span class="pipe-paper-badge p2">P2</span> Paper 2 · Optimisation Study
+      </div>
+    </div>
+  </div>
+
+  <div class="pipe-connector"></div>
+
+  <!-- ── Stage 4 ── -->
+  <div class="pipe-stage" id="pipe-s4" onclick="pgPipeClick(4)">
+    <div class="pipe-stage-header">
+      <div class="pipe-dot" id="pipe-dot4"></div>
+      <div class="pipe-label">
+        <div class="pipe-code">STAGE 4 · P2 + P3</div>
+        <div class="pipe-name">Results &amp; Comparison</div>
+      </div>
+    </div>
+    <div class="pipe-detail" id="pipe-detail4">
+      <div class="pipe-what">F(p_manual) vs F(p*). Pre-registered threshold check. Cross-platform projection: HeyGen★★★ → D-ID★★ → Akool★.</div>
+      <div class="pipe-actor">
+        <span class="pipe-actor-icon">📊</span> Wilcoxon · Cohen d · D1 export
+      </div>
+      <div class="pipe-paper">
+        <span class="pipe-paper-badge p2">P2</span> Paper 2
+        <span class="pipe-paper-badge p3" style="margin-left:4px;">P3</span> Paper 3 · Portability
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: sim note -->
+  <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-size:9px;color:rgba(255,255,255,.3);line-height:1.6;font-family:var(--mono);">
+    🎭 Playground simulates HeyGen + DeepFace scoring with research-validated mock values.<br>
+    Real P1/P2 experiments use live API calls.
+  </div>
+
+</div>
+<!-- ══ END PIPELINE SIDEBAR ═══════════════════════════════════ -->
+
+<!-- Left column: main playground content -->
+<div id="pg-main-col">
+
+
+
+<!-- Stage nav bar -->
+<div style="display:flex;background:var(--paper2);border-radius:10px;overflow:hidden;border:1px solid var(--paper3);flex-shrink:0" id="pg-nav">
+  <div class="pgstg active" id="pgn1" onclick="pgGo(1)">
+    <div class="pgstg-n">1</div>
+    <div class="pgstg-info">
+      <div class="pgstg-main">SELECT SCRIPT</div>
+      <div class="pgstg-sub" id="pgn1sub">Choose category + sentence</div>
+    </div>
+  </div>
+  <div class="pgstg locked" id="pgn2" onclick="pgGo(2)">
+    <div class="pgstg-n">2</div>
+    <div class="pgstg-info">
+      <div class="pgstg-main">BUILD TAGS</div>
+      <div class="pgstg-sub">Place expression tags manually</div>
+    </div>
+  </div>
+  <div class="pgstg locked" id="pgnR" style="pointer-events:none;flex:.7">
+    <div class="pgstg-n" style="font-size:9px">🎬</div>
+    <div class="pgstg-info">
+      <div class="pgstg-main">RENDER</div>
+      <div class="pgstg-sub">HeyGen produces clip</div>
+    </div>
+  </div>
+  <div class="pgstg locked" id="pgnA" style="pointer-events:none;flex:.7">
+    <div class="pgstg-n" style="font-size:9px">🔬</div>
+    <div class="pgstg-info">
+      <div class="pgstg-main">ASSESS</div>
+      <div class="pgstg-sub">DeepFace scores clip</div>
+    </div>
+  </div>
+  <div class="pgstg locked" id="pgn3" onclick="pgGo(3)">
+    <div class="pgstg-n">3</div>
+    <div class="pgstg-info">
+      <div class="pgstg-main">RUN GA</div>
+      <div class="pgstg-sub">Watch 8 generations evolve</div>
+    </div>
+  </div>
+  <div class="pgstg locked" id="pgn4" onclick="pgGo(4)">
+    <div class="pgstg-n">4</div>
+    <div class="pgstg-info">
+      <div class="pgstg-main">F(p) RESULTS</div>
+      <div class="pgstg-sub">Compare manual vs GA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANEL 1 ══ -->
+<div class="pgpanel on" id="pgp1">
+  <div class="pgguide"><strong>📋 Stage 1 — Choose a Script Sentence</strong><br>Select a category, then pick a sentence from the dropdown. In real EVAtAR-IDEA, Jahidul labelled 50 of these with target emotions.</div>
+
+  <!-- Category + sentence selectors -->
+  <div style="display:flex;gap:10px;align-items:flex-start;flex-shrink:0;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <label style="font-family:var(--mono);font-size:10px;color:var(--ink4);letter-spacing:.08em">CATEGORY</label>
+      <select id="pg-cat-sel" onchange="pgCatChange()"
+        style="font-size:14px;border:1.5px solid var(--paper3);border-radius:7px;padding:8px 12px;background:var(--paper);color:var(--ink);cursor:pointer;min-width:200px">
+        <option value="">— pick a category —</option>
+        <option value="Announcement">📢 Announcement</option>
+        <option value="Rhetorical">🤔 Rhetorical Question</option>
+        <option value="Key Finding">🏆 Key Finding</option>
+        <option value="Transition">🔄 Transition</option>
+        <option value="Empathy">💙 Empathy / Sombre</option>
+        <option value="Advocacy">✊ Advocacy / Assertive</option>
+        <option value="Warning">⚠️ Warning / Emphasis</option>
+        <option value="Technical">🔬 Technical Detail</option>
+      </select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px;flex:1;min-width:300px">
+      <label style="font-family:var(--mono);font-size:10px;color:var(--ink4);letter-spacing:.08em">SENTENCE</label>
+      <select id="pg-sent-sel" onchange="pgSentChange()" disabled
+        style="font-size:14px;border:1.5px solid var(--paper3);border-radius:7px;padding:8px 12px;background:var(--paper);color:var(--ink);cursor:pointer;width:100%">
+        <option value="">— select a category first —</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Preview card -->
+  <div id="pg-preview-card" style="display:none;border:1.5px solid #1a4f8a;border-radius:10px;background:rgba(26,79,138,.04);padding:14px 16px;flex-shrink:0">
+    <div style="font-family:var(--mono);font-size:10px;color:#1a4f8a;margin-bottom:8px;letter-spacing:.08em">SELECTED SENTENCE</div>
+    <div id="pg-preview-text" style="font-size:16px;color:var(--ink);line-height:1.5;margin-bottom:8px"></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--ink4)">Target emotion:</span>
+      <span id="pg-preview-emo" style="font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px"></span>
+      <span id="pg-preview-diff" style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-left:8px"></span>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:flex-end;flex-shrink:0;margin-top:auto">
+    <button id="pg-next1" onclick="pgGo(2)" disabled
+      style="font-family:var(--mono);font-size:12px;background:#1a4f8a;color:#fff;border:none;border-radius:8px;padding:10px 24px;cursor:pointer;opacity:.4;transition:opacity .2s">
+      Next: Build Tag Sequence →
+    </button>
+  </div>
+</div>
+
+<!-- ══ PANEL 2 ══ -->
+<div class="pgpanel" id="pgp2">
+  <div class="pgguide"><strong>🏷️ Stage 2 — Build Your Tag Sequence Manually</strong><br>Click any word to insert an expression tag at that position. This is <em>your</em> manual attempt — the baseline the GA will try to beat. The GA does <strong>not</strong> use your tags — it searches the full 21-token vocabulary independently and finds its own best combination.</div>
+
+  <!-- Two-column layout: left = words+tags, right = taxonomy table -->
+  <div style="display:flex;gap:10px;flex:1;min-height:0;overflow:hidden;">
+
+    <!-- LEFT: word display + picker + individual + fp -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-height:0;overflow-y:auto;">
+
+      <!-- Click any word label -->
+      <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink4);letter-spacing:.1em;flex-shrink:0">CLICK ANY WORD TO INSERT A TAG:</div>
+
+      <!-- Words -->
+      <div id="pg-words" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex-shrink:0"></div>
+
+      <!-- Tag picker -->
+      <div id="pg-picker" style="display:none;border:1.5px solid #1a4f8a;border-radius:9px;padding:10px 12px;flex-shrink:0;background:#fff;max-height:200px;overflow-y:auto">
+        <div style="display:flex;align-items:center;margin-bottom:8px;position:sticky;top:0;background:#fff;padding-bottom:4px;border-bottom:1px solid var(--paper3)">
+          <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:#1a4f8a">INSERT TAG AT: <span id="pg-pick-word" style="color:#c8510a"></span></span>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--ink4)">Hold:</span>
+            <input type="range" id="pg-dur" min="0.5" max="5.0" step="0.5" value="1.0" style="width:80px"
+              oninput="var v=parseFloat(this.value);document.getElementById('pg-dur-num').value=v;document.getElementById('pg-dur-warn').style.display=v>3?'inline':'none';"/>
+            <input type="number" id="pg-dur-num" min="0.5" max="10" step="0.5" value="1.0"
+              style="width:46px;font-family:var(--mono);font-size:11px;border:1px solid var(--paper3);border-radius:5px;padding:2px 5px;color:var(--ink);background:var(--paper);text-align:center;"
+              oninput="var v=parseFloat(this.value)||1;document.getElementById('pg-dur').value=Math.min(v,5);document.getElementById('pg-dur-warn').style.display=v>3?'inline':'none';"/>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--ink)">s</span>
+            <span id="pg-dur-warn" style="display:none;font-family:var(--mono);font-size:9px;color:#8a1a2e;background:rgba(138,26,46,.08);border:1px solid rgba(138,26,46,.25);border-radius:4px;padding:1px 6px;white-space:nowrap">⚠ F7 risk</span>
+            <button onclick="document.getElementById('pg-picker').style.display='none'" style="background:none;border:1px solid var(--paper3);color:var(--ink4);border-radius:5px;padding:2px 8px;cursor:pointer;font-size:12px">✕</button>
+          </div>
+        </div>
+        <div id="pg-tag-opts" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+
+      <!-- Individual + constraint -->
+      <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);display:flex;align-items:center;gap:8px;letter-spacing:.08em">
+          YOUR CANDIDATE SEQUENCE p:
+          <span id="pg-const-warn" style="font-size:9.5px;color:#b45309;background:rgba(180,83,9,.08);border:1px solid rgba(180,83,9,.25);border-radius:4px;padding:1px 8px;display:none"></span>
+        </div>
+        <div class="pgindbox" id="pg-ind-repr">[ ]  &larr; click words above to add tags</div>
+      </div>
+
+      <!-- F(p) preview -->
+      <div id="pg-fp-prev" style="display:none;background:rgba(26,79,138,.05);border:1px solid rgba(26,79,138,.18);border-radius:8px;padding:10px 14px;flex-shrink:0">
+        <div style="font-family:var(--mono);font-size:10px;color:#1a4f8a;margin-bottom:6px;letter-spacing:.06em">ESTIMATED F(p_manual) — your manual sequence:</div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span style="font-family:var(--mono);font-size:26px;font-weight:700;color:#1a4f8a" id="pg-mfp">—</span>
+          <div style="flex:1">
+            <div style="display:flex;gap:14px;font-size:10px;color:var(--ink4);margin-bottom:4px">
+              <span>f1 acc: <strong id="pg-mf1" style="color:var(--ink)">—</strong></span>
+              <span>f2 timing: <strong id="pg-mf2" style="color:var(--ink)">—</strong></span>
+              <span>f3 consist: <strong id="pg-mf3" style="color:var(--ink)">—</strong></span>
+            </div>
+            <div class="pgbar"><div id="pg-mbar" class="pgbarfill" style="width:0%;background:#1a4f8a"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Live failure taxonomy table -->
+    <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:0;border:1px solid var(--paper3);border-radius:9px;overflow:hidden;">
+      <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--ink4);letter-spacing:.1em;padding:7px 12px;background:var(--paper2);border-bottom:1px solid var(--paper3);flex-shrink:0;">
+        LIVE FAILURE TAXONOMY
+      </div>
+      <div style="flex:1;overflow-y:auto;">
+        <div id="ftax-F1" class="pg-ftax-cell" onclick="ftaxShowTip(event,'F1','F1 — No Emotion Tag','AffectNet requires at least one T1 emotion token to compute f1. Without it, F(p) defaults to near-zero because the face renders as neutral — unmeasurable.','Criterion: at least 1 of [excited] [serious] [surprised] [curious] [sad] [angry]')">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="pg-ftax-code">F1</span>
+            <span class="pg-ftax-status" id="ftax-F1-st">—</span>
+          </div>
+          <span class="pg-ftax-label">No emotion tag</span>
+          <span class="pg-ftax-rule">At least 1 T1 emotion token required</span>
+        </div>
+        <div id="ftax-F2" class="pg-ftax-cell" onclick="ftaxShowTip(event,'F2','F2 — Emotion Tag Stacking','Two emotion tags placed within 2 word positions cause AffectNet class confusion. The expression engine cannot smoothly transition between two emotions in rapid succession — both degrade.','Criterion: any two emotion tags must be ≥3 word positions apart')">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="pg-ftax-code">F2</span>
+            <span class="pg-ftax-status" id="ftax-F2-st">—</span>
+          </div>
+          <span class="pg-ftax-label">Emotion tag stacking</span>
+          <span class="pg-ftax-rule">Two emotion tags must be &gt;2 words apart</span>
+        </div>
+        <div id="ftax-F3" class="pg-ftax-cell" onclick="ftaxShowTip(event,'F3','F3 — Late Onset','Avatar IV\'s audio-to-expression engine fires the facial expression slightly before the audio peak. If the tag fires after 60% of the sentence, the expression peaks after the audio has passed — penalising f2 timing score.','Criterion: all tags must be placed before word position = 60% of sentence length')">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="pg-ftax-code">F3</span>
+            <span class="pg-ftax-status" id="ftax-F3-st">—</span>
+          </div>
+          <span class="pg-ftax-label">Late onset</span>
+          <span class="pg-ftax-rule">Tags must fire before 60% of sentence</span>
+        </div>
+        <div id="ftax-F4" class="pg-ftax-cell" onclick="ftaxShowTip(event,'F4','F4 — Emotion Overloading','Aubria\'s expression engine cannot maintain distinct emotional states for more than 3 simultaneous cues. Excess tags cause expression blending artefacts and degrade f3 consistency.','Criterion: maximum 3 T1 emotion tags per sentence clip')">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="pg-ftax-code">F4</span>
+            <span class="pg-ftax-status" id="ftax-F4-st">—</span>
+          </div>
+          <span class="pg-ftax-label">Emotion overloading</span>
+          <span class="pg-ftax-rule">Maximum 3 emotion tags per sentence</span>
+        </div>
+        <div id="ftax-F5" class="pg-ftax-cell" onclick="ftaxShowTip(event,'F5','F5 — Gesture Overload','Gesture tokens ([smile], [nod], [lean:forward], [eyebrow:raise], [head:tilt], [gaze:camera], [hand:open], [point]) compete for the same facial action units. More than 2 causes visible blending artefacts.','Criterion: maximum 2 gesture tokens per sentence clip')">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="pg-ftax-code">F5</span>
+            <span class="pg-ftax-status" id="ftax-F5-st">—</span>
+          </div>
+          <span class="pg-ftax-label">Gesture overload</span>
+          <span class="pg-ftax-rule">Maximum 2 gesture tokens per sentence</span>
+        </div>
+        <div id="ftax-F6" class="pg-ftax-cell" onclick="ftaxShowTip(event,'F6','F6 — Amplitude Fatigue','Avatar IV\'s diffusion-based audio-to-expression engine reduces expression amplitude on repeated identical emotion cues within the same clip. The third [excited] renders measurably weaker than the first.','Criterion: [excited] used at most twice per clip')">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="pg-ftax-code">F6</span>
+            <span class="pg-ftax-status" id="ftax-F6-st">—</span>
+          </div>
+          <span class="pg-ftax-label">Amplitude fatigue</span>
+          <span class="pg-ftax-rule">[excited] used at most twice per clip</span>
+        </div>
+        <div id="ftax-F7" class="pg-ftax-cell" onclick="ftaxShowTip(event,'F7','F7 — Timing Overflow','Pause tokens consume clip time. A typical 4–8s clip with >3s of pauses has insufficient active frames for DeepFace to score expression consistently — f2 and f3 both degrade.','Criterion: total [pause:Xs] duration ≤ 3.0 seconds per clip')">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="pg-ftax-code">F7</span>
+            <span class="pg-ftax-status" id="ftax-F7-st">—</span>
+          </div>
+          <span class="pg-ftax-label">Timing overflow</span>
+          <span class="pg-ftax-rule">Total pause duration ≤ 3s per clip</span>
+        </div>
+        <div id="ftax-F8" class="pg-ftax-cell" onclick="ftaxShowTip(event,'F8','F8 — Sub-Perceptual Tag','[curious] maps to the AffectNet fear-proxy class. The expression amplitude is too subtle for DeepFace to reliably detect — f1 averages only 0.31. The GA compensates by pairing [curious] with [head:tilt] + [eyebrow:raise].','Criterion: [curious] is in vocabulary but flagged — mean P(fear) < 0.35 across trials')">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="pg-ftax-code">F8</span>
+            <span class="pg-ftax-status" id="ftax-F8-st">—</span>
+          </div>
+          <span class="pg-ftax-label">Sub-perceptual tag</span>
+          <span class="pg-ftax-rule">[curious] → AffectNet f1 avg 0.31 ⚠</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end two-column -->
+
+  <div style="display:flex;justify-content:space-between;flex-shrink:0;margin-top:6px">
+    <button onclick="pgGo(1)" style="font-family:var(--mono);font-size:12px;background:none;color:var(--ink4);border:1px solid var(--paper3);border-radius:8px;padding:10px 18px;cursor:pointer">← Back</button>
+    <button onclick="pgGo('R')" style="font-family:var(--mono);font-size:12px;background:#1a4f8a;color:#fff;border:none;border-radius:8px;padding:10px 24px;cursor:pointer">Next: Render & Assess →</button>
+  </div>
+</div>
+
+<!-- ══ PANEL R — HEYGEN RENDER ══ -->
+<div class="pgpanel" id="pgpR">
+  <div class="pgguide" style="background:rgba(138,26,46,.06);border-color:rgba(138,26,46,.2);color:#8a1a2e;">
+    <strong>🎬 Production — HeyGen Aubria Renders Your Tagged Script</strong><br>
+    In the real EVAtAR-IDEA pipeline, your tag sequence is serialised and sent to the HeyGen API. Aubria renders a video clip — costing tokens and taking 30–90 seconds. Here it is simulated with the same data structure the real system uses.
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:18px;">
+
+    <div style="width:100%;max-width:580px;background:#111;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.08);">
+      <div style="position:relative;background:#1a0a00;padding:28px 0;display:flex;justify-content:center;align-items:center;min-height:140px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0;opacity:.9;">
+          <div id="pg-render-head" style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#c8510a44,#e8920a44);border:2px solid rgba(200,81,10,.4);display:flex;align-items:center;justify-content:center;font-size:26px;transition:all .5s;">🧑</div>
+          <div style="width:2px;height:18px;background:rgba(200,81,10,.3);"></div>
+          <div style="width:72px;height:50px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,rgba(200,81,10,.12),rgba(200,81,10,.04));border:1px solid rgba(200,81,10,.18);"></div>
+        </div>
+        <div id="pg-render-tag-overlay" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:#c8510a;background:rgba(200,81,10,.15);border:1px solid rgba(200,81,10,.4);border-radius:5px;padding:3px 10px;opacity:0;transition:opacity .4s;white-space:nowrap;"></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.05);">
+          <div id="pg-render-progress" style="height:100%;background:#c8510a;width:0%;transition:width .35s linear;border-radius:0 2px 2px 0;"></div>
+        </div>
+      </div>
+      <div style="padding:9px 14px;background:#0e0500;display:flex;align-items:center;gap:10px;">
+        <div id="pg-render-spinner" style="font-size:15px;">⏳</div>
+        <div>
+          <div id="pg-render-status" style="font-family:var(--mono);font-size:11px;color:#c8510a;font-weight:700;">Initialising render job…</div>
+          <div id="pg-render-detail" style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);margin-top:1px;">HeyGen Avatar IV · Aubria · 1080p · ~60s real render time</div>
+        </div>
+        <div id="pg-render-cost" style="margin-left:auto;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.3)">—</div>
+      </div>
+    </div>
+
+    <div style="width:100%;max-width:580px;background:rgba(200,81,10,.04);border:1px solid rgba(200,81,10,.12);border-radius:9px;padding:9px 13px;">
+      <div style="font-family:var(--mono);font-size:9px;color:rgba(200,81,10,.5);margin-bottom:5px;letter-spacing:.08em;">YOUR TAG SEQUENCE → SERIALISED HEYGEN SCRIPT:</div>
+      <div id="pg-render-seq" style="font-family:var(--mono);font-size:11px;color:#c8510a;word-break:break-all;line-height:1.6;"></div>
+    </div>
+
+    <div style="font-size:11px;color:var(--ink3);text-align:center;max-width:480px;line-height:1.65;">
+      Your research reality: <strong>100+ re-renders</strong> · <strong>$166+ token cost</strong> · <strong>200+ hours</strong> per video.<br>
+      EVAtAR-IDEA automates this loop — GA iterates <em>without</em> you touching the render button.
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANEL A — DEEPFACE ASSESSMENT ══ -->
+<div class="pgpanel" id="pgpA">
+  <div class="pgguide" style="background:rgba(74,26,122,.06);border-color:rgba(74,26,122,.2);color:#4a1a7a;">
+    <strong>🔬 Assessment — DeepFace + AffectNet Scores the Clip</strong><br>
+    DeepFace analyses every frame. For each frame it outputs P(emotion) across 8 AffectNet classes. f1 = mean P(target class) · f2 = peak timing alignment with audio · f3 = expression consistency across frames. This score drives the GA fitness function.
+  </div>
+  <div style="display:flex;gap:12px;flex:1;min-height:0;overflow:hidden;">
+
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto;">
+      <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--ink4);letter-spacing:.1em;">FRAME-BY-FRAME DEEPFACE OUTPUT</div>
+      <div style="display:flex;gap:3px;flex-shrink:0;flex-wrap:wrap;" id="pg-assess-frames"></div>
+      <div style="border:1px solid var(--paper3);border-radius:9px;padding:10px 12px;flex-shrink:0;">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--ink4);margin-bottom:8px;letter-spacing:.06em;">AFFECTNET CLASS PROBABILITIES — FRAME AVERAGE</div>
+        <div id="pg-assess-bars" style="display:flex;flex-direction:column;gap:4px;"></div>
+      </div>
+      <div style="background:rgba(74,26,122,.05);border:1px solid rgba(74,26,122,.18);border-radius:9px;padding:10px 12px;flex-shrink:0;">
+        <div style="font-family:var(--mono);font-size:9px;color:#4a1a7a;margin-bottom:8px;letter-spacing:.06em;">COMPUTED SCORES</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          <div style="text-align:center;">
+            <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:#4a1a7a" id="pg-af1">—</div>
+            <div style="font-size:9px;color:var(--ink4)">f1 accuracy</div>
+            <div style="font-size:8px;color:var(--ink4);font-family:var(--mono)">P(target class)</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:#1a4f8a" id="pg-af2">—</div>
+            <div style="font-size:9px;color:var(--ink4)">f2 timing</div>
+            <div style="font-size:8px;color:var(--ink4);font-family:var(--mono)">peak alignment</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:#7c3aed" id="pg-af3">—</div>
+            <div style="font-size:9px;color:var(--ink4)">f3 consistency</div>
+            <div style="font-size:8px;color:var(--ink4);font-family:var(--mono)">frame variance</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--paper3);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--ink4)">F(p_manual) =</div>
+          <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:#4a1a7a" id="pg-afp">—</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);flex:1;min-width:120px;">= 0.5·f1 + 0.3·f2 + 0.2·f3<br><span id="pg-afp-thresh" style="font-size:9px;"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto;">
+      <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--ink4);letter-spacing:.1em;">AFFECTNET 8 CLASSES</div>
+      <div style="border:1px solid var(--paper3);border-radius:9px;overflow:hidden;flex-shrink:0;">
+        <div id="pg-affectnet-classes"></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--ink4);letter-spacing:.1em;margin-top:2px;">FAILURE FLAGS</div>
+      <div id="pg-assess-failures" style="display:flex;flex-direction:column;gap:4px;"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;flex-shrink:0;margin-top:6px;">
+    <button onclick="pgGo(2)" style="font-family:var(--mono);font-size:12px;background:none;color:var(--ink4);border:1px solid var(--paper3);border-radius:8px;padding:9px 16px;cursor:pointer;">← Back to Tags</button>
+    <button onclick="pgGo(3)" style="font-family:var(--mono);font-size:12px;background:#1a4f8a;color:#fff;border:none;border-radius:8px;padding:9px 24px;cursor:pointer;font-weight:700;">▶ Now Watch GA Beat This →</button>
+  </div>
+</div>
+
+
+<div class="pgpanel" id="pgp3" style="justify-content:flex-start;overflow:hidden;">
+
+
+<!-- PRE-RUN: non-technical explainer -->
+<div id="pg-prerun">
+  <div style="width:100%;max-width:820px;display:flex;flex-direction:column;gap:8px;overflow-y:auto">
+
+  <div style="font-size:19px;font-weight:700;color:var(--ink)">What is about to happen?</div>
+  <div style="font-size:13px;color:var(--ink3);line-height:1.65;max-width:740px">
+    The GA does <strong style="color:#1a4f8a">not</strong> use the tags you placed in Stage 2 —
+    those are your manual baseline. The GA searches the <strong style="color:#c8510a">full 21-token vocabulary</strong> independently.
+  </div>
+
+  <!-- Real loop explanation -->
+  <div style="width:100%;max-width:740px;background:rgba(26,79,138,.04);border:1.5px solid rgba(26,79,138,.2);border-radius:10px;padding:12px 16px;">
+    <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:#1a4f8a;letter-spacing:.12em;margin-bottom:10px;">⚙️ THE REAL GA INNER LOOP — WHAT HAPPENS EACH GENERATION</div>
+    <!-- Loop diagram -->
+    <div style="display:flex;align-items:center;gap:0;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;">
+      <div class="loop-node" style="background:rgba(26,79,138,.08);border-color:rgba(26,79,138,.3);">
+        <div class="loop-icon">🧬</div>
+        <div class="loop-label">GA generates<br>8 sequences</div>
+        <div class="loop-sub">from 21-token vocab</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node" style="background:rgba(138,26,46,.06);border-color:rgba(138,26,46,.3);">
+        <div class="loop-icon">🎬</div>
+        <div class="loop-label">HeyGen renders<br>each clip</div>
+        <div class="loop-sub">~60s · tokens/clip</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node" style="background:rgba(74,26,122,.06);border-color:rgba(74,26,122,.3);">
+        <div class="loop-icon">🔬</div>
+        <div class="loop-label">DeepFace scores<br>F(p) per clip</div>
+        <div class="loop-sub">AffectNet · f1·f2·f3</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-node" style="background:rgba(26,107,60,.06);border-color:rgba(26,107,60,.3);">
+        <div class="loop-icon">🏆</div>
+        <div class="loop-label">Tournament select<br>best F(p)</div>
+        <div class="loop-sub">top survive · mutate</div>
+      </div>
+      <div class="loop-arrow" style="color:#1a4f8a;font-size:16px;">↩</div>
+      <div style="font-family:var(--mono);font-size:9px;color:#1a4f8a;white-space:nowrap;">×8 gen</div>
+    </div>
+    <!-- Cost callout -->
+    <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(26,79,138,.12);display:flex;gap:16px;flex-wrap:wrap;">
+      <div style="font-size:10px;color:var(--ink3);">
+        <strong style="color:#1a4f8a;">Real cost per sentence:</strong>
+        8 <strong style="color:#1a4f8a;" title="candidate tag sequences, not people">candidate sequences</strong> × 8 generations = <strong style="color:#c8510a;">64 HeyGen renders</strong> + 64 DeepFace runs
+      </div>
+      <div style="font-size:10px;color:var(--ink3);">
+        <strong style="color:#1a4f8a;">Why meme space matters:</strong>
+        Solutions with F(p*)≥0.70 are stored and reused as seeds — avoiding re-renders for the same emotion
+      </div>
+      <div style="font-family:var(--mono);font-size:9.5px;color:#c8510a;background:rgba(200,81,10,.07);border:1px solid rgba(200,81,10,.2);border-radius:5px;padding:3px 9px;">
+        🎭 Playground: simulated instantly with research-validated mock F(p) values</div>
+      <div style="font-size:10px;color:var(--ink4);margin-top:6px;padding:6px 10px;background:rgba(0,0,0,.03);border-radius:6px;border-left:3px solid #1a4f8a;">
+        <strong style="color:#1a4f8a;">GA Terminology note:</strong> In Genetic Algorithms, an <em>"individual"</em> means a <strong>candidate solution</strong> — one possible tag sequence being tested. It has nothing to do with people or research participants. A <em>"population"</em> is the set of 8 candidate sequences competing in one generation. The GA evolves better candidates over 8 generations by keeping the best-scoring ones and mutating them.
+      </div
+      </div>
+    </div>
+    <!-- Where F(p_manual) fits -->
+    <div style="margin-top:8px;padding:8px 10px;background:rgba(138,26,46,.05);border-radius:7px;border:1px solid rgba(138,26,46,.15);font-size:10.5px;color:var(--ink3);line-height:1.6;">
+      <strong style="color:#8a1a2e;">Your F(p_manual) = <span id="pg-prerun-manual-score">—</span></strong> from Stage 2 becomes the
+      <strong style="color:#8a1a2e;">red baseline dashed line</strong> in the convergence chart.
+      The GA must beat it. It is <em>not</em> fed into the GA — the GA searches independently.
+    </div>
+  </div>
+
+  <!-- Vocabulary corpus display -->
+  <div style="border:1.5px solid rgba(200,81,10,.25);border-radius:10px;padding:12px 14px;background:rgba(200,81,10,.03)">
+    <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:#c8510a;letter-spacing:.1em;margin-bottom:10px">
+      📚 THE FULL 21-TOKEN VOCABULARY — GA SEARCH SPACE
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+
+      <!-- T1 Emotion tags -->
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div style="font-family:var(--mono);font-size:9.5px;font-weight:700;color:#c8510a;min-width:72px;padding-top:3px">T1 EMOTION<br><span style="color:var(--ink4);font-weight:400">6 tags</span></div>
+        <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(200,81,10,.1);color:#c8510a;border:1px solid rgba(200,81,10,.3)">[excited] <span style="font-size:9px;opacity:.7">— AffectNet happy+surprise · f1 0.78 ✅ P2</span></span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(26,79,138,.08);color:#1a4f8a;border:1px solid rgba(26,79,138,.25)">[serious] <span style="font-size:9px;opacity:.7">— AffectNet neutral · f1 0.71 ✅ P2</span></span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(74,26,122,.08);color:#7c3aed;border:1px solid rgba(74,26,122,.25)">[surprised] <span style="font-size:9px;opacity:.7">— AffectNet surprise · f1 0.73 ✅ P2</span></span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(245,158,11,.08);color:#b45309;border:1px solid rgba(245,158,11,.3)">[curious] <span style="font-size:9px;opacity:.7">— fear proxy · f1 0.31 ⚠️ F8 · P2</span></span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(71,85,105,.08);color:#475569;border:1px dashed rgba(71,85,105,.35)">[sad] <span style="font-size:9px;opacity:.7">— AffectNet sadness · ⏳ P1 test pending</span></span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(138,26,46,.08);color:#8a1a2e;border:1px dashed rgba(138,26,46,.3)">[angry] <span style="font-size:9px;opacity:.7">— AffectNet anger · ⏳ P1 test pending</span></span>
+        </div>
+      </div>
+
+      <!-- T3 Gesture tags -->
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div style="font-family:var(--mono);font-size:9.5px;font-weight:700;color:#1a5c6b;min-width:72px;padding-top:3px">T3 GESTURE<br><span style="color:var(--ink4);font-weight:400">9 tags</span></div>
+        <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(26,92,107,.07);color:#1a5c6b;border:1px solid rgba(26,92,107,.22)">[smile]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(26,92,107,.07);color:#1a5c6b;border:1px solid rgba(26,92,107,.22)">[nod]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(26,92,107,.07);color:#1a5c6b;border:1px solid rgba(26,92,107,.22)">[lean:forward]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(26,92,107,.07);color:#1a5c6b;border:1px solid rgba(26,92,107,.22)">[gaze:camera]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(26,92,107,.07);color:#1a5c6b;border:1px solid rgba(26,92,107,.22)">[eyebrow:raise]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(26,92,107,.07);color:#1a5c6b;border:1px solid rgba(26,92,107,.22)">[head:tilt]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(26,92,107,.07);color:#1a5c6b;border:1px solid rgba(26,92,107,.22)">[hand:open]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(26,92,107,.07);color:#1a5c6b;border:1px solid rgba(26,92,107,.22)">[point]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(148,163,184,.06);color:#94a3b8;border:1px dashed rgba(148,163,184,.4)">[blinks] ⏳</span>
+        </div>
+      </div>
+
+      <!-- T3 Delivery + Timing -->
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div style="font-family:var(--mono);font-size:9.5px;font-weight:700;color:#7a5200;min-width:72px;padding-top:3px">T3 DELIVERY<br><span style="color:var(--ink4);font-weight:400">3 tags</span></div>
+        <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(122,82,0,.07);color:#7a5200;border:1px solid rgba(122,82,0,.22)">[emphasis]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(122,82,0,.07);color:#7a5200;border:1px solid rgba(122,82,0,.22)">[fast]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(122,82,0,.07);color:#7a5200;border:1px solid rgba(122,82,0,.22)">[slow]</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div style="font-family:var(--mono);font-size:9.5px;font-weight:700;color:#475569;min-width:72px;padding-top:3px">T3 TIMING<br><span style="color:var(--ink4);font-weight:400">3 tags</span></div>
+        <div style="flex:1;display:flex;flex-wrap:wrap;gap:5px">
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(71,85,105,.07);color:#475569;border:1px solid rgba(71,85,105,.22)">[pause:0.5s]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(71,85,105,.07);color:#475569;border:1px solid rgba(71,85,105,.22)">[pause:1s]</span>
+          <span style="font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(71,85,105,.07);color:#475569;border:1px solid rgba(71,85,105,.22)">[pause:2s]</span>
+        </div>
+      </div>
+
+    </div></div>
+    <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(200,81,10,.15);font-size:11px;color:var(--ink3);line-height:1.6">
+      The GA draws from all 21 tokens above — not just the ones you used. Each <strong>candidate sequence</strong> (called an "individual" in GA terminology — meaning a <em>candidate solution</em>, not a person) is a variable-length list of <code style="font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.05);padding:1px 5px;border-radius:3px">(position, tag, duration)</code> tuples. With 21 tokens × ~12 word positions × 5 durations, the search space exceeds <strong>1,000+ combinations per candidate</strong>.
+    </div>
+  </div>
+
+  <!-- 4 process cards (compact) -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+    <div class="pg-explainer-card">
+      <div class="pg-exp-icon">🎲</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px">8 random sequences created from the 21-token corpus</div>
+        <div style="font-size:11px;color:var(--ink3);line-height:1.5">Each <strong>candidate tag sequence</strong> is a random draw from the vocabulary above — not based on your manual sequence.</div>
+      </div>
+    </div>
+    <div class="pg-explainer-card">
+      <div class="pg-exp-icon">🎬</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px">Each is scored with F(p) = 0.5·f1 + 0.3·f2 + 0.2·f3</div>
+        <div style="font-size:11px;color:var(--ink3);line-height:1.5">Real system: HeyGen API + DeepFace. Here: simulated with research-validated mock scores.</div>
+      </div>
+    </div>
+    <div class="pg-explainer-card">
+      <div class="pg-exp-icon">🧬</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px">Best survive · mutate · compete again (×8 generations)</div>
+        <div style="font-size:11px;color:var(--ink3);line-height:1.5">5 operators: change_tag · shift_pos · add_tag · remove_tag · change_dur — all applied to corpus tokens.</div>
+      </div>
+    </div>
+    <div class="pg-explainer-card">
+      <div class="pg-exp-icon">🧠</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px">Meme Space stores F(p*)&gt;0.70 for future reuse</div>
+        <div style="font-size:11px;color:var(--ink3);line-height:1.5">Seeds the next run of the same emotion — the system learns from its own history.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:center;gap:14px;padding:6px 0;flex-wrap:wrap">
+    <div style="font-size:12px;color:var(--ink3)">Your manual F(p) from Stage 2 will appear as the baseline.</div>
+    <!-- Run count selector -->
+    <div style="display:flex;align-items:center;gap:8px;background:var(--paper2);border:1px solid var(--paper3);border-radius:8px;padding:6px 12px;">
+      <span style="font-family:var(--mono);font-size:11px;color:var(--ink3)">Runs:</span>
+      <div style="display:flex;gap:4px;" id="pg-run-count-btns">
+        <button onclick="pgSetRuns(1)" id="pg-rc-1" style="font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 11px;border-radius:5px;border:1.5px solid #1a4f8a;background:#1a4f8a;color:#fff;cursor:pointer;">1</button>
+        <button onclick="pgSetRuns(2)" id="pg-rc-2" style="font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 11px;border-radius:5px;border:1.5px solid var(--paper3);background:none;color:var(--ink3);cursor:pointer;">2</button>
+        <button onclick="pgSetRuns(3)" id="pg-rc-3" style="font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 11px;border-radius:5px;border:1.5px solid var(--paper3);background:none;color:var(--ink3);cursor:pointer;">3</button>
+        <button onclick="pgSetRuns(5)" id="pg-rc-5" style="font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 11px;border-radius:5px;border:1.5px solid var(--paper3);background:none;color:var(--ink3);cursor:pointer;">5</button>
+      </div>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--ink4)">× 8 gen each</span>
+    </div>
+    <button onclick="pgStartGA()"
+      style="flex-shrink:0;font-family:var(--mono);font-size:13px;font-weight:700;background:#1a4f8a;color:#fff;border:none;border-radius:9px;padding:11px 28px;cursor:pointer;letter-spacing:.05em;box-shadow:0 4px 14px rgba(26,79,138,.3);white-space:nowrap">
+      ▶ START THE GA
+    </button>
+  </div>
+
+  </div><!-- inner scroll wrapper -->
+</div>
+
+<!-- GA RUNNING VIEW -->
+<div id="pg-ga-run">
+  <!-- Generation timeline strip -->
+  <div id="pg-gen-strip" style="display:flex;gap:4px;align-items:center;padding:6px 10px;background:var(--paper2);border-radius:8px;flex-shrink:0">
+    <span style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-right:4px;letter-spacing:.06em">GEN:</span>
+    <div class="pg-gen-dot" id="pgdot1">1</div><div class="pg-gen-line" id="pgline1"></div>
+    <div class="pg-gen-dot" id="pgdot2">2</div><div class="pg-gen-line" id="pgline2"></div>
+    <div class="pg-gen-dot" id="pgdot3">3</div><div class="pg-gen-line" id="pgline3"></div>
+    <div class="pg-gen-dot" id="pgdot4">4</div><div class="pg-gen-line" id="pgline4"></div>
+    <div class="pg-gen-dot" id="pgdot5">5</div><div class="pg-gen-line" id="pgline5"></div>
+    <div class="pg-gen-dot" id="pgdot6">6</div><div class="pg-gen-line" id="pgline6"></div>
+    <div class="pg-gen-dot" id="pgdot7">7</div><div class="pg-gen-line" id="pgline7"></div>
+    <div class="pg-gen-dot" id="pgdot8">8</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+      <span style="font-family:var(--mono);font-size:10px;font-weight:700;color:#1a4f8a;background:rgba(26,79,138,.1);border:1px solid rgba(26,79,138,.25);border-radius:5px;padding:2px 9px;display:none;" id="pg-run-indicator">RUN 1/1</span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--ink4)" id="pg-gastatus">Ready</span>
+    </div>
+  </div>
+
+  <div id="pg-ga-body">
+    <!-- LEFT: Live sentence preview -->
+    <div id="pg-sent-panel">
+      <div style="font-family:var(--mono);font-size:9.5px;font-weight:700;color:var(--ink4);letter-spacing:.1em">CURRENT BEST — SCRIPT PREVIEW</div>
+      <!-- Sentence with tags shown inline -->
+      <div style="background:var(--paper2);border-radius:8px;padding:10px 12px;flex-shrink:0;min-height:80px">
+        <div id="pg-live-sent" style="line-height:3;display:flex;flex-wrap:wrap;gap:2px"></div>
+      </div>
+      <!-- Score breakdown for current best -->
+      <div style="background:rgba(26,107,60,.04);border:1px solid rgba(26,107,60,.18);border-radius:8px;padding:10px 12px;flex-shrink:0">
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+          <span class="pg-fp-big" id="pg-live-fp" style="color:#1a6b3c">—</span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--ink4)">F(p) best</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink4)"><span>f1 accuracy</span><span id="pg-lf1">—</span></div>
+          <div style="background:var(--paper3);border-radius:4px;height:6px"><div id="pg-lb1" style="height:100%;border-radius:4px;background:#1a6b3c;transition:width .6s ease;width:0%"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink4)"><span>f2 timing</span><span id="pg-lf2">—</span></div>
+          <div style="background:var(--paper3);border-radius:4px;height:6px"><div id="pg-lb2" style="height:100%;border-radius:4px;background:#1a4f8a;transition:width .6s ease;width:0%"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink4)"><span>f3 consistency</span><span id="pg-lf3">—</span></div>
+          <div style="background:var(--paper3);border-radius:4px;height:6px"><div id="pg-lb3" style="height:100%;border-radius:4px;background:#7c3aed;transition:width .6s ease;width:0%"></div></div>
+        </div>
+      </div>
+      <!-- Mini convergence chart -->
+      <div id="pg-conv-mini">
+        <div style="font-family:var(--mono);font-size:9.5px;color:var(--ink4);margin-bottom:4px;letter-spacing:.08em">CONVERGENCE</div>
+        <canvas id="pg-canvas" width="240" height="100" style="border:1px solid var(--paper3);border-radius:7px;background:rgba(26,79,138,.03);width:100%;display:block"></canvas>
+      </div>
+    </div>
+
+    <!-- MIDDLE: Evolution trail -->
+    <div id="pg-evo-panel">
+      <div style="font-family:var(--mono);font-size:9.5px;font-weight:700;color:var(--ink4);letter-spacing:.1em;flex-shrink:0;display:flex;align-items:center;gap:8px;">
+        EVOLUTION LOG — WHAT'S CHANGING
+        <div id="pg-run-tabs" style="display:flex;gap:3px;margin-left:auto"></div>
+      </div>
+      <div id="pg-evo-trail" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px;min-height:0"></div>
+    </div>
+
+    <!-- RIGHT: Meme Space with full list -->
+    <div id="pg-meme-panel">
+      <div style="font-family:var(--mono);font-size:9.5px;font-weight:700;color:#7a5200;letter-spacing:.1em;flex-shrink:0">🧠 MEME SPACE</div>
+      <div style="font-size:10.5px;color:var(--ink3);flex-shrink:0;line-height:1.5">Solutions stored when F(p*) &gt; 0.70. These seed future experiments of the same emotion.</div>
+      <div style="font-family:var(--mono);font-size:11px;color:#7a5200;flex-shrink:0" id="pg-meme-count-live">0 stored</div>
+      <div id="pg-meme-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:3px;min-height:0"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-top:4px">
+    <button onclick="pgGo(1)" style="font-family:var(--mono);font-size:12px;background:none;color:var(--ink4);border:1px solid var(--paper3);border-radius:8px;padding:9px 16px;cursor:pointer">← Back</button>
+    <button id="pg-runbtn" onclick="pgRerunGA()" style="display:none;font-family:var(--mono);font-size:12px;font-weight:700;background:none;color:#1a4f8a;border:1.5px solid #1a4f8a;border-radius:8px;padding:9px 20px;cursor:pointer">↺ Re-run</button>
+    <button id="pg-to4" onclick="pgGo(4)" style="display:none;font-family:var(--mono);font-size:12px;background:#1a6b3c;color:#fff;border:none;border-radius:8px;padding:9px 20px;cursor:pointer;margin-left:auto">View Results →</button>
+  </div>
+</div>
+</div>
+
+
+<!-- ══ PANEL 4 ══ -->
+<div class="pgpanel" id="pgp4">
+  <div class="pgguide"><strong>📊 Stage 4 — F(p) Results &amp; Comparison</strong><br>Your manual attempt vs the GA's optimised p*. This is exactly what Paper 2 reports. Below: pre-registered threshold check, cross-platform P3 projection, failure taxonomy, and HeyGen script.</div>
+
+  <!-- ── Top: 3-column comparison ── -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0">
+
+    <!-- Manual -->
+    <div style="border:1.5px solid rgba(138,26,46,.3);border-radius:10px;padding:12px;background:rgba(138,26,46,.03)">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:#8a1a2e;margin-bottom:6px;display:flex;align-items:center;gap:8px">
+        👤 YOUR MANUAL SEQUENCE
+        <span id="pg-r-mfp" style="font-size:20px;font-weight:700;margin-left:auto">—</span>
+      </div>
+      <!-- Sentence render -->
+      <div id="pg-r-msent" style="font-size:12px;line-height:2.2;padding:7px 9px;background:#fff;border:1px solid rgba(138,26,46,.15);border-radius:7px;margin-bottom:7px;flex-wrap:wrap;display:flex;gap:2px;min-height:38px"></div>
+      <!-- Seq repr -->
+      <div id="pg-r-mseq" style="font-family:var(--mono);font-size:9px;color:var(--ink3);background:rgba(138,26,46,.04);border-radius:6px;padding:6px 8px;margin-bottom:8px;word-break:break-all;min-height:28px">—</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div><div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink4);margin-bottom:2px"><span>f1 accuracy (×0.5)</span><span id="pg-r-mf1">—</span></div><div class="pgbar"><div id="pg-rb-mf1" class="pgbarfill" style="width:0%;background:#8a1a2e"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink4);margin-bottom:2px"><span>f2 timing (×0.3)</span><span id="pg-r-mf2">—</span></div><div class="pgbar"><div id="pg-rb-mf2" class="pgbarfill" style="width:0%;background:#8a1a2e"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink4);margin-bottom:2px"><span>f3 consistency (×0.2)</span><span id="pg-r-mf3">—</span></div><div class="pgbar"><div id="pg-rb-mf3" class="pgbarfill" style="width:0%;background:#8a1a2e"></div></div></div>
+      </div>
+      <!-- Failure taxonomy -->
+      <div id="pg-r-fails" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+    </div>
+
+    <!-- GA -->
+    <div style="border:1.5px solid rgba(26,107,60,.3);border-radius:10px;padding:12px;background:rgba(26,107,60,.03)">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:#1a6b3c;margin-bottom:6px;display:flex;align-items:center;gap:8px">
+        🧬 GA OPTIMISED p*
+        <span id="pg-r-gfp" style="font-size:20px;font-weight:700;color:#1a6b3c;margin-left:auto">—</span>
+      </div>
+      <!-- Sentence render -->
+      <div id="pg-r-gsent" style="font-size:12px;line-height:2.2;padding:7px 9px;background:#fff;border:1px solid rgba(26,107,60,.15);border-radius:7px;margin-bottom:7px;flex-wrap:wrap;display:flex;gap:2px;min-height:38px"></div>
+      <!-- Seq repr -->
+      <div id="pg-r-gseq" style="font-family:var(--mono);font-size:9px;color:var(--ink3);background:rgba(26,107,60,.04);border-radius:6px;padding:6px 8px;margin-bottom:8px;word-break:break-all;min-height:28px">—</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div><div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink4);margin-bottom:2px"><span>f1 accuracy (×0.5)</span><span id="pg-r-gf1">—</span></div><div class="pgbar"><div id="pg-rb-gf1" class="pgbarfill" style="width:0%;background:#1a6b3c"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink4);margin-bottom:2px"><span>f2 timing (×0.3)</span><span id="pg-r-gf2">—</span></div><div class="pgbar"><div id="pg-rb-gf2" class="pgbarfill" style="width:0%;background:#1a6b3c"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink4);margin-bottom:2px"><span>f3 consistency (×0.2)</span><span id="pg-r-gf3">—</span></div><div class="pgbar"><div id="pg-rb-gf3" class="pgbarfill" style="width:0%;background:#1a6b3c"></div></div></div>
+      </div>
+      <div id="pg-r-insight" style="margin-top:8px;background:rgba(26,107,60,.06);border:1px solid rgba(26,107,60,.2);border-radius:7px;padding:7px 10px;font-size:10.5px;color:#1a5030"></div>
+    </div>
+  </div>
+
+  <!-- ── Middle row: threshold + delta + runs ── -->
+  <div style="display:flex;gap:8px;flex-shrink:0">
+
+    <!-- Pre-registered threshold check -->
+    <div id="pg-r-threshold" style="flex:1;border-radius:9px;padding:10px 14px;border:2px solid var(--paper3);background:var(--paper2)">
+      <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--ink4);margin-bottom:4px;letter-spacing:.08em">📋 PRE-REGISTERED THRESHOLD CHECK</div>
+      <div id="pg-r-thresh-body" style="font-size:12px;color:var(--ink3)">Run the GA to see threshold check</div>
+    </div>
+
+    <!-- Delta -->
+    <div style="background:rgba(200,81,10,.07);border:1.5px solid rgba(200,81,10,.28);border-radius:9px;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <div style="font-family:var(--mono);font-size:26px;font-weight:700;color:#c8510a" id="pg-r-delta">+?%</div>
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--ink4)">GA IMPROVEMENT</div><div style="font-size:9.5px;color:var(--ink3)">over manual</div></div>
+    </div>
+
+    <!-- Runs variance -->
+    <div style="flex:1;border-radius:9px;padding:10px 14px;background:rgba(26,79,138,.04);border:1.5px solid rgba(26,79,138,.18)">
+      <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:#1a4f8a;margin-bottom:5px;letter-spacing:.08em">🔁 MULTI-RUN SUMMARY</div>
+      <div id="pg-r-runs" style="display:flex;flex-direction:column;gap:3px;font-size:10.5px">
+        <div style="font-size:10px;color:var(--ink4);font-style:italic">Set number of runs in Stage 3 before starting GA.</div>
+      </div>
+    </div>
+
+    <!-- D1 export -->
+    <div style="flex-shrink:0;display:flex;flex-direction:column;gap:5px">
+      <button onclick="pgExportD1()" style="font-family:var(--mono);font-size:11px;background:rgba(26,107,60,.08);color:#1a6b3c;border:1.5px solid rgba(26,107,60,.3);border-radius:8px;padding:9px 14px;cursor:pointer;white-space:nowrap">⬇ Export D1 CSV</button>
+
+      <button onclick="pgReset()" style="font-family:var(--mono);font-size:11px;background:rgba(200,81,10,.07);color:#c8510a;border:1.5px solid rgba(200,81,10,.28);border-radius:8px;padding:9px 14px;cursor:pointer;white-space:nowrap">↺ Try Another</button>
+    </div>
+  </div>
+
+</div>
+
+</div>
+</div><!-- pg-main-col -->
+
+</div><!-- slide-body -->
+</div><!-- slide s11c -->
+  </div>
+
+</div>
+
+<script>
+var pg;
+const PG_SCRIPTS = {
+  'Announcement':[
+    {text:"Today we will explore the fundamental theorem of calculus.", emotion:"serious", diff:"Easy"},
+    {text:"This framework closes four gaps that have been open for two decades.", emotion:"excited", diff:"Medium"},
+    {text:"I want you to remember this number — it will appear in the final exam.", emotion:"serious", diff:"Easy"},
+    {text:"In twelve months, three papers, one hundred and sixty-six dollars — it is done.", emotion:"excited", diff:"Medium"},
+  ],
+  'Rhetorical':[
+    {text:"But what would happen if we removed all the expression constraints entirely?", emotion:"curious", diff:"Hard"},
+    {text:"Can a computer really learn to be more expressive than a human researcher?", emotion:"curious", diff:"Hard"},
+    {text:"Is it possible that the algorithm understands emotion better than we do?", emotion:"surprised", diff:"Hard"},
+    {text:"What if the constraint repair removed exactly the wrong tag every time?", emotion:"curious", diff:"Hard"},
+  ],
+  'Key Finding':[
+    {text:"The algorithm outperformed every single manual attempt by thirty-four percent.", emotion:"excited", diff:"Medium"},
+    {text:"Three independent runs, eight generations each — and the GA converged every time.", emotion:"excited", diff:"Medium"},
+    {text:"The p-value was point zero zero three — well below the pre-registered threshold.", emotion:"surprised", diff:"Medium"},
+    {text:"And here is the result that surprised us most — a score of eighty-one percent.", emotion:"surprised", diff:"Medium"},
+  ],
+  'Transition':[
+    {text:"Let us pause here — this part is subtle and worth thinking about carefully.", emotion:"serious", diff:"Easy"},
+    {text:"With this baseline established, we can now move into the optimisation phase.", emotion:"serious", diff:"Easy"},
+    {text:"Having seen what the GA achieves, let us now compare across platforms.", emotion:"serious", diff:"Easy"},
+    {text:"Now that we understand the problem, let us look at the solution together.", emotion:"serious", diff:"Easy"},
+  ],
+  'Empathy':[
+    {text:"We understand this has been an incredibly difficult time for everyone affected.", emotion:"sad", diff:"Medium"},
+    {text:"I know how hard you have all worked — and it truly shows in these results.", emotion:"sad", diff:"Easy"},
+    {text:"Not every experiment succeeds, and that is a completely normal part of research.", emotion:"sad", diff:"Medium"},
+    {text:"It is okay to feel uncertain — uncertainty is where discovery begins.", emotion:"sad", diff:"Easy"},
+  ],
+  'Advocacy':[
+    {text:"This has to change — and it has to change now.", emotion:"angry", diff:"Medium"},
+    {text:"We cannot keep ignoring the gap between what AI promises and what it delivers.", emotion:"angry", diff:"Hard"},
+    {text:"Every researcher who builds on this work without citing sources sets us back.", emotion:"angry", diff:"Hard"},
+    {text:"The data is clear — bias in training data is not a minor issue, it is a crisis.", emotion:"angry", diff:"Medium"},
+  ],
+  'Warning':[
+    {text:"This is not a failure — a pre-registered negative result is equally publishable.", emotion:"serious", diff:"Hard"},
+    {text:"Do not confuse statistical significance with practical significance.", emotion:"serious", diff:"Medium"},
+    {text:"This is the most important equation you will see in this entire course.", emotion:"serious", diff:"Easy"},
+  ],
+  'Technical':[
+    {text:"The fitness function computes F of p as a weighted sum of three sub-scores.", emotion:"serious", diff:"Hard"},
+    {text:"Each candidate sequence encodes a variable-length list of position, tag, and duration tuples.", emotion:"serious", diff:"Hard"},
+    {text:"Tournament selection with k equals three preserves genetic diversity across runs.", emotion:"serious", diff:"Hard"},
+  ],
+};
+
+const PG_TAG_GROUPS = [
+  {label:'Emotion T1 — GA Targets', c:'#c8510a', tags:['[excited]','[serious]','[surprised]','[curious]','[sad]','[angry]']},
+  {label:'Gesture T3 — Support', c:'#1a5c6b', tags:['[smile]','[nod]','[lean:forward]','[eyebrow:raise]','[head:tilt]','[point]','[hand:open]','[gaze:camera]']},
+  {label:'Delivery T3', c:'#7a5200', tags:['[emphasis]','[fast]','[slow]']},
+  {label:'Timing T3', c:'#475569', tags:['[pause:0.5s]','[pause:1s]','[pause:2s]']},
+];
+
+const PG_MOCK = {
+  excited:  {base:0.66,boost:0.15,f1:0.62,f2:0.70,f3:0.74},
+  serious:  {base:0.60,boost:0.14,f1:0.57,f2:0.63,f3:0.68},
+  surprised:{base:0.63,boost:0.16,f1:0.59,f2:0.67,f3:0.64},
+  curious:  {base:0.55,boost:0.18,f1:0.50,f2:0.58,f3:0.55},
+  sad:      {base:0.52,boost:0.16,f1:0.48,f2:0.55,f3:0.52},
+  angry:    {base:0.50,boost:0.17,f1:0.46,f2:0.54,f3:0.50},
+};
+
+const PG_INSIGHTS = {
+  excited:"GA places [excited] at word 0 for maximum f2 timing. Pairs [smile] mid-sentence to reinforce AffectNet happy-class signal. Most consistent T1 token — f1 avg 0.78.",
+  serious:"GA selects [serious] at the first content word, then adds [emphasis] to hold AffectNet neutral-high across more frames — boosting f3 consistency.",
+  surprised:"GA discovers [eyebrow:raise] at onset + [surprised] at the reveal word maximises AffectNet surprise-class signal. Human placements miss the onset window.",
+  curious:"GA compensates for F8 weakness by pairing [curious] with [head:tilt] — the gesture adds visible signal when emotion amplitude is too low for AffectNet to score.",
+  sad:"GA places [sad] early and pairs it with [gaze:camera] to hold AffectNet sadness-class across frames. P1 testing ongoing — current mock scores are provisional.",
+  angry:"GA pairs [angry] with [emphasis] on the action word for maximum f2 alignment. P1 testing ongoing — vocal prosody drives facial intensity on this token.",
+};
+
+pg = {stage:1, script:null, tags:[], selWord:null, gaGens:null, gaIdx:0, gaRunning:false, gaTimer:null, conv:[], gaResult:null, manScore:null};
+
+// ── Init ─────────────────────────────────────────────────────
+function algoTab(id){
+  ['pipe','pseudo','desc'].forEach(function(v){
+    var view=document.getElementById('algo-view-'+v);
+    var btn=document.getElementById('atab-'+v);
+    if(view) view.style.display = v===id ? 'flex' : 'none';
+    if(btn)  btn.className = 'algo-tab' + (v===id ? ' active' : '');
+  });
+}
+
+// ── Intro Deck ────────────────────────────────────────────────
+var introCur = 0;
+var introTotal = 6;
+
+function introGoTo(n){
+  introCur = Math.max(0, Math.min(introTotal-1, n));
+  document.getElementById('intro-slides').style.transform = 'translateX(-'+introCur+'00%)';
+  // dots
+  var dots = document.getElementById('intro-dots').children;
+  for(var i=0;i<dots.length;i++) dots[i].className = 'intro-dot'+(i===introCur?' on':'');
+  // counter
+  document.getElementById('intro-counter').textContent = (introCur+1)+' / '+introTotal;
+  // prev/next buttons
+  var prev = document.getElementById('intro-prev');
+  var next = document.getElementById('intro-next');
+  if(prev) prev.style.visibility = introCur===0 ? 'hidden' : 'visible';
+  if(next){
+    if(introCur===introTotal-1){
+      next.textContent = '▶ Enter Playground';
+      next.className = 'intro-btn enter';
+      next.onclick = introEnter;
+    } else {
+      next.textContent = 'Next →';
+      next.className = 'intro-btn next';
+      next.onclick = function(){ introNav(1); };
+    }
+  }
+}
+
+function introNav(dir){
+  if(introCur+dir >= introTotal){
+    introEnter();
+  } else {
+    introGoTo(introCur + dir);
+  }
+}
+
+function introEnter(){
+  var intro = document.getElementById('pg-intro');
+  if(intro) intro.classList.add('hidden');
+}
+
+// keyboard nav for intro
+document.addEventListener('keydown', function(e){
+  var intro = document.getElementById('pg-intro');
+  if(!intro || intro.classList.contains('hidden')) return;
+  if(e.key==='ArrowRight'||e.key===' ') introNav(1);
+  if(e.key==='ArrowLeft') introNav(-1);
+  if(e.key==='Escape') introEnter();
+});
+
+function pgInit(){
+  // Kill any running GA timer first
+  clearTimeout(pg && pg.gaTimer);
+  pg = {stage:1, script:null, tags:[], selWord:null, gaGens:null, gaIdx:0,
+        gaRunning:false, gaTimer:null, conv:[], gaResult:null, manScore:null,
+        memeItems:[], totalRuns:1, currentRun:1, allRunTrails:{}, allRunBest:{}, viewingRun:1};
+
+  // ── Reset Stage 1 dropdowns ──
+  const cs=document.getElementById('pg-cat-sel');
+  const ss=document.getElementById('pg-sent-sel');
+  if(cs) cs.value='';
+  if(ss){ ss.innerHTML='<option value="">— select a category first —</option>'; ss.disabled=true; }
+  const pc=document.getElementById('pg-preview-card');
+  if(pc) pc.style.display='none';
+  const nb=document.getElementById('pg-next1');
+  if(nb){ nb.disabled=true; nb.style.opacity='.4'; }
+
+  // ── Reset Stage 2 word/tag area ──
+  const wr=document.getElementById('pg-words');
+  if(wr) wr.innerHTML='';
+  const pk=document.getElementById('pg-picker');
+  if(pk) pk.style.display='none';
+  const ir=document.getElementById('pg-ind-repr');
+  if(ir) ir.innerHTML='[ ] &larr; click words above to add tags';
+  const cw=document.getElementById('pg-const-warn');
+  if(cw) cw.style.display='none';
+  // Reset taxonomy table
+  ['F1','F2','F3','F4','F5','F6','F7','F8'].forEach(function(f){
+    var cell=document.getElementById('ftax-'+f);
+    var st=document.getElementById('ftax-'+f+'-st');
+    if(cell) cell.className='pg-ftax-cell na';
+    if(st) st.textContent='—';
+  });
+  const fp=document.getElementById('pg-fp-prev');
+  if(fp) fp.style.display='none';
+
+  // ── Reset Stage 3 pre-run / GA run ──
+  const prerun=document.getElementById('pg-prerun');
+  const garun=document.getElementById('pg-ga-run');
+  if(prerun){ prerun.style.display='flex'; prerun.style.flex='1'; prerun.style.padding='10px 0'; prerun.style.minHeight=''; }
+  if(garun){ garun.style.display='none'; garun.style.flex='0'; }
+  // Clear gen dot strip
+  for(let i=1;i<=8;i++){
+    const d=document.getElementById('pgdot'+i); if(d) d.className='pg-gen-dot';
+    const l=document.getElementById('pgline'+i); if(l) l.className='pg-gen-line';
+  }
+  const gs=document.getElementById('pg-gastatus');
+  if(gs) gs.textContent='Ready';
+  const lf=document.getElementById('pg-live-fp');
+  if(lf){ lf.textContent='—'; lf.style.color='#1a6b3c'; }
+  ['pg-lf1','pg-lf2','pg-lf3'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='—';});
+  ['pg-lb1','pg-lb2','pg-lb3'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.width='0%';});
+  const et=document.getElementById('pg-evo-trail');
+  if(et) et.innerHTML='';
+  const mc=document.getElementById('pg-meme-count-live');
+  if(mc) mc.textContent='0 stored';
+  const ml=document.getElementById('pg-meme-list');
+  if(ml) ml.innerHTML='';
+  const to4=document.getElementById('pg-to4');
+  if(to4) to4.style.display='none';
+  const rb=document.getElementById('pg-runbtn');
+  if(rb) rb.style.display='none';
+  // Reset canvas
+  const cv=document.getElementById('pg-canvas');
+  if(cv){ const ctx=cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height); }
+
+  // ── Reset Stage 4 ──
+  ['pg-r-mfp','pg-r-gfp'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='—';});
+  ['pg-r-mseq','pg-r-gseq'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='—';});
+  ['pg-r-msent','pg-r-gsent'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
+  ['pg-rb-mf1','pg-rb-mf2','pg-rb-mf3','pg-rb-gf1','pg-rb-gf2','pg-rb-gf3']
+    .forEach(id=>{const e=document.getElementById(id);if(e)e.style.width='0%';});
+  const scr=document.getElementById('pg-r-script');
+  if(scr) scr.textContent='';
+  const ins=document.getElementById('pg-r-insight');
+  if(ins) ins.innerHTML='';
+
+  // Reset run selector to 1
+  pgSetRuns(1);
+  var ind=document.getElementById('pg-run-indicator');
+  if(ind) ind.style.display='none';
+  var tabs=document.getElementById('pg-run-tabs');
+  if(tabs) tabs.innerHTML='';
+
+  pgGo(1);
+  // Ensure panel 3 children are in correct initial state
+  var pre3=document.getElementById('pg-prerun');
+  var run3=document.getElementById('pg-ga-run');
+  if(pre3){ pre3.style.display='flex'; pre3.style.flex='1'; pre3.style.padding='10px 0'; pre3.style.minHeight=''; }
+  if(run3){ run3.style.display='none'; run3.style.flex='0'; }
+  setTimeout(function(){ pgUpdatePipeline(1); }, 50);
+}
+
+function pgCatChange(){
+  const cat = document.getElementById('pg-cat-sel').value;
+  const ss = document.getElementById('pg-sent-sel');
+  if(!cat){ ss.innerHTML='<option>— select a category first —</option>'; ss.disabled=true; return; }
+  const scripts = PG_SCRIPTS[cat]||[];
+  ss.innerHTML = '<option value="">— choose a sentence —</option>' +
+    scripts.map((s,i)=>`<option value="${cat}|${i}">[${s.diff}] ${s.text}</option>`).join('');
+  ss.disabled = false;
+  pg.script = null;
+  const pc = document.getElementById('pg-preview-card');
+  if(pc) pc.style.display='none';
+  const nb = document.getElementById('pg-next1');
+  if(nb){ nb.disabled=true; nb.style.opacity='.4'; }
+}
+
+const PG_EMO_STYLE = {
+  excited:  {c:'#c8510a', bg:'rgba(200,81,10,.1)',  border:'rgba(200,81,10,.3)'},
+  serious:  {c:'#1a4f8a', bg:'rgba(26,79,138,.1)',  border:'rgba(26,79,138,.3)'},
+  surprised:{c:'#7c3aed', bg:'rgba(74,26,122,.1)',  border:'rgba(74,26,122,.3)'},
+  curious:  {c:'#b45309', bg:'rgba(245,158,11,.1)', border:'rgba(245,158,11,.3)'},
+  sad:      {c:'#475569', bg:'rgba(71,85,105,.1)',  border:'rgba(71,85,105,.3)'},
+  angry:    {c:'#8a1a2e', bg:'rgba(138,26,46,.1)',  border:'rgba(138,26,46,.3)'},
+};
+
+function pgSentChange(){
+  const val = document.getElementById('pg-sent-sel').value;
+  if(!val){ pg.script=null; return; }
+  const [cat,idxStr] = val.split('|');
+  const s = (PG_SCRIPTS[cat]||[])[parseInt(idxStr)];
+  if(!s) return;
+  pg.script = {...s, cat};
+  // Show preview
+  const ec = PG_EMO_STYLE[s.emotion]||PG_EMO_STYLE.serious;
+  document.getElementById('pg-preview-text').textContent = s.text;
+  const eb = document.getElementById('pg-preview-emo');
+  eb.textContent = s.emotion.toUpperCase();
+  eb.style.cssText = `font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;background:${ec.bg};color:${ec.c};border:1px solid ${ec.border}`;
+  document.getElementById('pg-preview-diff').textContent = `Difficulty: ${s.diff}`;
+  document.getElementById('pg-preview-card').style.display='block';
+  const nb = document.getElementById('pg-next1');
+  if(nb){ nb.disabled=false; nb.style.opacity='1'; }
+  // Update stage sub
+  const ns = document.getElementById('pgn1sub');
+  if(ns) ns.textContent = s.text.substring(0,35)+'...';
+}
+
+// ── Navigation ────────────────────────────────────────────────
+// ── Pipeline sidebar update ────────────────────────────────────
+function pgUpdatePipeline(n){
+  // Map stage to numeric position for done/active logic
+  var order=['',1,2,'R','A',3,4]; // index = position
+  var pos = order.indexOf(n);
+  [1,2,3,4].forEach(function(i){
+    var s=document.getElementById('pipe-s'+i);
+    if(!s) return;
+    var sPos=order.indexOf(i);
+    s.className='pipe-stage'+(n===i?' active':pos>sPos?' done':'');
+  });
+  var hg=document.getElementById('pipe-heygen');
+  var df=document.getElementById('pipe-deepface');
+  if(hg) hg.style.cssText=(n==='R'?'border-color:rgba(200,81,10,.5);background:rgba(200,81,10,.06);':'')+'border-radius:7px;border:'+(n==='R'?'1.5px solid rgba(200,81,10,.5)':'1px dashed rgba(255,255,255,.1)')+';background:'+(n==='R'?'rgba(200,81,10,.06)':pos>3?'rgba(26,107,60,.04)':'rgba(255,255,255,.02)')+';padding:7px 10px;';
+  if(df) df.style.cssText='border-radius:7px;border:'+(n==='A'?'1.5px solid rgba(74,26,122,.5)':pos>4?'1px solid rgba(26,107,60,.3)':'1px dashed rgba(255,255,255,.1)')+';background:'+(n==='A'?'rgba(74,26,122,.06)':pos>4?'rgba(26,107,60,.04)':'rgba(255,255,255,.02)')+';padding:7px 10px;';
+}
+
+function pgPipeClick(n){
+  pgGo(n);
+}
+
+function pgGo(n){
+  if(n!=='R' && n!=='A' && n>1 && !pg.script) return;
+  if(n>3 && !pg.gaResult) return;
+  clearTimeout(pg.gaTimer);
+  if(n!==3) pg.gaRunning=false;
+  pg.stage=n;
+
+  // Update nav buttons — R and A are special
+  [1,2,3,4].forEach(function(i){
+    var el=document.getElementById('pgn'+i);
+    if(!el) return;
+    var isActive = i===n;
+    var isDone = (typeof n==='number') ? i<n : (n==='R'?i<=2:n==='A'?i<=2:false);
+    el.className='pgstg '+(isActive?'active':isDone?'done':'locked');
+    var sub=el.querySelector('.pgstg-sub');
+    if(sub && (isActive||isDone)) sub.style.color=isActive?'rgba(255,255,255,.6)':'var(--ink4)';
+  });
+  // R and A nav highlights
+  var nR=document.getElementById('pgnR'), nA=document.getElementById('pgnA');
+  if(nR) nR.className='pgstg '+(n==='R'?'active':n==='A'||n===3||n===4?'done':'locked');
+  if(nA) nA.className='pgstg '+(n==='A'?'active':n===3||n===4?'done':'locked');
+
+  // Show correct panel
+  ['pgp1','pgp2','pgpR','pgpA','pgp3','pgp4'].forEach(function(id){
+    var p=document.getElementById(id);
+    if(!p) return;
+    var panelN = id==='pgpR'?'R':id==='pgpA'?'A':parseInt(id.replace('pgp',''));
+    p.className='pgpanel'+(panelN===n?' on':'');
+  });
+
+  // Stage-specific logic
+  if(n===2){
+    pgInitWords();
+    var _pre=document.getElementById('pg-prerun');
+    var _run=document.getElementById('pg-ga-run');
+    if(_pre){ _pre.style.display='flex'; _pre.style.flex='1'; _pre.style.padding='10px 0'; _pre.style.minHeight=''; }
+    if(_run){ _run.style.display='none'; _run.style.flex='0'; }
+  }
+  if(n==='R') pgRunRender();
+  if(n==='A') pgRunAssess();
+  if(n===3){
+    // Show F(p_manual) in pre-run banner
+    var msEl=document.getElementById('pg-prerun-manual-score');
+    if(msEl && pg.manScore) msEl.textContent=pg.manScore.fp.toFixed(3)+' (your Stage 2 sequence)';
+    else if(msEl) msEl.textContent='(place tags in Stage 2 first)';
+    var pre=document.getElementById('pg-prerun');
+    var run=document.getElementById('pg-ga-run');
+    var trail=document.getElementById('pg-evo-trail');
+    var hasContent = trail && trail.children.length > 0;
+    if(pg.gaResult && hasContent){
+      if(pre){ pre.style.display='none'; pre.style.flex='0'; pre.style.minHeight='0'; pre.style.padding='0'; }
+      if(run){ run.style.display='flex'; run.style.flex='1'; }
+    } else {
+      if(pre){ pre.style.display='flex'; pre.style.flex='1'; pre.style.padding='10px 0'; pre.style.minHeight=''; }
+      if(run){ run.style.display='none'; run.style.flex='0'; }
+    }
+  }
+  if(n===4) pgShowResults();
+  pgUpdatePipeline(n);
+}
+
+// ── Render simulation ──────────────────────────────────────────
+function pgRunRender(){
+  if(!pg.script) return;
+  var ms=[...pg.tags].sort(function(a,b){return a.wi-b.wi;});
+  var words=pg.script.text.split(' ');
+
+  // Build HeyGen script string
+  var gMap={};
+  ms.forEach(function(t){ gMap[t.wi]=t.tag; });
+  var hgScript=words.map(function(w,i){ return gMap[i]?gMap[i]+' '+w:w; }).join(' ');
+  var seqEl=document.getElementById('pg-render-seq');
+  if(seqEl) seqEl.textContent = '"'+hgScript+'"';
+
+  // Animate the render steps
+  var steps=[
+    {pct:15, status:'Parsing tag sequence…', detail:'Validating 21-token vocabulary · checking constraints', emoji:'⚙️'},
+    {pct:30, status:'Submitting to HeyGen API…', detail:'POST /v2/video/generate · Avatar: Aubria · Resolution: 1080p', emoji:'📡'},
+    {pct:50, status:'Rendering facial expressions…', detail:'Diffusion model · audio-to-expression sync · '+ms.length+' tag'+(ms.length!==1?'s':'')+' applied', emoji:'🎭'},
+    {pct:72, status:'Synthesising audio layer…', detail:'ElevenLabs v3 TTS · EL tags processed · timing locked', emoji:'🎙️'},
+    {pct:88, status:'Compositing final clip…', detail:'1080p MP4 · ~'+Math.round(3+words.length*.3)+'s clip · '+Math.round(12+ms.length*3)+' token credits used', emoji:'🎬'},
+    {pct:100,status:'✓ Render complete — clip ready for assessment', detail:'Saved to evaluation queue · proceeding to DeepFace', emoji:'✅'},
+  ];
+
+  // Show tags animating on avatar
+  var tagWords=ms.map(function(t){ return words[t.wi]||''; });
+  var tagIdx=0;
+
+  var i=0;
+  function tick(){
+    if(i>=steps.length){
+      // Auto-advance to assess after brief pause
+      setTimeout(function(){ pgGo('A'); }, 800);
+      return;
+    }
+    var step=steps[i];
+    var prog=document.getElementById('pg-render-progress');
+    var stat=document.getElementById('pg-render-status');
+    var det =document.getElementById('pg-render-detail');
+    var spin=document.getElementById('pg-render-spinner');
+    var cost=document.getElementById('pg-render-cost');
+    var head=document.getElementById('pg-render-head');
+    var overlay=document.getElementById('pg-render-tag-overlay');
+    if(prog) prog.style.width=step.pct+'%';
+    if(stat) stat.textContent=step.status;
+    if(det)  det.textContent=step.detail;
+    if(spin) spin.textContent=step.emoji;
+    if(cost) cost.textContent='~'+(12+ms.length*3)+' credits';
+    // Animate avatar expression
+    if(ms.length>0 && i>=2){
+      var tag=ms[Math.min(tagIdx,ms.length-1)].tag;
+      if(overlay){ overlay.textContent=tag; overlay.style.opacity='1'; }
+      var faces={'[excited]':'😄','[serious]':'😐','[surprised]':'😲','[curious]':'🤔','[sad]':'😢','[angry]':'😠','[smile]':'😊','[nod]':'🙂','[lean:forward]':'🫦','[eyebrow:raise]':'🤨'};
+      if(head) head.textContent=faces[tag]||'🧑';
+      tagIdx=(tagIdx+1)%ms.length;
+    }
+    i++;
+    setTimeout(tick, 520);
+  }
+  tick();
+}
+
+// ── Assessment simulation ──────────────────────────────────────
+function pgRunAssess(){
+  if(!pg.script) return;
+  var sc=PG_MOCK[pg.script.emotion]||PG_MOCK.serious;
+  var ms=[...pg.tags].sort(function(a,b){return a.wi-b.wi;});
+  if(!pg.manScore) pg.manScore=pgCalcFp();
+  var score=pg.manScore;
+
+  // AffectNet 8 classes with mock probabilities
+  var emoMap={
+    'excited':'happy','serious':'neutral','surprised':'surprise',
+    'curious':'fear','sad':'sad','angry':'anger','warm':'happy'
+  };
+  var targetAN=emoMap[pg.script.emotion]||'neutral';
+  var AFFECT_CLASSES=['neutral','happy','sad','surprise','fear','disgust','anger','contempt'];
+  var AFFECT_EMOJIS= ['😐',    '😄',    '😢',    '😲',     '😨',   '🤢',    '😠',    '😒'];
+  var probs={};
+  AFFECT_CLASSES.forEach(function(cls){
+    probs[cls]=cls===targetAN ? score.f1 : Math.max(0.01,Math.random()*0.15);
+  });
+  // Normalise roughly
+  var tot=Object.values(probs).reduce(function(a,b){return a+b;},0);
+  AFFECT_CLASSES.forEach(function(cls){ probs[cls]=+(probs[cls]/tot*0.8+probs[cls]*0.2).toFixed(3); });
+  probs[targetAN]=score.f1; // force target to f1 score
+
+  // Build frame strip
+  var framesEl=document.getElementById('pg-assess-frames');
+  if(framesEl){
+    framesEl.innerHTML='';
+    for(var fi=0;fi<16;fi++){
+      var frame=document.createElement('div');
+      var intensity=Math.max(0.2,score.f1*(0.7+Math.random()*.6));
+      var clamp=Math.min(1,intensity);
+      frame.style.cssText='width:calc(6.25% - 3px);aspect-ratio:9/12;border-radius:4px;background:rgba(74,26,122,'+clamp.toFixed(2)+');border:1px solid rgba(74,26,122,.3);flex-shrink:0;font-size:9px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,'+(0.3+clamp*.5)+');transition:all .3s;opacity:0;';
+      frame.textContent=(clamp>0.6?'✓':'·');
+      framesEl.appendChild(frame);
+      (function(f,delay){ setTimeout(function(){f.style.opacity='1';},delay); })(frame, fi*60);
+    }
+  }
+
+  // Build AffectNet class bars
+  var barsEl=document.getElementById('pg-assess-bars');
+  if(barsEl){
+    barsEl.innerHTML=AFFECT_CLASSES.map(function(cls,ci){
+      var p=probs[cls];
+      var isTarget=cls===targetAN;
+      var barColor=isTarget?'#4a1a7a':'#94a3b8';
+      return '<div style="display:flex;align-items:center;gap:6px;">'
+        +'<span style="font-size:11px;flex-shrink:0;width:18px">'+AFFECT_EMOJIS[ci]+'</span>'
+        +'<span style="font-family:var(--mono);font-size:9px;color:var(--ink4);width:60px;'+(isTarget?'font-weight:700;color:#4a1a7a':'')+'">'+(isTarget?'▶ ':'')+cls+'</span>'
+        +'<div style="flex:1;height:7px;background:var(--paper3);border-radius:4px;overflow:hidden;">'
+        +'<div style="height:100%;background:'+barColor+';border-radius:4px;width:0%;transition:width .8s ease;" data-w="'+(p*100).toFixed(0)+'%"></div>'
+        +'</div>'
+        +'<span style="font-family:var(--mono);font-size:9px;color:var(--ink4);width:36px;text-align:right;'+(isTarget?'color:#4a1a7a;font-weight:700':'')+'">'+(p*100).toFixed(1)+'%</span>'
+        +'</div>';
+    }).join('');
+    // Animate bars
+    setTimeout(function(){
+      barsEl.querySelectorAll('[data-w]').forEach(function(el){
+        el.style.width=el.getAttribute('data-w');
+      });
+    },200);
+  }
+
+  // Build AffectNet class reference
+  var classesEl=document.getElementById('pg-affectnet-classes');
+  if(classesEl){
+    classesEl.innerHTML=AFFECT_CLASSES.map(function(cls,ci){
+      var isTarget=cls===targetAN;
+      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--paper3);'+(isTarget?'background:rgba(74,26,122,.06)':'')+'">'
+        +'<span style="font-size:13px;">'+AFFECT_EMOJIS[ci]+'</span>'
+        +'<span style="font-size:11px;font-weight:'+(isTarget?'700':'400')+';color:'+(isTarget?'#4a1a7a':'var(--ink3)')+'">'+(isTarget?'▶ ':'')+cls+'</span>'
+        +(isTarget?'<span style="margin-left:auto;font-family:var(--mono);font-size:8px;background:rgba(74,26,122,.15);color:#4a1a7a;padding:1px 5px;border-radius:3px;">target</span>':'')
+        +'</div>';
+    }).join('');
+  }
+
+  // Animate f1/f2/f3 and F(p)
+  setTimeout(function(){
+    var f1El=document.getElementById('pg-af1');
+    var f2El=document.getElementById('pg-af2');
+    var f3El=document.getElementById('pg-af3');
+    var fpEl=document.getElementById('pg-afp');
+    var thEl=document.getElementById('pg-afp-thresh');
+    if(f1El) f1El.textContent=score.f1.toFixed(2);
+    if(f2El) f2El.textContent=score.f2.toFixed(2);
+    if(f3El) f3El.textContent=score.f3.toFixed(2);
+    if(fpEl) fpEl.textContent=score.fp.toFixed(3);
+    if(thEl){
+      var passed=score.fp>=0.75;
+      thEl.textContent=(passed?'✓ Pre-registered threshold (≥0.75) met':'✗ Below pre-registered threshold (0.75) — GA will aim higher');
+      thEl.style.color=passed?'#1a6b3c':'#8a1a2e';
+    }
+  },1000);
+
+  // Failure flags
+  var failEl=document.getElementById('pg-assess-failures');
+  if(failEl){
+    var wlen=pg.script.text.split(' ').length;
+    var emTags=ms.filter(function(t){return t.tag.match(/\[(excited|serious|surprised|curious|sad|angry)/);});
+    var gestTags=ms.filter(function(t){return t.tag.match(/\[(smile|nod|lean|gaze|eyebrow|head|hand|point)/);});
+    var flags=[];
+    if(emTags.length===0) flags.push({code:'F1',msg:'No emotion tag — neutral render',c:'#8a1a2e'});
+    if(ms.some(function(t){return t.wi>Math.floor(wlen*.6);})) flags.push({code:'F3',msg:'Late onset — timing penalty applied',c:'#b45309'});
+    if(gestTags.length>2) flags.push({code:'F5',msg:'Gesture overload — blending artefacts',c:'#b45309'});
+    if(pg.script.emotion==='curious') flags.push({code:'F8',msg:'[curious] → fear-proxy · f1 avg 0.31',c:'#7c3aed'});
+    if(flags.length===0) flags.push({code:'✓','msg':'No failure modes — clean sequence',c:'#1a6b3c'});
+    failEl.innerHTML=flags.map(function(f){
+      return '<div style="font-family:var(--mono);font-size:9px;padding:5px 8px;border-radius:6px;background:rgba(0,0,0,.04);border:1px solid '+f.c+'44;color:'+f.c+'"><strong>'+f.code+'</strong> '+f.msg+'</div>';
+    }).join('');
+  }
+}
+
+
+function pgReset(){ pgInit(); }
+
+// ── Stage 2: Tag Builder ───────────────────────────────────────
+function pgInitWords(){
+  const words = pg.script.text.replace(/[.,!?]/g,'').split(' ');
+  const container = document.getElementById('pg-words');
+  if(!container) return;
+  container.innerHTML = words.map((w,i)=>{
+    const t = pg.tags.find(x=>x.wi===i);
+    return `<span class="pgword${t?' tagged':''}" id="pgw${i}" onclick="pgWordClick(${i},'${w.replace(/'/g,"\\'")}')">${t?`<span class="pgtchip">${t.tag}<span style="font-size:9px;opacity:.7;margin-left:2px">${t.dur}s</span><span class="rx" onclick="event.stopPropagation();pgRmTag(${i})">×</span></span> `:''}<span>${w}</span></span>`;
+  }).join('');
+  pgUpdInd();
+  pgUpdFp();
+}
+
+function pgWordClick(i, word){
+  pg.selWord = i;
+  document.getElementById('pg-pick-word').textContent = `${i} ("${word}")`;
+  document.getElementById('pg-picker').style.display='block';
+  const opts = document.getElementById('pg-tag-opts');
+  // Shorten labels for display
+  const shortLabel = {
+    'Emotion T1 — GA Targets':'T1 Emotion',
+    'Gesture T3 — Support':'T3 Gesture',
+    'Delivery T3':'T3 Delivery',
+    'Timing T3':'T3 Timing',
+  };
+  opts.innerHTML = PG_TAG_GROUPS.map(g=>`
+    <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+      <span style="font-family:var(--mono);font-size:9px;font-weight:700;color:${g.c};min-width:62px;flex-shrink:0">${shortLabel[g.label]||g.label}:</span>
+      ${g.tags.map(t=>`<button class="pgtagbtn" style="font-size:10px;padding:2px 7px;color:${g.c};border-color:${g.c}44"
+        onclick="pgInsertTag('${t}')"
+        onmouseover="this.style.background='${g.c}15'"
+        onmouseout="this.style.background='none'">${t}</button>`).join('')}
+    </div>`).join('');
+}
+
+function pgInsertTag(tag){
+  if(pg.selWord===null) return;
+  const dur = parseFloat(document.getElementById('pg-dur-num').value||document.getElementById('pg-dur').value||'1.0');
+  // Remove existing at this word, then add new (no hard limit — allow any number)
+  pg.tags = pg.tags.filter(t=>t.wi!==pg.selWord);
+  pg.tags.push({wi:pg.selWord, tag, dur});
+  document.getElementById('pg-picker').style.display='none';
+  pgInitWords();
+}
+
+function pgRmTag(i){
+  pg.tags = pg.tags.filter(t=>t.wi!==i);
+  pgInitWords();
+}
+
+// ── Failure taxonomy clickable tooltips ──────────────────────
+function ftaxShowTip(evt, code, title, body, criterion){
+  var tip = document.getElementById('ftax-tooltip');
+  if(!tip) return;
+  document.getElementById('tt-code').textContent = code;
+  document.getElementById('tt-title').textContent = title;
+  document.getElementById('tt-body').textContent = body;
+  document.getElementById('tt-criterion').textContent = criterion;
+  // Position: try right of cell, flip left if off screen
+  var rect = evt.currentTarget.getBoundingClientRect();
+  var left = rect.right + 8;
+  var top  = rect.top;
+  tip.style.left = left + 'px';
+  tip.style.top  = top  + 'px';
+  tip.style.right = 'auto';
+  tip.classList.add('show');
+  // Flip left if overflowing right edge
+  setTimeout(function(){
+    var tr = tip.getBoundingClientRect();
+    if(tr.right > window.innerWidth - 8){
+      tip.style.left = (rect.left - tr.width - 8) + 'px';
+    }
+    if(tr.bottom > window.innerHeight - 8){
+      tip.style.top = (window.innerHeight - tr.height - 8) + 'px';
+    }
+  }, 0);
+  // Dismiss on outside click
+  setTimeout(function(){
+    document.addEventListener('click', ftaxOutsideClick, {once:true});
+  }, 10);
+  evt.stopPropagation();
+}
+function ftaxHideTip(){
+  var tip=document.getElementById('ftax-tooltip');
+  if(tip) tip.classList.remove('show');
+}
+function ftaxOutsideClick(e){
+  var tip=document.getElementById('ftax-tooltip');
+  if(tip && !tip.contains(e.target)) tip.classList.remove('show');
+}
+
+function pgUpdateTaxTable(){
+  if(!pg.script) return;
+  const sorted=[...pg.tags].sort(function(a,b){return a.wi-b.wi;});
+  const wlen=pg.script.text.split(' ').length;
+  const emTags  =sorted.filter(function(t){return t.tag.match(/\[(excited|serious|surprised|curious|sad|angry)\]/);});
+  const gestTags=sorted.filter(function(t){return t.tag.match(/\[(smile|nod|lean|gaze|eyebrow|head|hand|point)/);});
+  const totalDur=sorted.reduce(function(s,t){return s+t.dur;},0);
+
+  function setCell(code,cls,status){
+    var cell=document.getElementById('ftax-'+code);
+    var st=document.getElementById('ftax-'+code+'-st');
+    if(!cell||!st) return;
+    cell.className='pg-ftax-cell '+cls;
+    st.textContent=status;
+  }
+
+  if(sorted.length===0){
+    // No tags yet — all neutral
+    ['F1','F2','F3','F4','F5','F6','F7','F8'].forEach(function(f){setCell(f,'na','—');});
+    return;
+  }
+
+  // F1 — no T1 emotion tag
+  if(emTags.length===0) setCell('F1','fail','✗ FAIL — no T1 emotion');
+  else setCell('F1','ok','✓ OK — '+emTags.length+' emotion tag'+(emTags.length>1?'s':''));
+
+  // F2 — stacking (two emotion tags ≤2 words apart)
+  var stacking=emTags.length>=2&&Math.abs(emTags[0].wi-(emTags[1]?emTags[1].wi:99))<=2;
+  if(stacking) setCell('F2','fail','✗ FAIL — tags at '+emTags[0].wi+' & '+emTags[1].wi);
+  else if(emTags.length>=2) setCell('F2','warn','⚠ CHECK — '+emTags.length+' emotion tags');
+  else setCell('F2','ok','✓ OK');
+
+  // F3 — late onset (any tag after 60% of sentence)
+  var lateTag=sorted.filter(function(t){return t.wi>Math.floor(wlen*0.6);});
+  if(lateTag.length>0) setCell('F3','fail','✗ FAIL — pos '+lateTag[0].wi+'/'+wlen);
+  else setCell('F3','ok','✓ OK — within 60%');
+
+  // F4 — overloading (>3 emotion tags)
+  if(emTags.length>3) setCell('F4','fail','✗ FAIL — '+emTags.length+' emotion tags');
+  else if(emTags.length===3) setCell('F4','warn','⚠ MAX — 3 emotion tags');
+  else setCell('F4','ok','✓ OK — '+emTags.length+' tag'+(emTags.length!==1?'s':''));
+
+  // F5 — gesture overload (>2 gesture tokens)
+  if(gestTags.length>2) setCell('F5','fail','✗ FAIL — '+gestTags.length+' gesture tags');
+  else if(gestTags.length===2) setCell('F5','warn','⚠ WATCH — 2 gestures');
+  else setCell('F5','ok','✓ OK — '+gestTags.length+' gesture'+(gestTags.length!==1?'s':''));
+
+  // F6 — amplitude fatigue ([excited] used >2× in clip)
+  var excitedCount=sorted.filter(function(t){return t.tag==='[excited]';}).length;
+  if(excitedCount>2) setCell('F6','fail','✗ FAIL — [excited] ×'+excitedCount);
+  else if(excitedCount===2) setCell('F6','warn','⚠ WATCH — [excited] ×2');
+  else setCell('F6','ok','✓ OK');
+
+  // F7 — timing overflow (total pause duration >3s)
+  var pauseDur=sorted.filter(function(t){return t.tag.match(/\[pause/);}).reduce(function(s,t){return s+t.dur;},0);
+  if(pauseDur>3) setCell('F7','fail','✗ FAIL — '+pauseDur.toFixed(1)+'s pauses');
+  else if(pauseDur>2) setCell('F7','warn','⚠ WATCH — '+pauseDur.toFixed(1)+'s');
+  else setCell('F7','ok','✓ OK — '+pauseDur.toFixed(1)+'s');
+
+  // F8 — sub-perceptual ([curious] present)
+  var hasCurious=sorted.some(function(t){return t.tag==='[curious]';});
+  if(hasCurious) setCell('F8','warn','⚠ WEAK — f1 avg 0.31');
+  else setCell('F8','ok','✓ OK');
+}
+
+function pgUpdInd(){
+  const el = document.getElementById('pg-ind-repr');
+  if(!el) return;
+  const sorted = [...pg.tags].sort((a,b)=>a.wi-b.wi);
+  el.textContent = sorted.length===0 ? '[ ]  ← click words above to add tags'
+    : '[' + sorted.map(t=>`(${t.wi}, "${t.tag}", ${t.dur})`).join(', ') + ']';
+  pgUpdateTaxTable();
+  // ── Full constraint warning: F1–F8 ──
+  const warn = document.getElementById('pg-const-warn');
+  if(!warn) return;
+  const emTags  = sorted.filter(t=>t.tag.match(/\[(excited|serious|surprised|curious|sad|angry)\]/));
+  const gestTags = sorted.filter(t=>t.tag.match(/\[(smile|nod|lean|gaze|eyebrow|head|hand|point)/));
+  const wlen = pg.script.text.split(' ').length;
+  const issues = [];
+  if(sorted.length===0){
+    issues.push('F1 No tags — AffectNet class undefined');
+  } else {
+    if(emTags.length===0) issues.push('F1 No emotion tag');
+    if(emTags.length>=2 && Math.abs(emTags[0].wi-(emTags[1]?emTags[1].wi:99))<=2) issues.push('F2 Stacking — two emotion tags within 2 words');
+    if(sorted.some(t=>t.wi>Math.floor(wlen*0.6))) issues.push('F3 Late onset — tag fires after 60% — timing penalty');
+    if(emTags.length>3) issues.push('F4 Overloading — >3 emotion tags');
+    if(gestTags.length>2) issues.push('F5 Gesture overload — >2 gesture tokens');
+    if(sorted.some(t=>t.tag==='[curious]')) issues.push('F8 Sub-perceptual — [curious] weak AffectNet signal');
+  }
+  if(issues.length===0){
+    warn.style.display='none';
+    warn.textContent='';
+  } else {
+    warn.style.display='inline';
+    warn.textContent='⚠ '+issues.join(' · ');
+  }
+}
+
+function pgCalcFp(){
+  const sc = PG_MOCK[pg.script.emotion]||PG_MOCK.serious;
+  const tags = pg.tags; const n = tags.length;
+  let f1=sc.f1, f2=sc.f2, f3=sc.f3;
+  if(n===0){ f1=0.12; f2=0.15; f3=0.20; }
+  else {
+    const hasEmo = tags.some(t=>t.tag.match(/\[(excited|serious|surprised|curious|sad|angry)\]/));
+    const wlen = pg.script.text.split(' ').length;
+    const firstPos = Math.min(...tags.map(t=>t.wi));
+    if(!hasEmo){ f1*=0.55; f2*=0.60; }
+    if(firstPos > Math.floor(wlen*0.5)) f2*=0.65;
+    if(n>=2) f3=Math.min(f3*1.06, 0.92);
+    f1 += (Math.random()-.5)*.07; f2 += (Math.random()-.5)*.07; f3 += (Math.random()-.5)*.05;
+    f1=Math.max(.10,Math.min(.97,f1)); f2=Math.max(.10,Math.min(.97,f2)); f3=Math.max(.10,Math.min(.97,f3));
+  }
+  const fp = +(0.5*f1+0.3*f2+0.2*f3).toFixed(3);
+  return {fp, f1:+f1.toFixed(3), f2:+f2.toFixed(3), f3:+f3.toFixed(3)};
+}
+
+function pgUpdFp(){
+  const prev = document.getElementById('pg-fp-prev');
+  if(!prev || pg.tags.length===0){ if(prev) prev.style.display='none'; return; }
+  prev.style.display='block';
+  const s = pgCalcFp();
+  pg.manScore = s;
+  document.getElementById('pg-mfp').textContent = s.fp.toFixed(2);
+  document.getElementById('pg-mf1').textContent = s.f1.toFixed(2);
+  document.getElementById('pg-mf2').textContent = s.f2.toFixed(2);
+  document.getElementById('pg-mf3').textContent = s.f3.toFixed(2);
+  setTimeout(()=>{ const b=document.getElementById('pg-mbar'); if(b) b.style.width=(s.fp*100)+'%'; }, 100);
+}
+
+// ── Stage 3: GA ────────────────────────────────────────────────
+function pgRunGA(){
+  if(pg.gaRunning) return;
+  clearTimeout(pg.gaTimer);
+  pg.gaRunning=true; pg.conv=[]; pg.gaIdx=0;
+  pg.memeItems=[];
+  const statusEl=document.getElementById('pg-gastatus');
+  if(statusEl) statusEl.textContent='Initialising population…';
+  const to4=document.getElementById('pg-to4');
+  const rb=document.getElementById('pg-runbtn');
+  if(to4) to4.style.display='none';
+  if(rb) rb.style.display='none';
+  const lfp=document.getElementById('pg-live-fp');
+  if(lfp) lfp.textContent='—';
+  const mc=document.getElementById('pg-meme-count-live');
+  if(mc) mc.textContent='0 stored';
+  const ml=document.getElementById('pg-meme-list');
+  if(ml) ml.innerHTML='';
+  const et=document.getElementById('pg-evo-trail');
+  if(et) et.innerHTML='';
+  for(let i=1;i<=8;i++){
+    const d=document.getElementById('pgdot'+i); if(d) d.className='pg-gen-dot';
+    const l=document.getElementById('pgline'+i); if(l) l.className='pg-gen-line';
+  }
+  if(!pg.manScore) pg.manScore=pgCalcFp();
+  const sc=PG_MOCK[pg.script.emotion]||PG_MOCK.serious;
+  const gens=[]; let memeN=0;
+  for(let g=0;g<8;g++){
+    const pop=[];
+    for(let i=0;i<8;i++){
+      const base=sc.base+sc.boost*(g/7)+(Math.random()-.5)*.09;
+      const bonus=i<2?.04+Math.random()*.07:0;
+      const fp=Math.max(.10,Math.min(.98,base+bonus));
+      const f1=Math.max(.10,Math.min(.97,sc.f1+sc.boost*.5*(g/7)+(Math.random()-.5)*.07));
+      const f2=Math.max(.10,Math.min(.97,sc.f2+sc.boost*.3*(g/7)+(Math.random()-.5)*.06));
+      const f3=Math.max(.10,Math.min(.97,sc.f3+sc.boost*.2*(g/7)+(Math.random()-.5)*.05));
+      pop.push({fp:+fp.toFixed(3),f1:+f1.toFixed(3),f2:+f2.toFixed(3),f3:+f3.toFixed(3),seq:pgMockSeq(pg.script.emotion,g,i)});
+    }
+    pop.sort((a,b)=>b.fp-a.fp);
+    if(pop[0].fp>0.70) memeN++;
+    gens.push({gen:g+1,pop,bestFp:pop[0].fp,memeN});
+  }
+  pg.gaGens=gens;
+  pgTickGA();
+}
+
+function pgMockSeq(emo, gen, ind){
+  // T1 emotion + paired T3 support tokens per emotion type
+  const vocab={
+    excited:  ['[excited]','[smile]','[lean:forward]','[gaze:camera]'],
+    serious:  ['[serious]','[emphasis]','[nod]','[gaze:camera]'],
+    surprised:['[surprised]','[eyebrow:raise]','[smile]','[head:tilt]'],
+    curious:  ['[curious]','[head:tilt]','[eyebrow:raise]','[gaze:camera]'],
+    sad:      ['[sad]','[gaze:camera]','[slow]','[pause:1s]'],
+    angry:    ['[angry]','[emphasis]','[lean:forward]','[point]'],
+  };
+  const tags=vocab[emo]||vocab.serious;
+  const nTags = gen<3?Math.floor(Math.random()*3)+1:(ind<2?3:Math.floor(Math.random()*2)+2);
+  const used=new Set(); const res=[];
+  for(let t=0;t<nTags;t++){
+    let pos=[0,1,2,3,4,5,7,9][Math.floor(Math.random()*8)];
+    let tries=0; while(used.has(pos)&&tries<10){pos=(pos+1)%10;tries++;}
+    used.add(pos);
+    const tag = gen>4&&t===0 ? tags[0] : tags[Math.floor(Math.random()*tags.length)];
+    const dur = [0.5,1.0,1.5,2.0,2.5][Math.floor(Math.random()*5)];
+    res.push({pos, tag, dur});
+  }
+  return res.sort((a,b)=>a.pos-b.pos).map(r=>`(${r.pos},"${r.tag}",${r.dur})`).join(', ');
+}
+
+function pgToggleTrailRow(id){
+  const el=document.getElementById(id); if(!el) return;
+  el.style.display=el.style.display==='none'?'block':'none';
+}
+
+function pgSeqToSentence(seq){
+  if(!pg.script) return seq;
+  const words=pg.script.text.replace(/[.,!?]/g,'').split(' ');
+  const tagMap={};
+  seq.split('),').forEach(function(part){
+    const m=part.match(/\(?(\d+),\s*"([^"]+)"/);
+    if(m) tagMap[parseInt(m[1])]=m[2];
+  });
+  return words.map(function(w,i){
+    const t=tagMap[i];
+    return t
+      ?'<span style="display:inline-block;margin:1px 2px"><span style="font-family:var(--mono);font-size:9px;background:#c8510a;color:#fff;padding:1px 5px;border-radius:3px;margin-right:2px">'+t+'</span><span style="font-size:12px;font-weight:600;color:#c8510a">'+w+'</span></span>'
+      :'<span style="font-size:12px;color:var(--ink);margin:0 2px">'+w+'</span>';
+  }).join('');
+}
+
+function pgSeqToHeyGenScript(seq){
+  if(!pg.script) return '';
+  const words=pg.script.text.split(' ');
+  const tagMap={};
+  seq.split('),').forEach(function(part){
+    const m=part.match(/\(?(\d+),\s*"([^"]+)"/);
+    if(m) tagMap[parseInt(m[1])]=m[2];
+  });
+  return words.map(function(w,i){
+    return tagMap[i]?tagMap[i]+' '+w:w;
+  }).join(' ');
+}
+
+function pgTickGA(){
+  if(!pg.gaRunning) return;
+  const g=pg.gaGens[pg.gaIdx];
+  if(!g){pgGADone();return;}
+  const best=g.pop[0];
+  // Gen dot strip
+  for(let i=1;i<=8;i++){
+    const d=document.getElementById('pgdot'+i); if(!d) continue;
+    d.className='pg-gen-dot'+(i<g.gen?' done':i===g.gen?' active':'');
+    const l=document.getElementById('pgline'+i); if(l) l.className='pg-gen-line'+(i<g.gen?' done':'');
+  }
+  const statusEl=document.getElementById('pg-gastatus');
+  if(statusEl) statusEl.textContent='Gen '+g.gen+'/8 — tournament → mutate → repair';
+  // Live sentence
+  pgUpdateLiveSent(best.seq);
+  // Score panel
+  const fpEl=document.getElementById('pg-live-fp');
+  if(fpEl){fpEl.textContent=best.fp.toFixed(3);fpEl.style.color=best.fp>=.75?'#1a6b3c':best.fp>=.60?'#1a4f8a':'#c8510a';}
+  const lf1=document.getElementById('pg-lf1'); if(lf1) lf1.textContent=best.f1.toFixed(2);
+  const lf2=document.getElementById('pg-lf2'); if(lf2) lf2.textContent=best.f2.toFixed(2);
+  const lf3=document.getElementById('pg-lf3'); if(lf3) lf3.textContent=best.f3.toFixed(2);
+  setTimeout(()=>{
+    const b1=document.getElementById('pg-lb1');const b2=document.getElementById('pg-lb2');const b3=document.getElementById('pg-lb3');
+    if(b1)b1.style.width=(best.f1*100)+'%';if(b2)b2.style.width=(best.f2*100)+'%';if(b3)b3.style.width=(best.f3*100)+'%';
+  },100);
+  // Evolution trail
+  const trail=document.getElementById('pg-evo-trail');
+  if(trail){
+    const mutLabels=['shift_pos: moved tag earlier for better f2 timing','change_tag: swapped emotion to match sentence valence','add_tag: inserted gesture tag to reinforce expression','remove_tag: dropped redundant tag causing F2 stacking','change_dur: extended hold for stronger f3 consistency','shift_pos: pushed tag to first content word (early onset)','change_tag: replaced weak tag with emotion-keyed alternative','add_tag: gesture added to compensate for F8 weakness'];
+    const mut=mutLabels[(g.gen-1)%mutLabels.length];
+    const imp=pg.gaIdx>0&&best.fp>(pg.gaGens[pg.gaIdx-1]?.pop[0].fp||0);
+    const rowId='pgtr'+g.gen;
+    const sentPreview=pgSeqToSentence(best.seq);
+    const row=document.createElement('div');
+    row.className='pg-trail-row';
+    row.style.flexDirection='column';row.style.gap='0';
+        const hdr=document.createElement('div');
+    hdr.style.cssText='display:flex;align-items:center;gap:6px;cursor:pointer;width:100%';
+    hdr.onclick=(function(id){return function(){pgToggleTrailRow(id);};})(rowId);
+    hdr.innerHTML='<span style="font-family:var(--mono);font-size:10px;color:var(--ink4);flex-shrink:0;width:44px">Gen '+g.gen+'</span>'
+      +'<span style="font-family:var(--mono);font-size:12px;font-weight:700;color:'+(best.fp>=.75?'#1a6b3c':best.fp>=.6?'#1a4f8a':'#c8510a')+';flex-shrink:0;width:52px">'+best.fp.toFixed(3)+'</span>'
+      +'<span style="font-size:11px;color:var(--ink3);flex:1">'+mut+'</span>'
+      +(imp?'<span style="color:#1a6b3c;font-size:14px">↑</span>':'<span style="color:var(--ink4);font-size:14px">→</span>')
+      +'<span style="font-family:var(--mono);font-size:9px;color:var(--ink4);margin-left:4px">▾</span>';
+    const bdy=document.createElement('div');
+    bdy.id=rowId;
+    bdy.style.cssText='display:none;margin-top:6px;padding:7px 10px;background:rgba(26,79,138,.04);border-radius:6px;border:1px solid rgba(26,79,138,.12)';
+    bdy.innerHTML='<div style="font-family:var(--mono);font-size:9px;color:#1a4f8a;margin-bottom:4px">SENTENCE WITH BEST TAGS:</div>'
+      +'<div style="font-size:12px;color:var(--ink);line-height:2">'+sentPreview+'</div>'
+      +'<div style="font-family:var(--mono);font-size:9px;color:var(--ink4);margin-top:4px">['+best.seq+']</div>';
+    row.appendChild(hdr); row.appendChild(bdy);
+    trail.appendChild(row);
+    trail.scrollTop=trail.scrollHeight;
+    setTimeout(()=>row.classList.add('show'),30);
+  }
+  // Meme space
+  if(best.fp>0.70){
+    if(!pg.memeItems) pg.memeItems=[];
+    const key=best.fp.toFixed(3);
+    if(!pg.memeItems.includes(key)){
+      pg.memeItems.push(key);
+      const ml=document.getElementById('pg-meme-list');
+      const mc=document.getElementById('pg-meme-count-live');
+      if(ml){
+        const item=document.createElement('div');
+        item.className='pg-meme-item';
+        const seqShort=best.seq.length>40?best.seq.substring(0,40)+'…':best.seq;
+        item.innerHTML='<div style="display:flex;justify-content:space-between"><span style="font-family:var(--mono);font-size:11px;font-weight:700;color:#7a5200">F(p*)='+key+'</span><span style="font-family:var(--mono);font-size:9px;color:var(--ink4)">gen '+g.gen+'</span></div>'
+          +'<div style="font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:2px;word-break:break-all">['+seqShort+']</div>'
+          +'<div style="background:var(--paper3);height:4px;border-radius:2px;margin-top:3px"><div style="height:100%;border-radius:2px;background:#7a5200;width:'+(best.fp*100)+'%"></div></div>';
+        ml.insertBefore(item,ml.firstChild);
+        setTimeout(()=>item.classList.add('show'),30);
+      }
+      if(mc) mc.textContent=pg.memeItems.length+' stored ✓';
+    }
+  }
+  pg.conv.push(best.fp); pgDrawConv();
+  pg.gaIdx++;
+  pg.gaTimer=setTimeout(pgTickGA,1100);
+}
+
+function pgDrawConv(){
+  const cv=document.getElementById('pg-canvas'); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  const W=cv.offsetWidth||240,H=100,pl=28,pt=8;
+  cv.width=W; ctx.clearRect(0,0,W,H);
+  const iW=W-pl-6,iH=H-pt-14;
+  [0,.5,1].forEach(v=>{
+    const y=pt+iH*(1-v);
+    ctx.strokeStyle='rgba(0,0,0,.06)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pl,y);ctx.lineTo(W-4,y);ctx.stroke();
+    ctx.fillStyle='#94a3b8';ctx.font='8px DM Mono,monospace';ctx.fillText(v.toFixed(1),2,y+3);
+  });
+  if(pg.manScore){
+    const y=pt+iH*(1-pg.manScore.fp);
+    ctx.strokeStyle='rgba(138,26,46,.5)';ctx.lineWidth=1.2;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(pl,y);ctx.lineTo(W-4,y);ctx.stroke();
+    ctx.setLineDash([]);ctx.fillStyle='#8a1a2e';ctx.font='8px DM Mono,monospace';ctx.fillText('yours',W-34,y-2);
+  }
+  const ty=pt+iH*(1-0.75);
+  ctx.strokeStyle='rgba(26,107,60,.4)';ctx.lineWidth=1;ctx.setLineDash([3,2]);
+  ctx.beginPath();ctx.moveTo(pl,ty);ctx.lineTo(W-4,ty);ctx.stroke();
+  ctx.setLineDash([]);ctx.fillStyle='#1a6b3c';ctx.font='8px DM Mono,monospace';ctx.fillText('0.75★',W-36,ty-2);
+  const data=pg.conv; if(data.length<1) return;
+  const xStep=iW/7;
+  ctx.strokeStyle='#1a4f8a';ctx.lineWidth=2.5;ctx.setLineDash([]);
+  ctx.beginPath();
+  data.forEach((v,i)=>{const x=pl+i*xStep,y=pt+iH*(1-v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.stroke();
+  data.forEach((v,i)=>{
+    const x=pl+i*xStep,y=pt+iH*(1-v);
+    ctx.fillStyle=v>=.75?'#1a6b3c':'#1a4f8a';
+    ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fill();
+  });
+  ctx.fillStyle='#94a3b8';ctx.font='8px DM Mono,monospace';
+  for(let i=0;i<8;i++) ctx.fillText(i+1,pl+i*xStep-3,H-2);
+}
+
+
+function pgGADone(){
+  pg.gaRunning=false;
+  const best=pg.gaGens[7].pop[0];
+  const ri=pg.currentRun||1;
+  const total=pg.totalRuns||1;
+
+  // Store this run's result and trail
+  if(!pg.allRunBest) pg.allRunBest={};
+  pg.allRunBest[ri]={fp:best.fp,f1:best.f1,f2:best.f2,f3:best.f3,seq:best.seq};
+  const trail=document.getElementById('pg-evo-trail');
+  if(!pg.allRunTrails) pg.allRunTrails={};
+  if(trail) pg.allRunTrails[ri]=trail.innerHTML;
+
+  // Update status
+  const statusEl=document.getElementById('pg-gastatus');
+  if(statusEl) statusEl.textContent='✓ Run '+ri+'/'+total+' done — F(p*)='+best.fp;
+
+  if(ri < total){
+    // More runs to go — pause briefly then start next
+    pg.currentRun = ri+1;
+    pg.viewingRun = pg.currentRun;
+    setTimeout(function(){
+      // Reset gen dots for next run
+      for(let i=1;i<=8;i++){
+        const d=document.getElementById('pgdot'+i); if(d) d.className='pg-gen-dot';
+        const l=document.getElementById('pgline'+i); if(l) l.className='pg-gen-line';
+      }
+      // Clear trail for new run
+      if(trail) trail.innerHTML='';
+      // Clear meme for intermediate runs (only last run keeps meme)
+      const ml=document.getElementById('pg-meme-list'); if(ml) ml.innerHTML='';
+      const mc=document.getElementById('pg-meme-count-live'); if(mc) mc.textContent='0 stored';
+      pg.memeItems=[];
+      // Reset score bars
+      ['pg-lb1','pg-lb2','pg-lb3'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.width='0%';});
+      // Reset canvas
+      const cv=document.getElementById('pg-canvas');
+      if(cv){const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);}
+      pg.conv=[];
+      // Update tabs - highlight new current run
+      pgUpdateRunTabs();
+      const ind=document.getElementById('pg-run-indicator');
+      if(ind) ind.textContent='RUN '+pg.currentRun+'/'+total;
+      if(statusEl) statusEl.textContent='Starting Run '+pg.currentRun+' of '+total+'…';
+      pgRunGA();
+    }, 800);
+  } else {
+    // All runs done
+    pg.gaResult={fp:best.fp,f1:best.f1,f2:best.f2,f3:best.f3,seq:best.seq};
+    const btn=document.getElementById('pg-runbtn');
+    if(btn){ btn.style.display='inline'; btn.textContent='↺ Re-run'; }
+    const to4=document.getElementById('pg-to4');
+    if(to4) to4.style.display='inline';
+    const ind=document.getElementById('pg-run-indicator');
+    if(ind) ind.textContent='ALL '+total+' RUNS DONE';
+    if(statusEl) statusEl.textContent='✓ All '+total+' runs done — best F(p*)='+best.fp;
+    // Show summary across runs if >1
+    if(total>1){
+      var scores=Object.values(pg.allRunBest).map(function(r){return r.fp;});
+      var mean=(scores.reduce(function(a,b){return a+b;},0)/scores.length);
+      var sd=Math.sqrt(scores.map(function(s){return (s-mean)*(s-mean);}).reduce(function(a,b){return a+b;},0)/scores.length);
+      if(trail){
+        var summary=document.createElement('div');
+        summary.style.cssText='background:rgba(26,79,138,.06);border:1px solid rgba(26,79,138,.18);border-radius:7px;padding:8px 11px;margin-top:5px;flex-shrink:0;';
+        summary.innerHTML='<div style="font-family:var(--mono);font-size:9px;font-weight:700;color:#1a4f8a;margin-bottom:5px;">RUNS SUMMARY</div>'
+          +scores.map(function(s,i){
+            return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">'
+              +'<span style="font-family:var(--mono);font-size:9px;color:var(--ink4);width:44px">Run '+(i+1)+'</span>'
+              +'<div style="flex:1;height:6px;background:var(--paper3);border-radius:3px;"><div style="height:100%;border-radius:3px;background:#1a4f8a;width:'+(s*100)+'%;"></div></div>'
+              +'<span style="font-family:var(--mono);font-size:10px;font-weight:700;color:'+(s>=0.75?'#1a6b3c':'#c8510a')+';width:46px">'+s+'</span>'
+              +'</div>';
+          }).join('')
+          +'<div style="font-size:9px;color:var(--ink4);margin-top:4px;font-family:var(--mono)">Mean='+mean.toFixed(3)+' · SD='+sd.toFixed(3)+' · Wilcoxon vs manual pending</div>';
+        trail.appendChild(summary);
+        trail.scrollTop=trail.scrollHeight;
+      }
+    }
+    // Add tab to switch to run 1 view
+    pgUpdateRunTabs();
+    // Switch to viewing last run by default
+    pg.viewingRun=total;
+  }
+}
+
+// ── Stage 4: Results ─────────────────────────────────────────
+function pgShowResults(){
+  const r=pg.gaResult; const m=pg.manScore||{fp:0.3,f1:0.3,f2:0.3,f3:0.3};
+  const words=pg.script.text.replace(/[.,!?]/g,'').split(' ');
+
+  // ── Helper: render sentence with floating tag chips ──
+  function renderSent(tagMap, accentColor, container){
+    if(!container) return;
+    container.innerHTML = words.map(function(w,i){
+      const t=tagMap[i];
+      if(t) return '<span style="display:inline-flex;flex-direction:column;align-items:center;margin:0 2px">'
+        +'<span style="font-family:var(--mono);font-size:8px;background:'+accentColor+';color:#fff;'
+        +'padding:1px 5px;border-radius:3px;margin-bottom:2px;white-space:nowrap">'+t+'</span>'
+        +'<span style="font-size:12px;font-weight:600;color:'+accentColor+'">'+w+'</span></span>';
+      return '<span style="font-size:12px;color:var(--ink);margin:0 1px;align-self:flex-end;padding-bottom:2px">'+w+'</span>';
+    }).join('');
+  }
+
+  // ── Build tag maps ──
+  const ms=[...pg.tags].sort(function(a,b){return a.wi-b.wi;});
+  const mTagMap={};
+  ms.forEach(function(t){ mTagMap[t.wi]=t.tag; });
+  const gTagMap={};
+  r.seq.split('),').forEach(function(part){
+    const match=part.match(/\(?(\d+),\s*"([^"]+)"/);
+    if(match) gTagMap[parseInt(match[1])]=match[2];
+  });
+
+  // ── Manual panel ──
+  document.getElementById('pg-r-mfp').textContent=m.fp.toFixed(2);
+  document.getElementById('pg-r-mseq').textContent=ms.length
+    ?'['+ms.map(function(t){return '('+t.wi+',"'+t.tag+'",'+t.dur+')'}).join(', ')+']'
+    :'[ ] — no tags placed';
+  renderSent(mTagMap,'#8a1a2e',document.getElementById('pg-r-msent'));
+  document.getElementById('pg-r-mf1').textContent=m.f1.toFixed(2);
+  document.getElementById('pg-r-mf2').textContent=m.f2.toFixed(2);
+  document.getElementById('pg-r-mf3').textContent=m.f3.toFixed(2);
+  setTimeout(function(){
+    var b1=document.getElementById('pg-rb-mf1');
+    var b2=document.getElementById('pg-rb-mf2');
+    var b3=document.getElementById('pg-rb-mf3');
+    if(b1) b1.style.width=(m.f1*100)+'%';
+    if(b2) b2.style.width=(m.f2*100)+'%';
+    if(b3) b3.style.width=(m.f3*100)+'%';
+  },200);
+
+  // ── GA panel ──
+  document.getElementById('pg-r-gfp').textContent=r.fp.toFixed(2);
+  document.getElementById('pg-r-gseq').textContent='['+r.seq+']';
+  renderSent(gTagMap,'#1a6b3c',document.getElementById('pg-r-gsent'));
+  document.getElementById('pg-r-gf1').textContent=r.f1.toFixed(2);
+  document.getElementById('pg-r-gf2').textContent=r.f2.toFixed(2);
+  document.getElementById('pg-r-gf3').textContent=r.f3.toFixed(2);
+  setTimeout(function(){
+    var b1=document.getElementById('pg-rb-gf1');
+    var b2=document.getElementById('pg-rb-gf2');
+    var b3=document.getElementById('pg-rb-gf3');
+    if(b1) b1.style.width=(r.f1*100)+'%';
+    if(b2) b2.style.width=(r.f2*100)+'%';
+    if(b3) b3.style.width=(r.f3*100)+'%';
+  },400);
+  var insEl=document.getElementById('pg-r-insight');
+  if(insEl) insEl.innerHTML='<strong style="color:#1a6b3c">Why GA won:</strong> '+(PG_INSIGHTS[pg.script.emotion]||'GA found an optimised sequence with improved temporal alignment and consistency.');
+
+  // ── Delta ──
+  const delta=r.fp-m.fp;
+  document.getElementById('pg-r-delta').textContent=(delta>=0?'+':'')+((m.fp>0?delta/m.fp*100:0)).toFixed(0)+'%';
+
+  // ── Pre-registered threshold check ──
+  const thresh=document.getElementById('pg-r-thresh-body');
+  if(thresh){
+    const passed=r.fp>=0.75;
+    thresh.innerHTML='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+      +'<span style="font-family:var(--mono);font-size:18px;font-weight:700;color:'+(passed?'#1a6b3c':'#8a1a2e')+'">F(p*)='+r.fp.toFixed(3)+'</span>'
+      +'<span style="font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:5px;background:'+(passed?'rgba(26,107,60,.1)':'rgba(138,26,46,.1)')+';color:'+(passed?'#1a6b3c':'#8a1a2e')+';border:1px solid '+(passed?'rgba(26,107,60,.3)':'rgba(138,26,46,.3)')+';">'+(passed?'✓ ≥ 0.75 PASSED':'✗ < 0.75 FAILED')+'</span>'
+      +'<span style="font-size:10px;color:var(--ink3)">'+(passed?'Pre-registered threshold met. Wilcoxon + Cohen d test next.':'Below pre-registered threshold. Negative result = valid P2 finding.')+'</span>'
+      +'</div>'
+      +'<div style="margin-top:5px;font-family:var(--mono);font-size:9px;color:var(--ink4)">Pre-registered: F(p*)≥0.75 · Wilcoxon p&lt;0.05 · Cohen d≥0.5</div>';
+  }
+
+  // ── Multi-run summary from Stage 3 allRunBest ──
+  const runs=document.getElementById('pg-r-runs');
+  if(runs){
+    const allBest=pg.allRunBest||{};
+    const runKeys=Object.keys(allBest).map(Number).sort();
+    if(runKeys.length<=1){
+      // Only one run — show single result bar
+      const s=r.fp;
+      runs.innerHTML='<div style="display:flex;align-items:center;gap:6px">'
+        +'<span style="font-family:var(--mono);font-size:9px;color:var(--ink4);width:36px">Run 1</span>'
+        +'<div class="pgbar" style="flex:1;margin:0"><div class="pgbarfill" style="width:'+(s*100)+'%;background:#1a4f8a;transition:width .8s ease"></div></div>'
+        +'<span style="font-family:var(--mono);font-size:10px;color:#1a4f8a;font-weight:700;width:38px">'+s+'</span>'
+        +'</div>'
+        +'<div style="font-size:9px;color:var(--ink4);margin-top:3px;font-style:italic">Set Runs &gt; 1 in Stage 3 for variance analysis.</div>';
+    } else {
+      const runScores=runKeys.map(function(k){return allBest[k].fp;});
+      const mean=runScores.reduce(function(a,b){return a+b;},0)/runScores.length;
+      const sd=Math.sqrt(runScores.map(function(s){return (s-mean)*(s-mean);}).reduce(function(a,b){return a+b;},0)/runScores.length);
+      runs.innerHTML=runScores.map(function(s,i){
+        const passed=s>=0.75;
+        return '<div style="display:flex;align-items:center;gap:6px">'
+          +'<span style="font-family:var(--mono);font-size:9px;color:var(--ink4);width:36px">Run '+(i+1)+'</span>'
+          +'<div class="pgbar" style="flex:1;margin:0"><div class="pgbarfill" style="width:'+(s*100)+'%;background:'+(passed?'#1a6b3c':'#c8510a')+';transition:width .8s ease"></div></div>'
+          +'<span style="font-family:var(--mono);font-size:10px;font-weight:700;width:38px;color:'+(passed?'#1a6b3c':'#c8510a')+'">'+s+'</span>'
+          +'</div>';
+      }).join('')
+      +'<div style="font-size:9px;color:var(--ink4);margin-top:4px;font-family:var(--mono)">Mean='+mean.toFixed(3)+' · SD='+sd.toFixed(3)+' · Wilcoxon vs manual pending</div>';
+    }
+  }
+
+  // ── P3 cross-platform projection ──
+  const hgScore=r.fp;
+  const didScore=+(hgScore*(0.78+Math.random()*.08)).toFixed(3);
+  const akoolScore=+(hgScore*(0.55+Math.random()*.08)).toFixed(3);
+  var hgEl=document.getElementById('pg-p3-hg');
+  var didEl=document.getElementById('pg-p3-did');
+  var akoolEl=document.getElementById('pg-p3-akool');
+  if(hgEl) hgEl.textContent=hgScore.toFixed(3);
+  if(didEl) didEl.textContent=didScore.toFixed(3);
+  if(akoolEl) akoolEl.textContent=akoolScore.toFixed(3);
+  setTimeout(function(){
+    var hgb=document.getElementById('pg-p3-hg-bar');
+    var didb=document.getElementById('pg-p3-did-bar');
+    var akoolb=document.getElementById('pg-p3-akool-bar');
+    if(hgb) hgb.style.width=(hgScore*100)+'%';
+    if(didb) didb.style.width=(didScore*100)+'%';
+    if(akoolb) akoolb.style.width=(akoolScore*100)+'%';
+  },600);
+
+  // ── HeyGen script — ALL tags ──
+  const scriptWords=pg.script.text.split(' ');
+  const hgStr=scriptWords.map(function(w,i){
+    return gTagMap[i]?gTagMap[i]+' '+w:w;
+  }).join(' ');
+  var scrEl=document.getElementById('pg-r-script');
+  if(scrEl) scrEl.textContent='"'+hgStr+'"';
+
+  // ── Full failure taxonomy ──
+  const fl=document.getElementById('pg-r-fails');
+  if(fl){
+    const wlen=pg.script.text.split(' ').length;
+    const allTags=ms;
+    const issues=[];
+    if(allTags.length===0){
+      issues.push({code:'F1',label:'No Tags — avatar may render as neutral',c:'#8a1a2e'});
+    } else {
+      const emT=allTags.filter(function(t){return t.tag.match(/\[(excited|serious|surprised|curious|sad|angry)\]/);});
+      const gestT=allTags.filter(function(t){return t.tag.match(/\[(smile|nod|lean|gaze|eyebrow|head|hand|point)/);});
+      if(emT.length===0) issues.push({code:'F1',label:'No emotion tag — AffectNet class undefined',c:'#8a1a2e'});
+      if(emT.length>=2&&Math.abs(emT[0].wi-(emT[1]?emT[1].wi:99))<=2) issues.push({code:'F2',label:'Stacking — two emotion tags within 2 words',c:'#b45309'});
+      if(allTags.some(function(t){return t.wi>Math.floor(wlen*.6);})) issues.push({code:'F3',label:'Late onset — tag fires after 60% · f2 penalty',c:'#b45309'});
+      if(emT.length>3) issues.push({code:'F4',label:'Overloading — >3 emotion tags in one sentence',c:'#b45309'});
+      if(gestT.length>2) issues.push({code:'F5',label:'Gesture overload — >2 gesture tokens stacked',c:'#475569'});
+      if(allTags.some(function(t){return t.tag==='[curious]';})) issues.push({code:'F8',label:'F8 Sub-perceptual — [curious] has weak AffectNet signal (f1 avg 0.31)',c:'#7c3aed'});
+    }
+    if(issues.length===0){
+      fl.innerHTML='<span style="font-family:var(--mono);font-size:9px;color:#1a6b3c;background:rgba(26,107,60,.07);border:1px solid rgba(26,107,60,.2);border-radius:4px;padding:2px 8px">✓ No failure modes detected — clean placement</span>';
+    } else {
+      fl.innerHTML=issues.map(function(x){
+        return '<span style="font-family:var(--mono);font-size:9px;color:'+x.c+';background:rgba(0,0,0,.04);border:1px solid '+x.c+'44;border-radius:4px;padding:2px 8px">'+x.code+' '+x.label+'</span>';
+      }).join('');
+    }
+  }
+}
+function pgSetRuns(n){
+  pg.totalRuns = n;
+  // Update button styles
+  [1,2,3,5].forEach(function(v){
+    var b = document.getElementById('pg-rc-'+v);
+    if(!b) return;
+    if(v===n){
+      b.style.background='#1a4f8a'; b.style.color='#fff'; b.style.borderColor='#1a4f8a';
+    } else {
+      b.style.background='none'; b.style.color='var(--ink3)'; b.style.borderColor='var(--paper3)';
+    }
+  });
+}
+
+function pgStartGA(){
+  var pre=document.getElementById('pg-prerun');
+  var run=document.getElementById('pg-ga-run');
+  if(pre){ pre.style.display='none'; pre.style.flex='0'; pre.style.minHeight='0'; pre.style.overflow='hidden'; pre.style.padding='0'; }
+  if(run){ run.style.display='flex'; run.style.flex='1'; }
+  if(!pg.totalRuns) pg.totalRuns=1;
+  pg.currentRun=1;
+  pg.allRunTrails={};  // stores trail rows per run
+  pg.allRunBest={};    // stores best per run
+  // Show run tabs if >1
+  pgUpdateRunTabs();
+  pgRunGA();
+}
+
+function pgRerunGA(){
+  var to4=document.getElementById('pg-to4');
+  var rb=document.getElementById('pg-runbtn');
+  if(to4) to4.style.display='none';
+  if(rb) rb.style.display='none';
+  pg.gaResult=null;
+  pg.currentRun=1;
+  pg.allRunTrails={};
+  pg.allRunBest={};
+  // Reset trail and meme
+  var et=document.getElementById('pg-evo-trail'); if(et) et.innerHTML='';
+  var ml=document.getElementById('pg-meme-list'); if(ml) ml.innerHTML='';
+  var mc=document.getElementById('pg-meme-count-live'); if(mc) mc.textContent='0 stored';
+  if(!pg.memeItems) pg.memeItems=[];
+  pg.memeItems=[];
+  pgUpdateRunTabs();
+  pgRunGA();
+}
+
+function pgUpdateRunTabs(){
+  var tabs=document.getElementById('pg-run-tabs'); if(!tabs) return;
+  var total=pg.totalRuns||1;
+  if(total<=1){ tabs.innerHTML=''; return; }
+  tabs.innerHTML='';
+  for(var i=1;i<=total;i++){
+    var btn=document.createElement('button');
+    btn.id='pg-run-tab-'+i;
+    btn.textContent='Run '+i;
+    var isCur = i===(pg.currentRun||1);
+    btn.style.cssText='font-family:var(--mono);font-size:8.5px;font-weight:700;padding:2px 8px;border-radius:4px;cursor:pointer;border:1px solid;'
+      +(isCur ? 'background:#1a4f8a;color:#fff;border-color:#1a4f8a;' : 'background:none;color:var(--ink4);border-color:var(--paper3);');
+    btn.onclick=(function(ri){return function(){pgSwitchRunView(ri);};})(i);
+    tabs.appendChild(btn);
+  }
+  // Show run indicator
+  var ind=document.getElementById('pg-run-indicator');
+  if(ind){
+    ind.style.display='inline';
+    ind.textContent='RUN '+(pg.currentRun||1)+'/'+(pg.totalRuns||1);
+  }
+}
+
+function pgSwitchRunView(ri){
+  // Save current trail
+  var trail=document.getElementById('pg-evo-trail');
+  if(trail && pg.currentRun){
+    pg.allRunTrails[pg.currentRun]=trail.innerHTML;
+  }
+  // Load selected run trail
+  if(trail) trail.innerHTML = pg.allRunTrails[ri]||'<div style="font-size:10px;color:var(--ink4);font-style:italic">Gen logs for Run '+ri+' will appear here.</div>';
+  pg.viewingRun=ri;
+  // Update tab styles
+  var total=pg.totalRuns||1;
+  for(var i=1;i<=total;i++){
+    var b=document.getElementById('pg-run-tab-'+i);
+    if(!b) continue;
+    if(i===ri){ b.style.background='#1a4f8a';b.style.color='#fff';b.style.borderColor='#1a4f8a';}
+    else { b.style.background='none';b.style.color='var(--ink4)';b.style.borderColor='var(--paper3)';}
+  }
+}
+
+function pgUpdateLiveSent(seq){
+  var el=document.getElementById('pg-live-sent'); if(!el||!pg.script) return;
+  var words=pg.script.text.replace(/[.,!?]/g,'').split(' ');
+  var tagMap={};
+  seq.split('),').forEach(function(part){
+    var m=part.match(/\(?([0-9]+),\s*"([^"]+)"/);
+    if(m) tagMap[parseInt(m[1])]=m[2];
+  });
+  el.innerHTML=words.map(function(w,i){
+    var t=tagMap[i];
+    return '<span class="pg-sword'+(t?' active-tag':'') +'">'+(t?'<span class="pg-stag-label">'+t+'</span>':'')+w+'</span>';
+  }).join('');
+}
+
+
+
+// Auto-init on load
+window.addEventListener('DOMContentLoaded', function() {
+  pgInit();
+});
+
+function pgExportD1(){
+  if(!pg.script||!pg.gaResult) return;
+  const ms=[...pg.tags].sort(function(a,b){return a.wi-b.wi;});
+  const rows=[
+    ['sentence_id','sentence_text','emotion','difficulty','placement_type','tag','position','duration','fp','f1','f2','f3'],
+    [1,'"'+pg.script.text+'"',pg.script.emotion,pg.script.diff||'',
+     'manual',ms.map(function(t){return t.tag;}).join('|'),
+     ms.map(function(t){return t.wi;}).join('|'),
+     ms.map(function(t){return t.dur;}).join('|'),
+     (pg.manScore?pg.manScore.fp:''),
+     (pg.manScore?pg.manScore.f1:''),
+     (pg.manScore?pg.manScore.f2:''),
+     (pg.manScore?pg.manScore.f3:'')],
+    [1,'"'+pg.script.text+'"',pg.script.emotion,pg.script.diff||'',
+     'GA_optimised','['+pg.gaResult.seq+']','','',
+     pg.gaResult.fp,pg.gaResult.f1,pg.gaResult.f2,pg.gaResult.f3],
+  ];
+  var csv=rows.map(function(r){return r.join(',');}).join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='D1_EVAtAR_IDEA_'+pg.script.emotion+'_'+Date.now()+'.csv';
+  a.click();
+}
+
+function pgRunThreeRuns(){
+  if(!pg.script) return;
+  var runsEl = document.getElementById('pg-r-runs');
+  var btn    = document.getElementById('pg-runs-btn');
+  if(!runsEl) return;
+  if(btn){ btn.disabled=true; btn.textContent='Running...'; }
+  runsEl.innerHTML = '<div style="font-size:10px;color:#1a4f8a;font-family:var(--mono);">⟳ Simulating Run 1 of 3…</div>';
+
+  var sc = PG_MOCK[pg.script.emotion]||PG_MOCK.serious;
+  var mutLabels = [
+    'shift_pos: moved tag earlier for better f2 timing',
+    'change_tag: swapped emotion to match sentence valence',
+    'add_tag: inserted gesture tag to reinforce expression',
+    'remove_tag: dropped redundant tag',
+    'change_dur: extended hold for stronger f3 consistency',
+    'shift_pos: pushed tag to first content word',
+    'change_tag: replaced weak tag with emotion-keyed alternative',
+    'add_tag: gesture added to compensate for F8 weakness',
+  ];
+
+  // Build all 3 runs × 8 generations upfront
+  var allRuns = [];
+  for(var ri=0; ri<3; ri++){
+    var gens=[];
+    var seed = ri===0 && pg.gaResult ? pg.gaResult.fp : null;
+    for(var g=0; g<8; g++){
+      var pop=[];
+      for(var ind=0; ind<8; ind++){
+        var base = sc.base + sc.boost*(g/7) + (Math.random()-.5)*.1 + ri*0.01*(Math.random()-.5);
+        var bonus = ind<2 ? .04+Math.random()*.07 : 0;
+        var fp = Math.max(.10,Math.min(.98,base+bonus));
+        if(seed && g===7 && ind===0) fp = seed + (Math.random()-.5)*.04;
+        fp = Math.max(.10,Math.min(.98,fp));
+        var f1 = Math.max(.10,Math.min(.97,sc.f1+sc.boost*.5*(g/7)+(Math.random()-.5)*.07));
+        var f2 = Math.max(.10,Math.min(.97,sc.f2+sc.boost*.3*(g/7)+(Math.random()-.5)*.06));
+        var f3 = Math.max(.10,Math.min(.97,sc.f3+sc.boost*.2*(g/7)+(Math.random()-.5)*.05));
+        pop.push({fp:+fp.toFixed(3),f1:+f1.toFixed(3),f2:+f2.toFixed(3),f3:+f3.toFixed(3),
+                  seq:pgMockSeq(pg.script.emotion,g,ind)});
+      }
+      pop.sort(function(a,b){return b.fp-a.fp;});
+      gens.push({gen:g+1, best:pop[0], mut:mutLabels[g%mutLabels.length]});
+    }
+    allRuns.push(gens);
+  }
+
+  // Render all 3 runs with animation delay
+  function renderRun(ri){
+    if(ri>=3){
+      // All done — update meme space with last run
+      pgUpdateMemFromRun(allRuns[2]);
+      if(btn){ btn.disabled=false; btn.textContent='▶ Re-run All 3'; }
+      // Update stats
+      var scores = allRuns.map(function(r){return r[7].best.fp;});
+      var mean = (scores[0]+scores[1]+scores[2])/3;
+      var sd = Math.sqrt(scores.map(function(s){return (s-mean)*(s-mean);})
+                        .reduce(function(a,b){return a+b;},0)/3);
+      var statsEl = document.getElementById('pg-runs-stats');
+      if(statsEl) statsEl.textContent = 'Mean F(p*)='+mean.toFixed(3)+' · SD='+sd.toFixed(3)+' · Wilcoxon vs manual pending';
+      return;
+    }
+    var gens = allRuns[ri];
+    var bestFp = gens[7].best.fp;
+    var passed = bestFp >= 0.75;
+
+    // Update progress label
+    runsEl.innerHTML = '';
+    for(var pr=0; pr<ri; pr++){
+      runsEl.appendChild(document.getElementById('pg-run-card-'+pr) || document.createElement('div'));
+    }
+    runsEl.innerHTML += '<div style="font-size:10px;color:#1a4f8a;font-family:var(--mono);">⟳ Simulating Run '+(ri+1)+' of 3…</div>';
+
+    setTimeout(function(runIdx, runGens, runBest, runPassed){
+      return function(){
+        // Build run card
+        var card = document.createElement('div');
+        card.id = 'pg-run-card-'+runIdx;
+        card.style.cssText = 'border:1.5px solid rgba(26,79,138,.2);border-radius:8px;overflow:hidden;';
+
+        // Run header (clickable to expand)
+        var hdr = document.createElement('div');
+        hdr.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 11px;background:rgba(26,79,138,.06);cursor:pointer;user-select:none;';
+        hdr.innerHTML = '<span style="font-family:var(--mono);font-size:11px;font-weight:700;color:#1a4f8a">Run '+(runIdx+1)+'</span>'
+          +'<span style="font-family:var(--mono);font-size:14px;font-weight:700;color:'+(runPassed?'#1a6b3c':'#c8510a')+'">F(p*)='+runBest+'</span>'
+          +'<span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;background:'+(runPassed?'rgba(26,107,60,.1)':'rgba(200,81,10,.1)')+';color:'+(runPassed?'#1a6b3c':'#c8510a')+';">'+(runPassed?'✓ ≥0.75':'✗ <0.75')+'</span>'
+          +'<span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink4);" id="pg-run-toggle-'+runIdx+'">▾ expand</span>';
+        hdr.onclick = (function(idx){return function(){ pgToggleRun(idx); };})(runIdx);
+
+        // Generation detail (collapsed by default)
+        var body = document.createElement('div');
+        body.id = 'pg-run-body-'+runIdx;
+        body.style.cssText = 'display:none;';
+
+        // Gen rows
+        runGens.forEach(function(g){
+          var imp = g.gen>1 && g.best.fp>(runGens[g.gen-2]?runGens[g.gen-2].best.fp:0);
+          var row = document.createElement('div');
+          row.style.cssText = 'border-top:1px solid var(--paper3);';
+
+          // Gen summary row (clickable)
+          var rowHdr = document.createElement('div');
+          rowHdr.style.cssText = 'display:flex;align-items:center;gap:6px;padding:5px 11px;cursor:pointer;';
+          rowHdr.innerHTML = '<span style="font-family:var(--mono);font-size:9.5px;color:var(--ink4);width:40px">Gen '+g.gen+'</span>'
+            +'<span style="font-family:var(--mono);font-size:11px;font-weight:700;color:'+(g.best.fp>=.75?'#1a6b3c':g.best.fp>=.6?'#1a4f8a':'#c8510a')+';width:48px">'+g.best.fp.toFixed(3)+'</span>'
+            +'<span style="font-size:10px;color:var(--ink3);flex:1">'+g.mut+'</span>'
+            +'<span style="font-size:13px;color:'+(imp?'#1a6b3c':'var(--ink4)')+';">'+(imp?'↑':'→')+'</span>'
+            +'<span style="font-family:var(--mono);font-size:9px;color:var(--ink4);margin-left:4px">▾</span>';
+
+          var genBodyId = 'pg-run'+runIdx+'-gen'+g.gen;
+          rowHdr.onclick = (function(id){return function(e){
+            e.stopPropagation();
+            var el=document.getElementById(id);
+            if(el) el.style.display=el.style.display==='none'?'block':'none';
+          };})(genBodyId);
+
+          // Gen expanded body — sentence with tags
+          var genBody = document.createElement('div');
+          genBody.id = genBodyId;
+          genBody.style.cssText = 'display:none;padding:7px 11px 9px;background:rgba(26,79,138,.03);border-top:1px solid rgba(26,79,138,.1);';
+          var sentHtml = pgSeqToSentence(g.best.seq);
+          genBody.innerHTML = '<div style="font-family:var(--mono);font-size:8.5px;color:#1a4f8a;margin-bottom:5px;">BEST CANDIDATE SEQUENCE THIS GENERATION:</div>'
+            +'<div style="font-size:12px;line-height:2.2;display:flex;flex-wrap:wrap;gap:2px;">'+sentHtml+'</div>'
+            +'<div style="font-family:var(--mono);font-size:8.5px;color:var(--ink4);margin-top:5px;">['+g.best.seq+']</div>';
+
+          row.appendChild(rowHdr);
+          row.appendChild(genBody);
+          body.appendChild(row);
+        });
+
+        card.appendChild(hdr);
+        card.appendChild(body);
+
+        // Rebuild runs content
+        runsEl.innerHTML = '';
+        // Re-add previous cards
+        for(var pr=0; pr<=runIdx; pr++){
+          if(pr<runIdx){
+            var prev = document.getElementById('pg-run-card-'+pr);
+            if(prev) runsEl.appendChild(prev);
+          } else {
+            runsEl.appendChild(card);
+          }
+        }
+
+        // Stats row
+        if(!document.getElementById('pg-runs-stats')){
+          var stats = document.createElement('div');
+          stats.id = 'pg-runs-stats';
+          stats.style.cssText = 'font-size:9px;color:var(--ink4);margin-top:3px;font-family:var(--mono);';
+          runsEl.appendChild(stats);
+        }
+
+        renderRun(runIdx+1);
+      };
+    }(ri, gens, bestFp, passed), (ri+1)*400);
+  }
+
+  renderRun(0);
+}
+
+function pgToggleRun(idx){
+  var body   = document.getElementById('pg-run-body-'+idx);
+  var toggle = document.getElementById('pg-run-toggle-'+idx);
+  if(!body) return;
+  var open = body.style.display==='none';
+  body.style.display = open ? 'block' : 'none';
+  if(toggle) toggle.textContent = open ? '▴ collapse' : '▾ expand';
+}
+
+function pgUpdateMemFromRun(gens){
+  // Update meme space with solutions from the last run that exceed 0.70
+  var ml  = document.getElementById('pg-meme-list');
+  var mc  = document.getElementById('pg-meme-count-live');
+  if(!ml) return;
+  ml.innerHTML = '';
+  var stored = [];
+  gens.forEach(function(g){
+    if(g.best.fp>0.70 && !stored.includes(g.best.fp.toFixed(3))){
+      stored.push(g.best.fp.toFixed(3));
+      var item = document.createElement('div');
+      item.className = 'pg-meme-item show';
+      var seqShort = g.best.seq.length>40 ? g.best.seq.substring(0,40)+'…' : g.best.seq;
+      item.innerHTML = '<div style="display:flex;justify-content:space-between"><span style="font-family:var(--mono);font-size:11px;font-weight:700;color:#7a5200">F(p*)='+g.best.fp.toFixed(3)+'</span><span style="font-family:var(--mono);font-size:9px;color:var(--ink4)">gen '+g.gen+' · run 3</span></div>'
+        +'<div style="font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:2px;word-break:break-all">['+seqShort+']</div>'
+        +'<div style="background:var(--paper3);height:4px;border-radius:2px;margin-top:3px"><div style="height:100%;border-radius:2px;background:#7a5200;width:'+(g.best.fp*100)+'%"></div></div>';
+      ml.insertBefore(item, ml.firstChild);
+    }
+  });
+  if(mc) mc.textContent = stored.length + ' stored ✓';
+}
+
+
+function pgReset(){
+  pgInit();
+}
+
+</script>
+<div id="ftax-tooltip">
+  <span class="tt-close" onclick="ftaxHideTip()">✕</span>
+  <div class="tt-code" id="tt-code"></div>
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-body" id="tt-body"></div>
+  <div class="tt-criterion" id="tt-criterion"></div>
+</div>
+</body>
+</html>
