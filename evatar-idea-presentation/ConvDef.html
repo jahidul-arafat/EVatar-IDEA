@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EVAtAR-IDEA · Reviewer Defence & FAQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>:root{--ink:#0e1117;--ink2:#2d3340;--ink3:#6b7280;--ink4:#9ca3af;--paper:#f8f7f4;--accent:#c8510a;--sans:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;--serif:'DM Serif Display',Georgia,serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper);font-family:var(--sans);min-height:100vh;color:var(--ink);}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 40px;background:var(--ink);position:sticky;top:0;z-index:100;}
+.brand{font-family:var(--mono);font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.12em;}
+.brand span{color:#c8510a;}
+.back{font-family:var(--mono);font-size:11px;font-weight:700;color:rgba(255,255,255,.6);background:rgba(255,255,255,.08);border:none;border-radius:6px;padding:6px 14px;cursor:pointer;letter-spacing:.06em;text-decoration:none;transition:background .15s;}
+.back:hover{background:rgba(255,255,255,.16);color:#fff;}
+.page{max-width:1100px;margin:0 auto;padding:28px 36px 60px;}
+.eyebrow{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.16em;color:#7c3aed;margin-bottom:6px;}
+.accent{width:48px;height:3px;background:#7c3aed;border-radius:2px;margin-bottom:14px;}
+.h1{font-family:var(--serif);font-size:clamp(22px,3vw,34px);font-weight:700;color:var(--ink);line-height:1.15;margin-bottom:8px;}
+.sub{font-size:13.5px;color:var(--ink3);line-height:1.65;max-width:680px;margin-bottom:20px;}
+.challenge{display:flex;align-items:flex-start;gap:10px;background:#f5f0ff;border:1px solid #ddd6fe;border-radius:8px;padding:10px 16px;margin-bottom:28px;}
+.ch-badge{background:#7c3aed;color:#fff;font-family:var(--mono);font-size:8.5px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:.08em;white-space:nowrap;flex-shrink:0;}
+.ch-text{font-size:12.5px;color:#374151;font-style:italic;line-height:1.5;}
+
+/* ── 3 Examples section ── */
+.ex-section-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.16em;color:#9ca3af;margin-bottom:14px;}
+.ex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+.ex-card{border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);}
+.ex-head{padding:12px 16px 10px;color:#fff;}
+.ex-badge{font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.1em;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px;}
+.ex-approach{font-size:14px;font-weight:700;line-height:1.2;margin-bottom:3px;}
+.ex-verdict{font-size:11px;opacity:.75;font-family:var(--mono);}
+.ex-body{background:#fff;padding:14px 16px;}
+.ex-sentence{font-size:12px;color:#374151;line-height:1.6;margin-bottom:10px;font-style:italic;}
+.ex-sentence strong{font-style:normal;}
+.ex-rail-wrap{margin-bottom:10px;}
+.ex-rail-label{font-family:var(--mono);font-size:8px;font-weight:700;color:#9ca3af;letter-spacing:.08em;margin-bottom:5px;}
+.ex-rail{position:relative;height:28px;background:#f3f4f6;border-radius:4px;overflow:visible;}
+.ex-rail-track{position:absolute;left:8px;right:8px;top:50%;height:3px;background:#e5e7eb;border-radius:2px;transform:translateY(-50%);}
+.ex-peak{position:absolute;top:2px;bottom:2px;width:2px;border-radius:1px;background:#9ca3af;}
+.ex-peak-lbl{position:absolute;bottom:-14px;font-family:var(--mono);font-size:7px;color:#9ca3af;transform:translateX(-50%);}
+.ex-tag-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;border:2px solid #fff;cursor:default;}
+.ex-tag-lbl{position:absolute;font-family:var(--mono);font-size:7.5px;font-weight:700;transform:translateX(-50%);white-space:nowrap;}
+.ex-scores{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.ex-score-chip{font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 10px;border-radius:5px;}
+.ex-fail-chip{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;}
+.ex-verdict-big{font-size:18px;font-weight:700;font-family:var(--mono);}
+.ex-stmt{font-size:11.5px;color:#6b7280;line-height:1.55;margin-top:8px;padding-top:8px;border-top:1px solid #f3f4f6;}
+.ex-stmt strong{color:var(--ink);}
+
+/* ── Chart ── */
+.chart-box{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px 20px 12px;margin-bottom:24px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.chart-label{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.12em;color:#9ca3af;margin-bottom:12px;}
+
+/* ── Argument cards ── */
+.args{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:24px;}
+.arg{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.arg:nth-child(1){border-top:3px solid #7c3aed;}
+.arg:nth-child(2){border-top:3px solid #d97706;}
+.arg:nth-child(3){border-top:3px solid #059669;}
+.arg:nth-child(4){border-top:3px solid #4338ca;}
+.arg:nth-child(5){border-top:3px solid #374151;}
+.arg-num{font-family:var(--mono);font-size:8px;font-weight:700;color:#9ca3af;letter-spacing:.1em;margin-bottom:4px;}
+.arg-title{font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:5px;line-height:1.35;}
+.arg-body{font-size:11.5px;color:#6b7280;line-height:1.6;}
+.arg-body strong{color:var(--ink);}
+
+/* ── FAQ ── */
+.faq-sec-title{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.14em;color:#374151;margin-bottom:12px;}
+.faq-list{display:flex;flex-direction:column;gap:6px;}
+.faq-item{background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);gap:12px;user-select:none;}
+.faq-q:hover{background:#f9fafb;}
+.faq-q-icon{font-family:var(--mono);font-size:16px;color:#9ca3af;flex-shrink:0;transition:transform .2s;}
+.faq-item.open .faq-q-icon{transform:rotate(45deg);color:#7c3aed;}
+.faq-a{display:none;padding:0 16px 13px;font-size:12.5px;color:#6b7280;line-height:1.7;border-top:1px solid #f3f4f6;}
+.faq-item.open .faq-a{display:block;}
+.faq-a strong{color:var(--ink);}
+
+/* ── Tooltip ── */
+#d6-tip{position:fixed;z-index:10001;background:#0e1117;color:#fff;border-radius:10px;padding:12px 14px;max-width:300px;pointer-events:none;display:none;box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.08);opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;}
+.d6t-tag{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 7px;border-radius:3px;display:inline-block;margin-bottom:7px;}
+.d6t-title{font-size:12px;font-weight:600;margin-bottom:5px;line-height:1.3;}
+.d6t-body{font-size:11px;color:rgba(255,255,255,.65);line-height:1.65;}
+.d6t-body strong{color:#fff;}.d6t-body code{font-family:var(--mono);font-size:10px;background:rgba(255,255,255,.1);padding:1px 4px;border-radius:3px;}
+.d6t-kv{display:none;grid-template-columns:auto 1fr;gap:3px 10px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1);font-size:10px;}
+.d6t-kk{color:rgba(255,255,255,.4);font-family:var(--mono);font-size:8px;letter-spacing:.06em;font-weight:600;}
+.d6t-vv{color:rgba(255,255,255,.8);}
+@keyframes f8mIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+
+/* Plain-English grid */
+@media (max-width: 680px) {
+  .plain-english-grid { grid-template-columns: 1fr !important; }
+}
+
+/* Expandable panels */
+.exp-panel { background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,.05); overflow:hidden; }
+.exp-header { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; cursor:pointer; user-select:none; transition:background .15s; }
+.exp-header:hover { background:#f9fafb; }
+.exp-label { font-family:var(--mono),monospace; font-size:8.5px; font-weight:700; letter-spacing:.12em; }
+.exp-icon { font-size:18px; font-weight:300; color:#9ca3af; transition:transform .25s; flex-shrink:0; }
+.exp-panel.open .exp-icon { transform:rotate(45deg); }
+.exp-body { display:none; padding:0 18px 16px; border-top:1px solid #f3f4f6; }
+.exp-panel.open .exp-body { display:block; }
+
+
+@keyframes d6PanelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span>EVAtAR-IDEA</span> · Academic Defence & FAQ</div>
+  <a href="evatar-idea-playground.html" class="back">← Back to Playground</a>
+</div>
+<div class="page">
+  <div class="eyebrow">ACADEMIC DEFENCE · REVIEWER CHALLENGE</div>
+  <div class="accent"></div>
+  <h1 class="h1">Auto-Enhance vs AffectNet — why the comparison is valid</h1>
+  <p class="sub">Three concrete tag-placement examples on the same sentence — then the unified pipeline flowchart showing how all three are scored identically.</p>
+  <!-- Reviewer challenge + plain-English explanation -->
+  <div class="challenge">
+    <div style="flex:1;">
+      <span class="ch-badge" style="margin-bottom:8px;display:inline-block;">REVIEWER CHALLENGE</span>
+      <div class="ch-text">"You criticise Auto-Enhance for lacking AffectNet validation — but you also use AffectNet to score your algorithm. If AffectNet is the arbiter, why is that a criticism rather than just a different design choice?"</div>
+    </div>
+  </div>
+
+    <!-- Plain-English summary under challenge -->
+  <div style="background:#faf5ff;border-left:3px solid #7c3aed;border-radius:0 7px 7px 0;padding:10px 16px;margin-bottom:28px;font-size:13px;color:#374151;line-height:1.7;">
+    <strong style="color:#5b21b6;">In plain English —</strong> imagine a cooking competition where both contestants are judged by the same panel of expert tasters.
+    <br><br>
+    <strong>Auto-Enhance</strong> cooks a dish, hands it to the judges, and hears the score for the first time. It had no idea what the judges valued — sweetness, texture, presentation — before cooking.
+    <br><br>
+    <strong>EVAtAR-IDEA</strong> spent 64 rounds tasting its own dish with a portable version of the same judging panel, adjusting the recipe each time based on the score, <em>before</em> the final judged meal.
+    <br><br>
+    When both dishes are scored at the end by the same judges: yes, the same scoring panel is used. But one chef cooked blind. The other used the scoring criteria as a training signal from the start. The reviewer is asking whether that difference matters — it does, because it is exactly what the research is designed to measure.
+  </div>
+
+
+  <!-- Technical panel: expandable -->
+  <div id="ep-tech" style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);overflow:hidden;margin-bottom:28px;">
+    <div onclick="expToggleId('ep-tech')" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;transition:background .15s;" onmouseenter="this.style.background='#f9fafb'" onmouseleave="this.style.background=''">
+      <span style="font-family:var(--mono),monospace;font-size:8.5px;font-weight:700;letter-spacing:.12em;color:#4338ca;">🔬 WHAT THIS MEANS TECHNICALLY</span>
+      <span id="ep-tech-icon" style="font-size:20px;color:#9ca3af;transition:transform .2s;display:inline-block;transform:rotate(45deg);">+</span>
+    </div>
+    <div id="ep-tech-body" style="display:block;padding:0 18px 16px;border-top:1px solid #f3f4f6;">
+      <div style="padding-top:14px;display:flex;flex-direction:column;gap:8px;">
+
+        <div style="padding:10px 12px;background:#fff7ed;border-radius:7px;border-left:3px solid #d97706;">
+          <div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:4px;">Auto-Enhance path</div>
+          <div style="font-family:monospace;font-size:11px;color:#374151;line-height:1.6;">
+            place tags → HeyGen renders → <strong>YOU</strong> run DeepFace → <strong>YOU</strong> compute F(p_auto)
+          </div>
+          <div style="font-size:11px;color:#6b7280;margin-top:4px;">Auto-Enhance ran AffectNet <strong>zero times</strong>. It had no idea F(p_auto) would be 0.41.</div>
+        </div>
+
+        <div style="padding:10px 12px;background:#f0fdf4;border-radius:7px;border-left:3px solid #10b981;">
+          <div style="font-size:11px;font-weight:700;color:#065f46;margin-bottom:4px;">EVAtAR-IDEA path — all 64 candidates are rendered &amp; scored</div>
+          <div style="font-family:monospace;font-size:10.5px;color:#374151;line-height:1.9;">
+            <span style="color:#9ca3af;">Gen 1:</span> 8 sequences → 8 renders → 8 scores → <strong>keep top 2 (elites)</strong> → mutate rest<br>
+            <span style="color:#9ca3af;">Gen 2:</span> 8 new sequences → 8 renders → 8 scores → if worse, <strong>elites survive</strong> → mutate<br>
+            <span style="color:#9ca3af;">…</span><br>
+            <span style="color:#9ca3af;">Gen 8:</span> 8 sequences → 8 renders → 8 scores → <strong style="color:#059669;">p* = global best across all 64</strong>
+          </div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:rgba(16,185,129,.08);border-radius:6px;">
+              <span style="font-size:15px;flex-shrink:0;">🛡️</span>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:#065f46;margin-bottom:2px;">Elitism — score can never go down</div>
+                <div style="font-size:11px;color:#6b7280;line-height:1.55;">The top 2 scorers from each generation are carried forward unchanged. If all 8 children in Gen 2 score worse than Gen 1's best, that Gen 1 winner survives into Gen 3. <strong style="color:#374151;">p* is the global best seen across all 64 renders</strong> — not just the Gen 8 winner.</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:rgba(16,185,129,.08);border-radius:6px;">
+              <span style="font-size:15px;flex-shrink:0;">📈</span>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:#065f46;margin-bottom:2px;">Convergence guarantee</div>
+                <div style="font-size:11px;color:#6b7280;line-height:1.55;">F(p*) is <strong style="color:#374151;">monotonically non-decreasing</strong> across generations. A dip in one generation's average score is fine — elite survivors prevent any regression. Paper 2 reports per-generation convergence curves to verify this empirically.</div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:#6b7280;margin-top:8px;line-height:1.6;">
+            Every candidate at every generation is rendered and scored. AffectNet is the <strong>live feedback signal</strong> driving selection — not a post-hoc judge. Cost: 64 × $0.048 = <strong>$3.07 per sentence</strong>.
+          </div>
+        </div>
+
+        <div style="padding:10px 12px;background:#eef2ff;border-radius:7px;border-left:3px solid #4338ca;">
+          <div style="font-size:11px;font-weight:700;color:#3730a3;margin-bottom:4px;">The reviewer's confusion</div>
+          <div style="font-size:12px;color:#374151;line-height:1.6;">
+            Both approaches produce a final video clip that is scored by your DeepFace + AffectNet pipeline — so yes, the same measurement tool judges both outputs.
+            <br><br>
+            But the reviewer conflates two different roles AffectNet can play:
+            <br><br>
+            <strong style="color:#3730a3;">Role A — Evaluator (post-hoc):</strong> You render a clip, then run AffectNet to see how well it scored. Auto-Enhance only ever experiences AffectNet in this role. It placed tags, rendered once, and the score arrived as a surprise. AffectNet had no influence on how tags were chosen.
+            <br><br>
+            <strong style="color:#3730a3;">Role B — Objective function (inside the loop):</strong> You run AffectNet during the design process, using its score as a signal to improve the next candidate. EVAtAR-IDEA uses AffectNet in this role — 64 times per sentence, at every generation, shaping which tag sequences survive and which are discarded.
+            <br><br>
+            Criticising Auto-Enhance for not using Role B is not the same as saying AffectNet is a biased judge. It is saying: <em>Auto-Enhance never used the feedback signal that EVAtAR-IDEA was built around</em>. That gap — between being evaluated by a measure and being optimised toward it — is precisely what the research quantifies.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1: Three examples -->
+  <div style="font-family:var(--mono),monospace;font-size:9px;font-weight:700;letter-spacing:.16em;color:#9ca3af;margin-bottom:14px;">STEP 1 — THREE APPROACHES, SAME SENTENCE</div>
+  <div style="background:#f5f0ff;border:1px solid #ddd6fe;border-radius:8px;padding:10px 16px;margin-bottom:16px;">
+    <div style="font-family:var(--mono),monospace;font-size:8px;font-weight:700;letter-spacing:.1em;color:#7c3aed;margin-bottom:5px;">TARGET SENTENCE — 19 words · Happy class · Hard · emotional peak = "finally done" (84%)</div>
+    <div style="font-size:13px;color:#374151;line-height:1.7;font-style:italic;">"In twelve months, three papers, one hundred and sixty-six dollars, two hundred hours — and it is <strong style="color:#059669;font-style:normal;">finally done</strong>."</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;">
+
+    <div style="border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);">
+      <div style="background:linear-gradient(135deg,#b45309,#d97706);padding:12px 16px 10px;">
+        <div style="font-family:monospace;font-size:8px;font-weight:700;letter-spacing:.1em;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px;background:rgba(255,255,255,.2);color:#fff;">AUTO-ENHANCE</div>
+        <div style="font-size:14px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:3px;">HeyGen places tags</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);font-family:monospace;">Black-box · 1 pass · no score returned</div>
+      </div>
+      <div style="background:#fff;padding:14px 16px;">
+        <div style="font-size:12px;color:#374151;line-height:1.6;margin-bottom:10px;font-style:italic;">In twelve <strong style="color:#d97706;font-style:normal;text-decoration:underline;text-underline-offset:3px;">months</strong> three papers one hundred and sixty-six dollars two hundred <strong style="color:#d97706;font-style:normal;text-decoration:underline;text-underline-offset:3px;">hours</strong> and it is <strong style="color:#059669;font-style:normal;">finally</strong> <strong style="color:#059669;font-style:normal;">done</strong></div>
+        <div style="background:#0e1117;border-radius:7px;padding:10px 14px;margin-bottom:10px;border-left:3px solid #d97706;"><div style="font-family:monospace;font-size:8px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-bottom:7px;">TAGGED SCRIPT — AS HEYGEN RECEIVES IT</div><div style="font-size:13px;color:rgba(255,255,255,.85);line-height:2;font-style:italic;">In twelve <strong style="color:#d97706;">[enthusiastic]</strong> months three papers one hundred and sixty-six dollars two hundred <strong style="color:#d97706;">[enthusiastic]</strong> hours — and it is <strong style="color:#059669;font-weight:800;">finally done</strong>.</div></div>
+        <div style="background:#f9fafb;border-radius:7px;padding:8px 12px;margin-bottom:10px;"><div style="font-family:monospace;font-size:8px;font-weight:700;letter-spacing:.1em;color:#9ca3af;margin-bottom:6px;">TAGS PLACED</div><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><code style="font-size:10px;font-weight:700;color:#d97706;background:#d9770618;padding:1px 6px;border-radius:3px;font-family:monospace;">[enthusiastic]</code><span style="font-size:11px;color:#6b7280;">at <strong style="color:#374151;">months</strong> — 16%</span></div><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><code style="font-size:10px;font-weight:700;color:#d97706;background:#d9770618;padding:1px 6px;border-radius:3px;font-family:monospace;">[enthusiastic]</code><span style="font-size:11px;color:#6b7280;">at <strong style="color:#374151;">hours</strong> — 68%</span></div><div style="margin-top:7px;padding-top:7px;border-top:1px solid #e5e7eb;display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-family:monospace;font-size:10px;font-weight:700;color:#dc2626;">F3 late-onset ✗</span><span style="font-family:monospace;font-size:9px;color:#9ca3af;">f2 = 0.28</span><span style="font-size:11px;color:#6b7280;">peak at <strong style="color:#059669;">finally done</strong> (84%)</span></div></div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px;">
+          <span style="font-family:monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:5px;background:#fee2e2;color:#b91c1c;">F(p_auto) = 0.41</span>
+          <span style="font-family:monospace;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;background:#fef3c7;color:#92400e;">F3 late-onset ✗</span>
+        </div>
+        <div style="font-size:11.5px;color:#6b7280;line-height:1.55;">Expression fires at 68% — audio peak at 84%. Avatar looks enthusiastic <em>before</em> saying <strong>"finally done"</strong>. <strong>Auto-Enhance returns no AffectNet score</strong> — F(p_auto) = 0.41 is computed entirely by your DeepFace pipeline.</div>
+      </div>
+    </div>
+
+    <div style="border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);">
+      <div style="background:linear-gradient(135deg,#991b1b,#ef4444);padding:12px 16px 10px;">
+        <div style="font-family:monospace;font-size:8px;font-weight:700;letter-spacing:.1em;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px;background:rgba(255,255,255,.2);color:#fff;">EXPERT HUMAN</div>
+        <div style="font-size:14px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:3px;">Jahidul places tags</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);font-family:monospace;">Knows F1–F8 taxonomy · 200+ hours</div>
+      </div>
+      <div style="background:#fff;padding:14px 16px;">
+        <div style="font-size:12px;color:#374151;line-height:1.6;margin-bottom:10px;font-style:italic;">In twelve months three papers one hundred and sixty-six <strong style="color:#ef4444;font-style:normal;text-decoration:underline;text-underline-offset:3px;">dollars</strong> two <strong style="color:#ef4444;font-style:normal;text-decoration:underline;text-underline-offset:3px;">hundred</strong> hours and it is <strong style="color:#059669;font-style:normal;">finally</strong> <strong style="color:#059669;font-style:normal;">done</strong></div>
+        <div style="background:#0e1117;border-radius:7px;padding:10px 14px;margin-bottom:10px;border-left:3px solid #ef4444;"><div style="font-family:monospace;font-size:8px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-bottom:7px;">TAGGED SCRIPT — AS HEYGEN RECEIVES IT</div><div style="font-size:13px;color:rgba(255,255,255,.85);line-height:2;font-style:italic;">In twelve months three papers one hundred and sixty-six <strong style="color:#ef4444;">[smile]</strong> dollars two <strong style="color:#ef4444;">[excited]</strong> hundred hours — and it is <strong style="color:#059669;font-weight:800;">finally done</strong>.</div></div>
+        <div style="background:#f9fafb;border-radius:7px;padding:8px 12px;margin-bottom:10px;"><div style="font-family:monospace;font-size:8px;font-weight:700;letter-spacing:.1em;color:#9ca3af;margin-bottom:6px;">TAGS PLACED</div><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><code style="font-size:10px;font-weight:700;color:#ef4444;background:#ef444418;padding:1px 6px;border-radius:3px;font-family:monospace;">[smile]</code><span style="font-size:11px;color:#6b7280;">at <strong style="color:#374151;">dollars</strong> — 53%</span></div><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><code style="font-size:10px;font-weight:700;color:#ef4444;background:#ef444418;padding:1px 6px;border-radius:3px;font-family:monospace;">[excited]</code><span style="font-size:11px;color:#6b7280;">at <strong style="color:#374151;">hundred</strong> — 63%</span></div><div style="margin-top:7px;padding-top:7px;border-top:1px solid #e5e7eb;display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-family:monospace;font-size:10px;font-weight:700;color:#d97706;">Borderline F3</span><span style="font-family:monospace;font-size:9px;color:#9ca3af;">f2 = 0.54</span><span style="font-size:11px;color:#6b7280;">peak at <strong style="color:#059669;">finally done</strong> (84%)</span></div></div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px;">
+          <span style="font-family:monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:5px;background:#fff1f2;color:#b91c1c;">F(p_manual) = 0.63</span>
+          <span style="font-family:monospace;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;background:#fef9c3;color:#854d0e;">Borderline F3</span>
+        </div>
+        <div style="font-size:11.5px;color:#6b7280;line-height:1.55;">Tag at 63% fires 4 words before the peak. Better than Auto-Enhance — but human intuition can't find the optimal late position without systematically testing every option.</div>
+      </div>
+    </div>
+
+    <div style="border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);">
+      <div style="background:linear-gradient(135deg,#065f46,#10b981);padding:12px 16px 10px;">
+        <div style="font-family:monospace;font-size:8px;font-weight:700;letter-spacing:.1em;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px;background:rgba(255,255,255,.2);color:#fff;">EVAtAR-IDEA GA</div>
+        <div style="font-size:14px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:3px;">64 renders · AffectNet in loop</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);font-family:monospace;">Dozier (2005) IDEA · pop=8 · gen=8</div>
+      </div>
+      <div style="background:#fff;padding:14px 16px;">
+        <div style="font-size:12px;color:#374151;line-height:1.6;margin-bottom:10px;font-style:italic;">In twelve months three papers one hundred and sixty-six <strong style="color:#10b981;font-style:normal;text-decoration:underline;text-underline-offset:3px;">dollars</strong> two hundred hours <strong style="color:#10b981;font-style:normal;text-decoration:underline;text-underline-offset:3px;">and</strong> it is <strong style="color:#059669;font-style:normal;">finally</strong> <strong style="color:#059669;font-style:normal;">done</strong></div>
+        <div style="background:#0e1117;border-radius:7px;padding:10px 14px;margin-bottom:10px;border-left:3px solid #10b981;"><div style="font-family:monospace;font-size:8px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-bottom:7px;">TAGGED SCRIPT — AS HEYGEN RECEIVES IT</div><div style="font-size:13px;color:rgba(255,255,255,.85);line-height:2;font-style:italic;">In twelve months three papers one hundred and sixty-six <strong style="color:#10b981;">[smile]</strong> dollars two hundred hours <strong style="color:#10b981;">[excited]</strong> and it is <strong style="color:#059669;font-weight:800;">finally done</strong>.</div></div>
+        <div style="background:#f9fafb;border-radius:7px;padding:8px 12px;margin-bottom:10px;"><div style="font-family:monospace;font-size:8px;font-weight:700;letter-spacing:.1em;color:#9ca3af;margin-bottom:6px;">TAGS PLACED</div><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><code style="font-size:10px;font-weight:700;color:#10b981;background:#10b98118;padding:1px 6px;border-radius:3px;font-family:monospace;">[smile]</code><span style="font-size:11px;color:#6b7280;">at <strong style="color:#374151;">dollars</strong> — 53%</span></div><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><code style="font-size:10px;font-weight:700;color:#10b981;background:#10b98118;padding:1px 6px;border-radius:3px;font-family:monospace;">[excited]</code><span style="font-size:11px;color:#6b7280;">at <strong style="color:#374151;">and (word 14)</strong> — 74%</span></div><div style="margin-top:7px;padding-top:7px;border-top:1px solid #e5e7eb;display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-family:monospace;font-size:10px;font-weight:700;color:#059669;">Aligned ✓</span><span style="font-family:monospace;font-size:9px;color:#9ca3af;">f2 = 0.82</span><span style="font-size:11px;color:#6b7280;">peak at <strong style="color:#059669;">finally done</strong> (84%)</span></div></div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px;">
+          <span style="font-family:monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:5px;background:#d1fae5;color:#065f46;">F(p*) = 0.81 ✓</span>
+          <span style="font-family:monospace;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;background:#d1fae5;color:#065f46;">Aligned ✓</span>
+        </div>
+        <div style="font-size:11.5px;color:#6b7280;line-height:1.55;">GA discovers word 14 (74%) — expression builds just as <strong>"finally done"</strong> arrives. 64 renders with AffectNet as the objective found what human intuition couldn't. <strong>F(p*)≥0.75 — pre-registered threshold met.</strong></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Transition banner -->
+  <div style="background:#fff;border:1px solid #7c3aed;border-radius:8px;padding:10px 16px;margin-bottom:28px;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:20px;">↓</span>
+    <span style="font-size:13px;color:#374151;line-height:1.5;"><strong>Now see how the same DeepFace + AffectNet pipeline scores all three identically.</strong> Auto-Enhance never runs AffectNet. You do — after the fact. EVAtAR-IDEA runs it 64 times per sentence to drive optimisation.</span>
+  </div>
+
+  <!-- STEP 2: Unified flowchart -->
+  <div style="font-family:var(--mono),monospace;font-size:9px;font-weight:700;letter-spacing:.16em;color:#9ca3af;margin-bottom:14px;">STEP 2 — UNIFIED PIPELINE: SAME EVALUATOR FOR ALL THREE</div>
+  <div id="d6-chart-wrap" style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px 18px 14px;margin-bottom:24px;box-shadow:0 2px 10px rgba(0,0,0,.05);">
+
+  <!-- Header row -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+    <div style="font-family:monospace;font-size:8.5px;font-weight:700;letter-spacing:.12em;color:#9ca3af;">HOVER ANY NODE · OR USE STEP-BY-STEP BELOW · ALL THREE BRANCHES FEED THE SAME DeepFace + AffectNet PIPELINE</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="d6StepPlay()" id="d6-play-btn" style="display:flex;align-items:center;gap:5px;font-family:monospace;font-size:9px;font-weight:700;padding:5px 12px;border-radius:6px;border:1.5px solid #7c3aed;background:#7c3aed;color:#fff;cursor:pointer;transition:all .15s;">▶ Auto Walk-through</button>
+      <button onclick="d6FullScreen()" style="display:flex;align-items:center;gap:5px;font-family:monospace;font-size:9px;font-weight:700;padding:5px 12px;border-radius:6px;border:1.5px solid #6b7280;background:transparent;color:#6b7280;cursor:pointer;transition:all .15s;" onmouseenter="this.style.background='#f3f4f6'" onmouseleave="this.style.background='transparent'">⛶ Full Screen</button>
+    </div>
+  </div>
+
+  <!-- SVG -->
+  <div id="d6-svg-wrap" style="width:100%;margin-bottom:14px;">
+    <svg viewBox="0 0 920 510" xmlns="http://www.w3.org/2000/svg" font-family="DM Sans,sans-serif" style="width:100%;height:auto;display:block;">
+<defs><marker id="ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 2L8 5L2 8" fill="none" stroke="#d97706" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="mr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 2L8 5L2 8" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="mg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 2L8 5L2 8" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="mgy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 2L8 5L2 8" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="mb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 2L8 5L2 8" fill="none" stroke="#4338ca" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="mp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 2L8 5L2 8" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="mdr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 2L8 5L2 8" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="mr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 2L8 5L2 8" fill="none" stroke="#b91c1c" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<path d="M460,64 C307,64 307,90 155,90" fill="none" stroke="#d97706" stroke-width="1.5" marker-end="url(#ma)"/><path d="M460,64 C460,64 460,90 460,90" fill="none" stroke="#6b7280" stroke-width="1.5" marker-end="url(#mgy)"/><path d="M460,64 C612,64 612,90 765,90" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#mg)"/><path d="M155,210 C307,210 307,245 460,245" fill="none" stroke="#d97706" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ma)"/><text x="307" y="222" text-anchor="middle" font-size="8" font-weight="600" fill="#d97706" font-family="DM Mono,monospace">render</text><path d="M460,210 C460,210 460,245 460,245" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#mgy)"/><path d="M765,210 C612,210 612,245 460,245" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#mg)"/><path d="M460,297 C460,297 460,315 460,315" fill="none" stroke="#4338ca" stroke-width="1.5" marker-end="url(#mb)"/><text x="460" y="301" text-anchor="middle" font-size="8" font-weight="600" fill="#4338ca" font-family="DM Mono,monospace">score</text><path d="M460,367 C307,367 307,385 155,385" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#mdr)"/><text x="307" y="371" text-anchor="middle" font-size="8" font-weight="600" fill="#ef4444" font-family="DM Mono,monospace">F(p_auto)</text><path d="M460,367 C460,367 460,385 460,385" fill="none" stroke="#b91c1c" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#mr2)"/><text x="460" y="371" text-anchor="middle" font-size="8" font-weight="600" fill="#b91c1c" font-family="DM Mono,monospace">F(p_manual)</text><path d="M460,367 C612,367 612,385 765,385" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#mg)"/><text x="612" y="371" text-anchor="middle" font-size="8" font-weight="600" fill="#10b981" font-family="DM Mono,monospace">F(p*)</text><path d="M155,437 C307,437 307,455 460,455" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#mgy)"/><path d="M460,437 C460,437 460,455 460,455" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#mgy)"/><path d="M765,437 C612,437 612,455 460,455" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#mp)"/><path d="M830,116 Q852,142 830,182" fill="none" stroke="#10b981" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#mg)"/><text x="856" y="152" font-size="7.5" fill="#10b981" font-family="DM Mono,monospace">↩ 8 gen · AffectNet in loop</text>
+<rect x="397" y="14" width="130" height="52" rx="7" fill="rgba(0,0,0,0.06)"/><rect data-tip="n0" x="395" y="12" width="130" height="52" rx="7" fill="#fffbeb" stroke="#d97706" stroke-width="1.8" style="cursor:pointer"/><rect x="395" y="12" width="130" height="5" rx="7" fill="#d97706"/><rect x="395" y="14" width="130" height="3" fill="#d97706"/><text x="460" y="30" text-anchor="middle" font-size="10.5" font-weight="700" fill="#92400e" font-family="DM Sans,sans-serif">📋 Script Sentence</text><text x="460" y="43" text-anchor="middle" font-size="8.5" font-weight="400" fill="#6b7280" font-family="DM Sans,sans-serif">19 words · Happy · Hard · peak=84%</text><text x="155" y="84" text-anchor="middle" font-size="8.5" font-weight="700" fill="#d97706" font-family="DM Mono,monospace">AUTO-ENHANCE</text><text x="460" y="84" text-anchor="middle" font-size="8.5" font-weight="700" fill="#ef4444" font-family="DM Mono,monospace">EXPERT HUMAN</text><text x="765" y="84" text-anchor="middle" font-size="8.5" font-weight="700" fill="#10b981" font-family="DM Mono,monospace">EVAtAR-IDEA GA</text><text x="460" y="8" text-anchor="middle" font-size="8" font-weight="700" fill="#9ca3af" font-family="DM Mono,monospace">SAME SENTENCE → 3 DIFFERENT APPROACHES</text><rect x="92" y="92" width="130" height="52" rx="7" fill="rgba(0,0,0,0.06)"/><rect data-tip="n1" x="90" y="90" width="130" height="52" rx="7" fill="#fffbeb" stroke="#d97706" stroke-width="1.8" style="cursor:pointer"/><rect x="90" y="90" width="130" height="5" rx="7" fill="#d97706"/><rect x="90" y="92" width="130" height="3" fill="#d97706"/><text x="155" y="108" text-anchor="middle" font-size="10.5" font-weight="700" fill="#92400e" font-family="DM Sans,sans-serif">🤖 Auto-Enhance</text><text x="155" y="121" text-anchor="middle" font-size="8.5" font-weight="400" fill="#6b7280" font-family="DM Sans,sans-serif">word 3+13 · 68% · F3!</text><rect x="397" y="92" width="130" height="52" rx="7" fill="rgba(0,0,0,0.06)"/><rect data-tip="n2" x="395" y="90" width="130" height="52" rx="7" fill="#fff1f2" stroke="#ef4444" stroke-width="1.8" style="cursor:pointer"/><rect x="395" y="90" width="130" height="5" rx="7" fill="#ef4444"/><rect x="395" y="92" width="130" height="3" fill="#ef4444"/><text x="460" y="108" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b91c1c" font-family="DM Sans,sans-serif">👤 Expert Human</text><text x="460" y="121" text-anchor="middle" font-size="8.5" font-weight="400" fill="#6b7280" font-family="DM Sans,sans-serif">word 12 · 63% · borderline</text><rect x="702" y="92" width="130" height="52" rx="7" fill="rgba(0,0,0,0.06)"/><rect data-tip="n3" x="700" y="90" width="130" height="52" rx="7" fill="#f0fdf4" stroke="#10b981" stroke-width="1.8" style="cursor:pointer"/><rect x="700" y="90" width="130" height="5" rx="7" fill="#10b981"/><rect x="700" y="92" width="130" height="3" fill="#10b981"/><text x="765" y="108" text-anchor="middle" font-size="10.5" font-weight="700" fill="#065f46" font-family="DM Sans,sans-serif">🧬 EVAtAR-IDEA GA</text><text x="765" y="121" text-anchor="middle" font-size="8.5" font-weight="400" fill="#6b7280" font-family="DM Sans,sans-serif">word 14 · 74% · aligned ✓</text><rect x="90" y="155" width="130" height="55" rx="4" fill="#d9770612" stroke="#d9770640" stroke-width="1"/><line x1="98" y1="186" x2="212" y2="186" stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/><line x1="193" y1="159" x2="193" y2="202" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="3 2"/><text x="193" y="208" text-anchor="middle" font-size="7" fill="#6b7280" font-family="DM Mono,monospace">peak 84%</text><circle cx="116" cy="186" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/><text x="116" y="177" text-anchor="middle" font-size="7" font-weight="700" fill="#d97706" font-family="DM Mono,monospace">w3</text><circle cx="175" cy="186" r="5" fill="#d97706" stroke="#fff" stroke-width="1.5"/><text x="175" y="193" text-anchor="middle" font-size="7" font-weight="700" fill="#d97706" font-family="DM Mono,monospace">w13</text><text x="155" y="167" text-anchor="middle" font-size="8" font-weight="700" fill="#dc2626" font-family="DM Mono,monospace">f2=0.28  F3 ✗</text><rect x="395" y="155" width="130" height="55" rx="4" fill="#ef444412" stroke="#ef444440" stroke-width="1"/><line x1="403" y1="186" x2="517" y2="186" stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/><line x1="498" y1="159" x2="498" y2="202" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="3 2"/><text x="498" y="208" text-anchor="middle" font-size="7" fill="#6b7280" font-family="DM Mono,monospace">peak 84%</text><circle cx="463" cy="186" r="5" fill="#ef4444" stroke="#fff" stroke-width="1.5"/><text x="463" y="177" text-anchor="middle" font-size="7" font-weight="700" fill="#ef4444" font-family="DM Mono,monospace">w10</text><circle cx="474" cy="186" r="5" fill="#ef4444" stroke="#fff" stroke-width="1.5"/><text x="474" y="193" text-anchor="middle" font-size="7" font-weight="700" fill="#ef4444" font-family="DM Mono,monospace">w12</text><text x="460" y="167" text-anchor="middle" font-size="8" font-weight="700" fill="#d97706" font-family="DM Mono,monospace">f2=0.54  borderline</text><rect x="700" y="155" width="130" height="55" rx="4" fill="#10b98112" stroke="#10b98140" stroke-width="1"/><line x1="708" y1="186" x2="822" y2="186" stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/><line x1="803" y1="159" x2="803" y2="202" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="3 2"/><text x="803" y="208" text-anchor="middle" font-size="7" fill="#6b7280" font-family="DM Mono,monospace">peak 84%</text><circle cx="768" cy="186" r="5" fill="#10b981" stroke="#fff" stroke-width="1.5"/><text x="768" y="177" text-anchor="middle" font-size="7" font-weight="700" fill="#10b981" font-family="DM Mono,monospace">w10</text><circle cx="792" cy="186" r="5" fill="#10b981" stroke="#fff" stroke-width="1.5"/><text x="792" y="193" text-anchor="middle" font-size="7" font-weight="700" fill="#10b981" font-family="DM Mono,monospace">w14</text><text x="765" y="167" text-anchor="middle" font-size="8" font-weight="700" fill="#059669" font-family="DM Mono,monospace">f2=0.82  aligned ✓</text><rect x="397" y="247" width="130" height="52" rx="7" fill="rgba(0,0,0,0.06)"/><rect data-tip="n4" x="395" y="245" width="130" height="52" rx="7" fill="#f9fafb" stroke="#6b7280" stroke-width="1.8" style="cursor:pointer"/><rect x="395" y="245" width="130" height="5" rx="7" fill="#6b7280"/><rect x="395" y="247" width="130" height="3" fill="#6b7280"/><text x="460" y="263" text-anchor="middle" font-size="10.5" font-weight="700" fill="#374151" font-family="DM Sans,sans-serif">🎬 HeyGen Render</text><text x="460" y="276" text-anchor="middle" font-size="8.5" font-weight="400" fill="#6b7280" font-family="DM Sans,sans-serif">~60s · $0.048 · clip only</text><text x="460" y="239" text-anchor="middle" font-size="8" font-weight="700" fill="#6b7280" font-family="DM Mono,monospace">ALL THREE CONVERGE → SAME EVALUATOR</text><rect x="397" y="317" width="130" height="52" rx="7" fill="rgba(0,0,0,0.06)"/><rect data-tip="n5" x="395" y="315" width="130" height="52" rx="7" fill="#eef2ff" stroke="#4338ca" stroke-width="1.8" style="cursor:pointer"/><rect x="395" y="315" width="130" height="5" rx="7" fill="#4338ca"/><rect x="395" y="317" width="130" height="3" fill="#4338ca"/><text x="460" y="333" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3730a3" font-family="DM Sans,sans-serif">🔬 DeepFace + AffectNet</text><text x="460" y="346" text-anchor="middle" font-size="8.5" font-weight="400" fill="#6b7280" font-family="DM Sans,sans-serif">YOUR pipeline · same for all</text><text x="460" y="309" text-anchor="middle" font-size="8" font-weight="700" fill="#4338ca" font-family="DM Mono,monospace">SAME EVALUATOR — YOUR PIPELINE</text><rect x="92" y="387" width="130" height="52" rx="7" fill="rgba(0,0,0,0.06)"/><rect data-tip="n6" x="90" y="385" width="130" height="52" rx="7" fill="#fff7ed" stroke="#ef4444" stroke-width="1.8" style="cursor:pointer"/><rect x="90" y="385" width="130" height="5" rx="7" fill="#ef4444"/><rect x="90" y="387" width="130" height="3" fill="#ef4444"/><text x="155" y="403" text-anchor="middle" font-size="10.5" font-weight="700" fill="#dc2626" font-family="DM Sans,sans-serif">F(p_auto) = 0.41 ✗</text><text x="155" y="416" text-anchor="middle" font-size="8.5" font-weight="400" fill="#6b7280" font-family="DM Sans,sans-serif">f2=0.28 · F3 late-onset</text><rect x="397" y="387" width="130" height="52" rx="7" fill="rgba(0,0,0,0.06)"/><rect data-tip="n7" x="395" y="385" width="130" height="52" rx="7" fill="#fff1f2" stroke="#b91c1c" stroke-width="1.8" style="cursor:pointer"/><rect x="395" y="385" width="130" height="5" rx="7" fill="#b91c1c"/><rect x="395" y="387" width="130" height="3" fill="#b91c1c"/><text x="460" y="403" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b91c1c" font-family="DM Sans,sans-serif">F(p_manual) = 0.63 ✗</text><text x="460" y="416" text-anchor="middle" font-size="8.5" font-weight="400" fill="#6b7280" font-family="DM Sans,sans-serif">f2=0.54 · borderline timing</text><rect x="702" y="387" width="130" height="52" rx="7" fill="rgba(0,0,0,0.06)"/><rect data-tip="n8" x="700" y="385" width="130" height="52" rx="7" fill="#f0fdf4" stroke="#10b981" stroke-width="1.8" style="cursor:pointer"/><rect x="700" y="385" width="130" height="5" rx="7" fill="#10b981"/><rect x="700" y="387" width="130" height="3" fill="#10b981"/><text x="765" y="403" text-anchor="middle" font-size="10.5" font-weight="700" fill="#065f46" font-family="DM Sans,sans-serif">F(p*) = 0.81 ✓</text><text x="765" y="416" text-anchor="middle" font-size="8.5" font-weight="400" fill="#6b7280" font-family="DM Sans,sans-serif">f2=0.82 · threshold met · OSF</text><rect x="22" y="457" width="880" height="52" rx="7" fill="rgba(0,0,0,0.06)"/><rect data-tip="n9" x="20" y="455" width="880" height="52" rx="7" fill="#faf5ff" stroke="#7c3aed" stroke-width="1.8" style="cursor:pointer"/><rect x="20" y="455" width="880" height="5" rx="7" fill="#7c3aed"/><rect x="20" y="457" width="880" height="3" fill="#7c3aed"/><text x="460" y="473" text-anchor="middle" font-size="10.5" font-weight="700" fill="#5b21b6" font-family="DM Sans,sans-serif">🔑 Key Distinction — Why the comparison is valid</text><text x="460" y="486" text-anchor="middle" font-size="8.5" font-weight="400" fill="#6b7280" font-family="DM Sans,sans-serif">Auto-Enhance evaluated BY AffectNet (post-hoc) · EVAtAR-IDEA optimises TOWARD AffectNet (×64 per sentence)</text><text x="916" y="506" text-anchor="end" font-size="8" font-weight="400" fill="#9ca3af" font-family="DM Mono,monospace">hover any node for details</text>
+</svg>
+  </div>
+
+  <!-- Step buttons -->
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+    <button onclick="d6Step(0)" id="d6-step-btn-0" style="font-family:monospace;font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;border:1.5px solid #d97706;background:transparent;color:#d97706;cursor:pointer;transition:all .15s;white-space:nowrap;" onmouseenter="this.style.background='#d9770618'" onmouseleave="if(d6CurStep!=0)this.style.background='transparent'">1. 📋 Script Sentence</button><button onclick="d6Step(1)" id="d6-step-btn-1" style="font-family:monospace;font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;border:1.5px solid #d97706;background:transparent;color:#d97706;cursor:pointer;transition:all .15s;white-space:nowrap;" onmouseenter="this.style.background='#d9770618'" onmouseleave="if(d6CurStep!=1)this.style.background='transparent'">2. 🤖 Auto-Enhance places tags</button><button onclick="d6Step(2)" id="d6-step-btn-2" style="font-family:monospace;font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;border:1.5px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;transition:all .15s;white-space:nowrap;" onmouseenter="this.style.background='#ef444418'" onmouseleave="if(d6CurStep!=2)this.style.background='transparent'">3. 👤 Expert Human places tags</button><button onclick="d6Step(3)" id="d6-step-btn-3" style="font-family:monospace;font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;border:1.5px solid #10b981;background:transparent;color:#10b981;cursor:pointer;transition:all .15s;white-space:nowrap;" onmouseenter="this.style.background='#10b98118'" onmouseleave="if(d6CurStep!=3)this.style.background='transparent'">4. 🧬 EVAtAR-IDEA GA places tags</button><button onclick="d6Step(4)" id="d6-step-btn-4" style="font-family:monospace;font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;border:1.5px solid #6b7280;background:transparent;color:#6b7280;cursor:pointer;transition:all .15s;white-space:nowrap;" onmouseenter="this.style.background='#6b728018'" onmouseleave="if(d6CurStep!=4)this.style.background='transparent'">5. 🎬 HeyGen Renders — all three</button><button onclick="d6Step(5)" id="d6-step-btn-5" style="font-family:monospace;font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;border:1.5px solid #4338ca;background:transparent;color:#4338ca;cursor:pointer;transition:all .15s;white-space:nowrap;" onmouseenter="this.style.background='#4338ca18'" onmouseleave="if(d6CurStep!=5)this.style.background='transparent'">6. 🔬 DeepFace + AffectNet scores all three</button><button onclick="d6Step(6)" id="d6-step-btn-6" style="font-family:monospace;font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;border:1.5px solid #dc2626;background:transparent;color:#dc2626;cursor:pointer;transition:all .15s;white-space:nowrap;" onmouseenter="this.style.background='#dc262618'" onmouseleave="if(d6CurStep!=6)this.style.background='transparent'">7. F(p_auto) = 0.41 — below threshold</button><button onclick="d6Step(7)" id="d6-step-btn-7" style="font-family:monospace;font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;border:1.5px solid #b91c1c;background:transparent;color:#b91c1c;cursor:pointer;transition:all .15s;white-space:nowrap;" onmouseenter="this.style.background='#b91c1c18'" onmouseleave="if(d6CurStep!=7)this.style.background='transparent'">8. F(p_manual) = 0.63 — below threshold</button><button onclick="d6Step(8)" id="d6-step-btn-8" style="font-family:monospace;font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;border:1.5px solid #059669;background:transparent;color:#059669;cursor:pointer;transition:all .15s;white-space:nowrap;" onmouseenter="this.style.background='#05966918'" onmouseleave="if(d6CurStep!=8)this.style.background='transparent'">9. F(p*) = 0.81 — threshold met ✓</button><button onclick="d6Step(9)" id="d6-step-btn-9" style="font-family:monospace;font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;border:1.5px solid #7c3aed;background:transparent;color:#7c3aed;cursor:pointer;transition:all .15s;white-space:nowrap;" onmouseenter="this.style.background='#7c3aed18'" onmouseleave="if(d6CurStep!=9)this.style.background='transparent'">10. 🔑 Key Distinction</button>
+  </div>
+
+  <!-- Step detail panel -->
+  <div id="d6-step-panel" style="display:none;border-radius:8px;padding:14px 16px;border:1.5px solid #e5e7eb;animation:d6PanelIn .2s ease;background:#fff;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div id="d6-step-num" style="font-family:monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:#f3f4f6;color:#6b7280;flex-shrink:0;"></div>
+      <div id="d6-step-title" style="font-size:14px;font-weight:700;color:#0e1117;"></div>
+    </div>
+    <div id="d6-step-body" style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:10px;"></div>
+    <div id="d6-step-chips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid #f3f4f6;">
+      <button onclick="d6Step(d6CurStep-1)" id="d6-prev-btn" style="font-family:monospace;font-size:9px;font-weight:700;padding:5px 12px;border-radius:6px;border:1.5px solid #e5e7eb;background:transparent;color:#6b7280;cursor:pointer;">← Prev</button>
+      <span id="d6-step-counter" style="font-family:monospace;font-size:9px;color:#9ca3af;"></span>
+      <button onclick="d6Step(d6CurStep+1)" id="d6-next-btn" style="font-family:monospace;font-size:9px;font-weight:700;padding:5px 12px;border-radius:6px;border:1.5px solid #7c3aed;background:#7c3aed;color:#fff;cursor:pointer;">Next →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Full-screen overlay -->
+<div id="d6-fs-overlay" style="display:none;position:fixed;inset:0;background:#0e1117;z-index:9800;flex-direction:column;padding:24px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-shrink:0;">
+    <div style="font-family:monospace;font-size:10px;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.5);">STEP 2 — UNIFIED PIPELINE · FULL SCREEN</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="d6StepPlay()" id="d6-play-btn-fs" style="font-family:monospace;font-size:9px;font-weight:700;padding:5px 12px;border-radius:6px;border:1.5px solid #7c3aed;background:#7c3aed;color:#fff;cursor:pointer;">▶ Auto Walk-through</button>
+      <button onclick="d6ExitFullScreen()" style="font-family:monospace;font-size:9px;font-weight:700;padding:5px 12px;border-radius:6px;border:1.5px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);cursor:pointer;">✕ Exit Full Screen</button>
+    </div>
+  </div>
+  <div style="display:flex;flex:1;min-height:0;gap:16px;">
+    <div style="flex:1;min-height:0;display:flex;align-items:center;">
+      <div id="d6-fs-svg-wrap" style="width:100%;"></div>
+    </div>
+    <div style="width:320px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;overflow-y:auto;">
+      <div style="font-family:monospace;font-size:8px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.4);margin-bottom:4px;">CLICK ANY STEP</div>
+      <div id="d6-fs-steps" style="display:flex;flex-direction:column;gap:6px;"></div>
+      <div id="d6-fs-panel" style="display:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px;">
+        <div id="d6-fs-step-num" style="font-family:monospace;font-size:9px;font-weight:700;margin-bottom:6px;"></div>
+        <div id="d6-fs-step-title" style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.35;"></div>
+        <div id="d6-fs-step-body" style="font-size:11.5px;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:10px;"></div>
+        <div id="d6-fs-step-chips" style="display:flex;flex-direction:column;gap:4px;"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.1);">
+          <button onclick="d6Step(d6CurStep-1)" style="font-family:monospace;font-size:9px;font-weight:700;padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;">← Prev</button>
+          <span id="d6-fs-counter" style="font-family:monospace;font-size:9px;color:rgba(255,255,255,.4);"></span>
+          <button onclick="d6Step(d6CurStep+1)" style="font-family:monospace;font-size:9px;font-weight:700;padding:5px 10px;border-radius:6px;border:1px solid #7c3aed;background:#7c3aed;color:#fff;cursor:pointer;">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="ex-section-title">THE FIVE ARGUMENTS</div>
+  <div class="args">
+    <div class="arg"><div class="arg-num">ARGUMENT 01</div><div class="arg-title">Same scorer, different generators</div><div class="arg-body">Auto-Enhance returns a tagged script only — <strong>no score, no feedback</strong>. You apply DeepFace identically to all three.</div></div>
+    <div class="arg"><div class="arg-num">ARGUMENT 02</div><div class="arg-title">Empirical, not architectural, criticism</div><div class="arg-body">Auto-Enhance fails because its observed positions — 65–80% — trigger <strong>F3 late-onset</strong>. Measurable, not assumed from its internals.</div></div>
+    <div class="arg"><div class="arg-num">ARGUMENT 03</div><div class="arg-title">Optimises TOWARD vs evaluated BY</div><div class="arg-body">EVAtAR-IDEA runs DeepFace <strong>64× per sentence inside its loop</strong>. Auto-Enhance runs AffectNet zero times. One studied the marking scheme.</div></div>
+    <div class="arg"><div class="arg-num">ARGUMENT 04</div><div class="arg-title">Practice-facing comparison</div><div class="arg-body">Auto-Enhance is what practitioners actually use. Does evolutionary optimisation beat the commercial default by a <strong>pre-registered, significant margin</strong>?</div></div>
+    <div class="arg"><div class="arg-num">ARGUMENT 05</div><div class="arg-title">Pre-registered at OSF</div><div class="arg-body">All three baselines and the scoring protocol were declared at OSF <strong>before any data collection</strong>. No post-hoc cherry-picking.</div></div>
+  </div>
+
+  <div class="faq-sec-title">FREQUENTLY ASKED COMMITTEE QUESTIONS</div>
+  <div class="faq-list" id="faq-list"></div>
+</div>
+<div id="d6-tip">
+  <span class="d6t-tag"></span>
+  <div class="d6t-title"></div>
+  <div class="d6t-body"></div>
+  <div class="d6t-kv"></div>
+</div>
+<script>
+var D6TIPS={
+  "n0":{tag:"SHARED INPUT",col:"#d97706",title:"Script Sentence — same input to all three",body:"19-word sentence: <em>\"...and it is <strong>finally done</strong>.\"</em><br>Happy class · Hard · emotional peak word 16 (84%). Very high F3 late-onset risk.",kv:[["Emotion","Happy → AffectNet Happy class"],["Length","19 words · FK grade 11"],["Peak","Word 16 of 19 = 84%"],["F3 risk","Very high — cue arrives extremely late"]]},
+  "n1":{tag:"AUTO-ENHANCE",col:"#d97706",title:"Auto-Enhance — black-box placement, no score",body:"Places <code>[enthusiastic]</code> at word 3 (16%) and word 13 (68%). Returns a tagged script only — <strong>no AffectNet score, no iteration</strong>. One pass, done.",kv:[["Tag 1","[enthusiastic] word 3 = 16%"],["Tag 2","[enthusiastic] word 13 = 68%"],["Audio peak","Word 16 = 84%"],["Output","Tagged script only — NO score returned"]]},
+  "n2":{tag:"HUMAN EXPERT",col:"#ef4444",title:"Expert Human — F1–F8 taxonomy, borderline F3",body:"Places <code>[smile]</code> at word 10 (53%) and <code>[excited]</code> at word 12 (63%). Fires 4 words before emotional climax.",kv:[["Tag 1","[smile] word 10 = 53%"],["Tag 2","[excited] word 12 = 63% (borderline F3)"],["Audio peak","Word 16 = 84%"],["Hours","200+ hours manual iteration"]]},
+  "n3":{tag:"EVAtAR-IDEA",col:"#10b981",title:"EVAtAR-IDEA GA — 64 renders, AffectNet in loop",body:"GA finds <code>[excited]</code> at word 14 (74%) + <code>[smile]</code> at word 10. Expression builds just as <strong>\"finally done\"</strong> arrives — f2 = 0.82.",kv:[["Tag 1","[smile] word 10 = 53%"],["Tag 2","[excited] word 14 = 74%"],["Audio peak","Word 16 = 84%"],["Key","64 renders — AffectNet is the objective"]]},
+  "n4":{tag:"SHARED STEP",col:"#6b7280",title:"HeyGen Render — same for all three, clip only",body:"Returns a video clip — <strong>NOT a score</strong>. AffectNet scoring is your pipeline, applied after rendering.",kv:[["Cost","$0.048 per render"],["Output","Video clip only — no score returned"],["Key","HeyGen has zero awareness of AffectNet"]]},
+  "n5":{tag:"YOUR EVALUATOR",col:"#4338ca",title:"DeepFace + AffectNet — your pipeline, identical for all three",body:"<code>F(p) = 0.5·f1 + 0.3·f2 + 0.2·f3</code> — applied post-hoc to p_auto, p_manual, and p* identically. <strong>Auto-Enhance never sees this score.</strong>",kv:[["f1","AffectNet class accuracy — mean P(Happy)"],["f2","Timing alignment — expression vs audio peak"],["f3","Frame-to-frame consistency"],["KEY","F(p_auto) computed BY YOU, not by HeyGen"]]},
+  "n6":{tag:"RESULT ✗",col:"#dc2626",title:"F(p_auto) = 0.41 — below threshold",body:"f1=0.69 · f2=0.28 · f3=0.41<br><code>0.5×0.69+0.3×0.28+0.2×0.41 = 0.41 ✗</code>",kv:[["f1=0.69","Correct class"],["f2=0.28","F3 late-onset — fires before audio peak"],["Verdict","0.41 < 0.75 ✗"]]},
+  "n7":{tag:"RESULT ✗",col:"#b91c1c",title:"F(p_manual) = 0.63 — better but below threshold",body:"f1=0.73 · f2=0.54 · f3=0.58<br><code>0.5×0.73+0.3×0.54+0.2×0.58 = 0.63 ✗</code>",kv:[["f1=0.73","Correct + gesture boost"],["f2=0.54","Better timing, still fires early"],["Verdict","0.63 < 0.75 ✗"]]},
+  "n8":{tag:"RESULT ✓",col:"#059669",title:"F(p*) = 0.81 — threshold met",body:"f1=0.78 · f2=0.82 · f3=0.74<br><code>0.5×0.78+0.3×0.82+0.2×0.74 = 0.81 ✓</code>",kv:[["f1=0.78","Highest accuracy"],["f2=0.82","Near-perfect timing"],["Verdict","0.81 ≥ 0.75 ✓ pre-registered"]]},
+  "n9":{tag:"KEY DISTINCTION",col:"#7c3aed",title:"Optimises TOWARD vs evaluated BY AffectNet",body:"<strong>Auto-Enhance:</strong> places tags → you render → you run DeepFace → F(p_auto). AffectNet is post-hoc. Zero awareness of F(p).<br><br><strong>EVAtAR-IDEA:</strong> runs DeepFace 64× per sentence inside its loop. F(p) is the optimisation objective at every generation.",kv:[["Auto-Enhance","Evaluated BY AffectNet post-hoc"],["EVAtAR-IDEA","Optimises TOWARD AffectNet ×64 per sentence"],["Pre-registered","Declared at OSF before any data collection"],["Analogy","One graded by exam; one studied the marking scheme"]]}
+};
+var d6tip,d6tipOn=false;
+function d6ShowTip(e,tag,title,body,col,kv){
+  if(!d6tip)d6tip=document.getElementById('d6-tip');
+  d6tip.querySelector('.d6t-tag').textContent=tag;
+  d6tip.querySelector('.d6t-tag').style.cssText='background:'+col+'28;color:'+col;
+  d6tip.querySelector('.d6t-title').textContent=title;
+  d6tip.querySelector('.d6t-body').innerHTML=body;
+  var kvel=d6tip.querySelector('.d6t-kv');
+  if(kv&&kv.length){kvel.style.display='grid';kvel.innerHTML=kv.map(function(r){return'<div class="d6t-kk">'+r[0]+'</div><div class="d6t-vv">'+r[1]+'</div>';}).join('');}else{kvel.style.display='none';}
+  d6tip.style.display='block';d6tip.style.opacity='0';d6tip.style.transform='translateY(4px)';
+  requestAnimationFrame(function(){d6tip.style.opacity='1';d6tip.style.transform='translateY(0)';});
+  d6tipOn=true;d6PosTip(e);
+}
+function d6PosTip(e){if(!d6tipOn||!d6tip)return;var x=e.clientX+16,y=e.clientY+12;if(x+310>window.innerWidth)x=e.clientX-318;if(y+230>window.innerHeight)y=e.clientY-238;d6tip.style.left=x+'px';d6tip.style.top=y+'px';}
+function d6HideTip(){d6tipOn=false;if(d6tip){d6tip.style.opacity='0';setTimeout(function(){if(!d6tipOn)d6tip.style.display='none';},120);}}
+document.addEventListener('mousemove',function(e){if(d6tipOn)d6PosTip(e);});
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('[data-tip]').forEach(function(el){
+    el.style.cursor='pointer';
+    el.addEventListener('mouseenter',function(e){var d=D6TIPS[el.dataset.tip];if(d)d6ShowTip(e,d.tag,d.title,d.body,d.col,d.kv);});
+    el.addEventListener('mouseleave',d6HideTip);
+  });
+  var list=document.getElementById('faq-list');
+  if(list)FAQS.forEach(function(f){
+    var item=document.createElement('div');item.className='faq-item';
+    var q=document.createElement('div');q.className='faq-q';
+    q.innerHTML='<span>'+f[0]+'</span><span class="faq-q-icon">+</span>';
+    q.onclick=function(){item.classList.toggle('open');};
+    var a=document.createElement('div');a.className='faq-a';a.innerHTML='<p>'+f[1]+'</p>';
+    item.appendChild(q);item.appendChild(a);list.appendChild(item);
+  });
+});
+var FAQS=[
+  ["Why is AffectNet the right measurement tool?","AffectNet (<a href=\"#\" onclick=\"openRefModal();return false;\" style=\"color:#4338ca;font-weight:600;text-decoration:underline;text-underline-offset:2px;\">Mollahosseini et al. 2019</a>) is the largest publicly available facial expression database — 1M+ images, 450K manually annotated, 8 emotion classes. DeepFace uses AffectNet's taxonomy as its backbone. Using any other scoring system would mean inventing our own ground truth."],
+  ["Is the Auto-Enhance comparison fair if it wasn't designed as a research baseline?","Yes. The comparison is EVAtAR-IDEA vs <strong>the automated alternative practitioners actually use</strong> — not vs a peer-reviewed system. Auto-Enhance's behaviour is documented empirically (tag positions, failure modes, F(p) distribution), not assumed. The comparison is behavioural, not architectural."],
+  ["How is F(p) = 0.5·f1 + 0.3·f2 + 0.2·f3 justified?","The weights reflect literature consensus: class accuracy (f1) is necessary but insufficient; timing alignment (f2) is the primary perceptual determinant of naturalness; consistency (f3) prevents flickering. Weights were declared at OSF before data collection — no post-hoc tuning."],
+  ["What if F(p*) < F(p_manual) for some sentences?","This is a reportable outcome, not a failure. Wilcoxon operates on the full 50-sentence distribution. Negative cases contribute to variance. If they cluster around a specific class (e.g. [curious] sentences), that finding itself is informative — likely F8 sub-perceptual failure limiting the GA."],
+  ["How do you validate DeepFace/AffectNet against human perception?","AffectNet was validated against 60.7% inter-annotator agreement (<a href=\"#\" onclick=\"openRefModal();return false;\" style=\"color:#4338ca;font-weight:600;text-decoration:underline;text-underline-offset:2px;\">Table 6, Mollahosseini et al. 2019</a>). DeepFace achieves 0.64 normalised F1 on this test set. Paper 1 includes a perceptual validation: 10 human raters view rendered clips and rate expression quality on a Likert scale. Spearman correlation between F(p) and human ratings is reported."],
+  ["Why 64 renders per sentence (8 pop × 8 gen)?","Render cost: 64 × $0.048 = $3.07 per sentence — acceptable for a 50-sentence corpus. Pilot testing showed convergence by generation 5–6 for this vocabulary size. The 8-gen cap is pre-registered. Paper 2 reports convergence curves so the committee can verify sufficiency."],
+  ["What is the novelty claim vs existing avatar expression papers?","(1) First application of Dozier (2005) IDEA to avatar expression optimisation in the IDEC domain. (2) First systematic failure taxonomy (F1–F8) for scripted avatar tags, validated against AffectNet. (3) First three-way empirical comparison of evolutionary optimisation vs human expert vs commercial heuristic using a pre-registered, AffectNet-grounded fitness function."]
+];
+
+
+// F1-F8 modal
+(function(){
+  var F8=[
+    {code:'F1',name:'No Emotion Tag',sev:'critical',col:'#dc2626',
+     rule:'At least one T1 emotion token required. Without it, DeepFace detects neutral — f1 defaults to near-zero.',
+     ex:'Sentence with no [excited] or [serious] tag at all.'},
+    {code:'F2',name:'Tag Stacking',sev:'high',col:'#ea580c',
+     rule:'Two emotion tags within 2 word positions cause AffectNet class confusion. Both degrade toward neutral.',
+     ex:'[serious] at word 4, [excited] at word 6 — too close.'},
+    {code:'F3',name:'Late Onset',sev:'high',col:'#ea580c',
+     rule:'Emotion tag placed after 60% of sentence length fires after the audio peak. Expression arrives too late.',
+     ex:'Auto-Enhance placing [enthusiastic] at word 13 of 19 (68%) when peak is at word 16 (84%).'},
+    {code:'F4',name:'Wrong Emotion Class',sev:'medium',col:'#d97706',
+     rule:'Tag emotion class does not match the sentence target. f1 score is near-zero despite good timing.',
+     ex:'Using [serious] on a Happy-class sentence.'},
+    {code:'F5',name:'Gesture Overload',sev:'medium',col:'#d97706',
+     rule:'More than 3 gesture tokens in a single sentence overwhelms the render pipeline.',
+     ex:'[smile], [nod], [lean:forward], [eyebrow:raise] all in one 10-word sentence.'},
+    {code:'F6',name:'Amplitude Fatigue',sev:'low',col:'#ca8a04',
+     rule:'[excited] used more than twice in a sentence. AffectNet registers diminishing return on repeated high-intensity tags.',
+     ex:'[excited] at word 2, word 7, word 12 — third instance adds no f1 lift.'},
+    {code:'F7',name:'Timing Overflow',sev:'low',col:'#ca8a04',
+     rule:'Pause tokens consume clip time. More than 3s of pauses in a 4–8s clip leaves insufficient time for expression.',
+     ex:'[pause: 2s] + [pause: 1.5s] in a 5-second clip.'},
+    {code:'F8',name:'Sub-perceptual',sev:'medium',col:'#d97706',
+     rule:'[curious] maps to AffectNet Fear class by researcher inference. Pre-registered threat to validity in Paper 1.',
+     ex:'[curious] on any sentence — DeepFace may not reliably detect it above threshold.'}
+  ];
+  document.addEventListener('DOMContentLoaded',function(){
+    var el=document.getElementById('f8-items');
+    if(!el)return;
+    el.innerHTML=F8.map(function(f){
+      return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-left:3px solid '+f.col+';border-radius:7px;padding:10px 14px;">'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">'
+        +'<span style="font-family:monospace;font-size:11px;font-weight:700;color:'+f.col+';">'+f.code+'</span>'
+        +'<span style="font-size:12px;font-weight:700;color:#fff;">'+f.name+'</span>'
+        +'<span style="margin-left:auto;font-family:monospace;font-size:8px;font-weight:700;padding:1px 6px;border-radius:3px;background:'+f.col+'28;color:'+f.col+';">'+f.sev+'</span>'
+        +'</div>'
+        +'<div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:5px;">'+f.rule+'</div>'
+        +'<div style="font-family:monospace;font-size:9px;color:rgba(255,255,255,.35);font-style:italic;">e.g. '+f.ex+'</div>'
+        +'</div>';
+    }).join('');
+  });
+  document.addEventListener('click',function(e){var m=document.getElementById('f8-modal');if(m&&e.target===m)m.style.display='none';});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){var m=document.getElementById('f8-modal');if(m)m.style.display='none';}});
+})();
+
+
+
+function expToggleId(id) {
+  var body = document.getElementById(id + '-body');
+  var icon = document.getElementById(id + '-icon');
+  if (!body) return;
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    if (icon) icon.style.transform = 'rotate(45deg)';
+  } else {
+    body.style.display = 'none';
+    if (icon) icon.style.transform = 'rotate(0deg)';
+  }
+}
+
+
+
+// Reference table data (Table 6, Mollahosseini et al. 2019)
+(function(){
+  var ROWS = [
+    {cls:'Neutral',   label:'0',col:'#6b7280',bg:'#f9fafb',n:500, acc:'74.0%',note:'Baseline class — not targeted by EVAtAR-IDEA tags'},
+    {cls:'Happy',     label:'1',col:'#059669',bg:'#f0fdf4',n:500, acc:'84.0%',note:'PRIMARY TARGET — f1 uses P(Happy) directly. Highest accuracy class.'},
+    {cls:'Sad',       label:'2',col:'#3b82f6',bg:'#eff6ff',n:500, acc:'65.0%',note:'Used in negative-valence sentences in P1 corpus'},
+    {cls:'Surprise',  label:'3',col:'#f59e0b',bg:'#fffbeb',n:500, acc:'73.0%',note:'[surprised] tag maps to this class'},
+    {cls:'Fear',      label:'4',col:'#8b5cf6',bg:'#f5f3ff',n:500, acc:'57.0%',note:'[curious] maps here by inference — F8 sub-perceptual risk'},
+    {cls:'Disgust',   label:'5',col:'#ef4444',bg:'#fff1f2',n:500, acc:'52.0%',note:'Not used in EVAtAR-IDEA tag vocabulary'},
+    {cls:'Anger',     label:'6',col:'#dc2626',bg:'#fff7ed',n:500, acc:'53.0%',note:'[angry] tag — low accuracy, avoided in P1 target set'},
+    {cls:'Contempt',  label:'7',col:'#92400e',bg:'#fefce8',n:500, acc:'40.0%',note:'Lowest accuracy — not in EVAtAR-IDEA vocabulary'},
+  ];
+  var tbody = document.getElementById('ref-table-body');
+  if(!tbody) return;
+  tbody.innerHTML = ROWS.map(function(r, i){
+    var stripe = i%2===0 ? 'background:#fff;' : 'background:#f9fafb;';
+    var bold = r.cls==='Happy' ? 'font-weight:700;' : '';
+    return '<tr style="'+stripe+bold+'">'
+      +'<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;gap:8px;">'
+      +'<span style="width:10px;height:10px;border-radius:50%;background:'+r.col+';flex-shrink:0;display:inline-block;"></span>'
+      +r.cls+'</td>'
+      +'<td style="padding:8px 12px;text-align:center;border-bottom:1px solid #f3f4f6;font-family:monospace;color:#6b7280;">Class '+r.label+'</td>'
+      +'<td style="padding:8px 12px;text-align:center;border-bottom:1px solid #f3f4f6;color:#6b7280;">'+r.n+'</td>'
+      +'<td style="padding:8px 12px;text-align:center;border-bottom:1px solid #f3f4f6;font-weight:700;color:'+r.col+';">'+r.acc+'</td>'
+      +'<td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;font-size:11px;color:#6b7280;">'+r.note+'</td>'
+      +'</tr>';
+  }).join('');
+  // Close on backdrop
+  document.addEventListener('click', function(e){
+    var m=document.getElementById('ref-modal');
+    if(m && e.target===m) m.style.display='none';
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){var m=document.getElementById('ref-modal');if(m)m.style.display='none';}
+  });
+})();
+
+function openRefModal(){ document.getElementById('ref-modal').style.display='flex'; }
+
+
+
+// ── Step-by-step pipeline walker ──────────────────────────────────
+var d6CurStep = -1;
+var d6PlayTimer = null;
+var d6IsFS = false;
+
+var D6STEPS=[["n0", "#d97706", "\ud83d\udccb Script Sentence", "The same 19-word sentence is given to all three approaches. Nothing has been tagged yet. Happy class \u00b7 Hard difficulty \u00b7 emotional peak at word 16 ('finally done') = 84% of sentence length. This is the starting point \u2014 identical for Auto-Enhance, Expert Human, and EVAtAR-IDEA.", ["Same input, different what happens next", "Peak at 84% creates high F3 late-onset risk", "19 words \u00b7 FK Grade 11 complexity"]], ["n1", "#d97706", "\ud83e\udd16 Auto-Enhance places tags", "HeyGen's black-box heuristic analyses the sentence and inserts expression tags. It places [enthusiastic] at word 3 (16%) and word 13 (68%). This is a single pass \u2014 no iteration, no scoring, no feedback. The tagged script is the output.", ["One pass only \u2014 no iteration", "No AffectNet score is computed here", "Tag positions: word 3 (16%) and word 13 (68%)"]], ["n2", "#ef4444", "\ud83d\udc64 Expert Human places tags", "Jahidul applies the F1\u2013F8 failure taxonomy knowledge manually, placing [smile] at word 9 'dollars' (53%) and [excited] at word 11 'hundred' (63%). This reflects 200+ hours of production experience \u2014 yet still produces borderline F3.", ["Taxonomy-aware placement \u2014 still limited by intuition", "200+ hours experience, one decision per sentence", "Tag positions: word 9 (53%) and word 11 (63%)"]], ["n3", "#10b981", "\ud83e\uddec EVAtAR-IDEA GA places tags", "The GA does NOT place tags manually. It initialises a population of 8 random tag sequences, then evolves them over 8 generations using AffectNet F(p) scores as the fitness function. 64 total renders. The GA discovers word 13 'and' (74%) \u2014 a position neither Auto-Enhance nor the human expert tried.", ["8 candidates \u00d7 8 generations = 64 renders", "AffectNet F(p) is the fitness function at every generation", "Elitism: best candidates survive if children score worse"]], ["n4", "#6b7280", "\ud83c\udfac HeyGen Renders \u2014 all three", "All three tagged scripts are rendered by HeyGen under identical conditions \u2014 same avatar (Aubria), same voice, same clip settings. Each render costs $0.048 and takes ~60 seconds. The output is a video clip. No score is returned by HeyGen \u2014 that is entirely your pipeline.", ["Cost: $0.048 per render", "Output: video clip only \u2014 no score returned", "HeyGen has zero awareness of AffectNet or F(p)"]], ["n5", "#4338ca", "\ud83d\udd2c DeepFace + AffectNet scores all three", "YOUR measurement pipeline runs on every rendered clip \u2014 identically for p_auto, p_manual, and p*. DeepFace analyses every frame across all 8 AffectNet emotion classes. F(p) = 0.5\u00b7f1 + 0.3\u00b7f2 + 0.2\u00b7f3 where f1=class accuracy, f2=timing alignment, f3=consistency. Auto-Enhance never ran this pipeline during tag placement.", ["F(p) = 0.5\u00b7f1 + 0.3\u00b7f2 + 0.2\u00b7f3", "Applied post-hoc to p_auto and p_manual", "Applied inside the loop (\u00d764) for EVAtAR-IDEA"]], ["n6", "#dc2626", "F(p_auto) = 0.41 \u2014 below threshold", "f1=0.69 (correct class \u2014 good tag type choice) \u00b7 f2=0.28 (F3 late-onset: expression fires at 68%, peak arrives at 84%) \u00b7 f3=0.41 (some frame flickering). Weighted: 0.5\u00d70.69 + 0.3\u00d70.28 + 0.2\u00d70.41 = 0.41. Below pre-registered threshold of 0.75.", ["f1=0.69: correct emotion class", "f2=0.28: expression fires before audio peak \u2014 F3 late-onset", "0.41 < 0.75 \u2014 fails pre-registered threshold"]], ["n7", "#b91c1c", "F(p_manual) = 0.63 \u2014 below threshold", "f1=0.73 (correct class + gesture boost from [smile]) \u00b7 f2=0.54 (borderline: tag at 63% fires 4 words before peak at 84%) \u00b7 f3=0.58 (more stable than Auto-Enhance). Weighted: 0.5\u00d70.73 + 0.3\u00d70.54 + 0.2\u00d70.58 = 0.63. Better than Auto-Enhance, still fails.", ["f1=0.73: gesture pairing improved accuracy", "f2=0.54: borderline F3 \u2014 fires 4 words early", "0.63 < 0.75 \u2014 fails pre-registered threshold"]], ["n8", "#059669", "F(p*) = 0.81 \u2014 threshold met \u2713", "f1=0.78 (highest accuracy \u2014 gesture pairing optimised by GA) \u00b7 f2=0.82 (near-perfect: tag at 74% fires as 'finally done' arrives at 84%) \u00b7 f3=0.74 (highly stable). Weighted: 0.5\u00d70.78 + 0.3\u00d70.82 + 0.2\u00d70.74 = 0.81. Pre-registered threshold of 0.75 met. Wilcoxon p<0.05 vs both baselines.", ["f1=0.78: GA optimised gesture-emotion pairing", "f2=0.82: expression builds WITH 'finally done'", "0.81 \u2265 0.75 \u2014 pre-registered threshold met \u2713"]], ["n9", "#7c3aed", "\ud83d\udd11 Key Distinction", "Both baselines (p_auto, p_manual) were evaluated BY AffectNet after the fact. EVAtAR-IDEA was optimised TOWARD AffectNet during design \u2014 running it 64 times per sentence as the objective function. The measurement tool is the same for all three. The access to that tool during creation is not. That difference produced F(p*) = 0.81 vs F(p_auto) = 0.41 \u2014 a gap the research is designed to quantify.", ["Auto-Enhance: evaluated BY AffectNet (post-hoc)", "EVAtAR-IDEA: optimised TOWARD AffectNet (\u00d764, in-loop)", "Pre-registered at OSF before any P1 data collection"]]];
+
+function d6Step(n) {
+  if (n < 0 || n >= D6STEPS.length) return;
+  d6CurStep = n;
+  var s = D6STEPS[n];
+  var nid = s[0], col = s[1], title = s[2], body = s[3], chips = s[4];
+
+  // Highlight the corresponding SVG node
+  document.querySelectorAll('[data-tip]').forEach(function(el) {
+    el.style.opacity = el.getAttribute('data-tip') === nid ? '1' : '0.25';
+  });
+
+  // Update step buttons
+  document.querySelectorAll('[id^="d6-step-btn-"]').forEach(function(btn, i) {
+    btn.style.background = i === n ? D6STEPS[i][1] + '22' : 'transparent';
+    btn.style.borderColor = D6STEPS[i][1];
+    btn.style.fontWeight = i === n ? '900' : '700';
+  });
+
+  // Build chips HTML
+  var chipsHtml = chips.map(function(ch) {
+    return '<span style="font-family:monospace;font-size:10px;padding:3px 9px;border-radius:5px;background:' + col + '15;color:' + col + ';border:1px solid ' + col + '30;">' + ch + '</span>';
+  }).join('');
+
+  // Update inline panel
+  var panel = document.getElementById('d6-step-panel');
+  if (panel) {
+    panel.style.display = 'block';
+    panel.style.borderColor = col;
+    document.getElementById('d6-step-num').textContent = 'STEP ' + (n+1) + ' OF ' + D6STEPS.length;
+    document.getElementById('d6-step-num').style.cssText = 'font-family:monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:' + col + '18;color:' + col + ';flex-shrink:0;';
+    document.getElementById('d6-step-title').textContent = title;
+    document.getElementById('d6-step-title').style.color = col;
+    document.getElementById('d6-step-body').textContent = body;
+    document.getElementById('d6-step-chips').innerHTML = chipsHtml;
+    document.getElementById('d6-step-counter').textContent = (n+1) + ' / ' + D6STEPS.length;
+    document.getElementById('d6-prev-btn').style.opacity = n === 0 ? '0.3' : '1';
+    document.getElementById('d6-next-btn').textContent = n === D6STEPS.length-1 ? '✓ Done' : 'Next →';
+  }
+
+  // Update full-screen panel if open
+  if (d6IsFS) {
+    var fsp = document.getElementById('d6-fs-panel');
+    if (fsp) {
+      fsp.style.display = 'block';
+      fsp.style.borderColor = col;
+      document.getElementById('d6-fs-step-num').textContent = 'STEP ' + (n+1) + ' OF ' + D6STEPS.length;
+      document.getElementById('d6-fs-step-num').style.color = col;
+      document.getElementById('d6-fs-step-title').textContent = title;
+      document.getElementById('d6-fs-step-title').style.color = col;
+      document.getElementById('d6-fs-step-body').textContent = body;
+      document.getElementById('d6-fs-step-chips').innerHTML = chips.map(function(ch) {
+        return '<div style="font-family:monospace;font-size:10px;padding:4px 9px;border-radius:5px;background:' + col + '20;color:' + col + ';border:1px solid ' + col + '40;">' + ch + '</div>';
+      }).join('');
+      document.getElementById('d6-fs-counter').textContent = (n+1) + ' / ' + D6STEPS.length;
+    }
+    // Highlight FS step list
+    document.querySelectorAll('[id^="d6-fs-step-"]').forEach(function(btn, i) {
+      btn.style.background = i === n ? D6STEPS[i][1] + '22' : 'rgba(255,255,255,.04)';
+      btn.style.borderColor = i === n ? D6STEPS[i][1] : 'rgba(255,255,255,.1)';
+    });
+  }
+}
+
+function d6StepPlay() {
+  var isPlaying = document.getElementById('d6-play-btn').textContent.includes('Pause');
+  if (isPlaying) {
+    clearInterval(d6PlayTimer); d6PlayTimer = null;
+    document.getElementById('d6-play-btn').textContent = '▶ Auto Walk-through';
+    if (document.getElementById('d6-play-btn-fs'))
+      document.getElementById('d6-play-btn-fs').textContent = '▶ Auto Walk-through';
+    return;
+  }
+  if (d6CurStep < 0) d6Step(0);
+  document.getElementById('d6-play-btn').textContent = '⏸ Pause';
+  if (document.getElementById('d6-play-btn-fs'))
+    document.getElementById('d6-play-btn-fs').textContent = '⏸ Pause';
+  d6PlayTimer = setInterval(function() {
+    var next = d6CurStep + 1;
+    if (next >= D6STEPS.length) {
+      clearInterval(d6PlayTimer); d6PlayTimer = null;
+      document.getElementById('d6-play-btn').textContent = '↺ Replay';
+      if (document.getElementById('d6-play-btn-fs'))
+        document.getElementById('d6-play-btn-fs').textContent = '↺ Replay';
+      // Reset opacity
+      document.querySelectorAll('[data-tip]').forEach(function(el){ el.style.opacity='1'; });
+      return;
+    }
+    d6Step(next);
+  }, 2200);
+}
+
+function d6FullScreen() {
+  d6IsFS = true;
+  var overlay = document.getElementById('d6-fs-overlay');
+  overlay.style.display = 'flex';
+  // Clone SVG into full-screen wrap
+  var svgWrap = document.getElementById('d6-svg-wrap');
+  var fsSvgWrap = document.getElementById('d6-fs-svg-wrap');
+  fsSvgWrap.innerHTML = svgWrap.innerHTML;
+  // Build FS step list
+  var fsList = document.getElementById('d6-fs-steps');
+  fsList.innerHTML = D6STEPS.map(function(s, i) {
+    return '<button id="d6-fs-step-' + i + '" onclick="d6Step(' + i + ')" style="'
+      + 'display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;'
+      + 'border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);'
+      + 'color:rgba(255,255,255,.75);font-size:11px;font-weight:600;cursor:pointer;text-align:left;width:100%;">'
+      + '<span style="font-family:monospace;font-size:9px;font-weight:700;color:' + s[1] + ';flex-shrink:0;">' + (i+1) + '</span>'
+      + s[2]
+      + '</button>';
+  }).join('');
+  // Attach data-tip listeners to cloned SVG
+  fsSvgWrap.querySelectorAll('[data-tip]').forEach(function(el) {
+    el.style.cursor = 'pointer';
+    el.addEventListener('mouseenter', function(e) {
+      var d = D6TIPS[el.dataset.tip]; if(d) d6ShowTip(e,d.tag,d.title,d.body,d.col,d.kv);
+    });
+    el.addEventListener('mouseleave', d6HideTip);
+  });
+  if (d6CurStep >= 0) d6Step(d6CurStep);
+}
+
+function d6ExitFullScreen() {
+  d6IsFS = false;
+  document.getElementById('d6-fs-overlay').style.display = 'none';
+  if (d6PlayTimer) { clearInterval(d6PlayTimer); d6PlayTimer = null; }
+  document.getElementById('d6-play-btn').textContent = '▶ Auto Walk-through';
+}
+
+// ESC exits full screen
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && d6IsFS) d6ExitFullScreen();
+});
+
+// ── END Step-by-step ──────────────────────────────────────────────
+
+</script>
+
+<!-- F1-F8 Modal (self-contained) -->
+<div id="f8-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:9000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#0e1117;border:1px solid rgba(255,255,255,.12);border-radius:14px;width:min(90vw,560px);max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:f8mIn .22s ease;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08);background:#161b26;border-radius:14px 14px 0 0;position:sticky;top:0;">
+      <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.7);">📋 F1–F8 FAILURE TAXONOMY</span>
+      <button onclick="document.getElementById('f8-modal').style.display='none'" style="background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.6);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:11px;">✕</button>
+    </div>
+    <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:4px;">Eight documented failure modes for scripted avatar expression tags. Pre-registered as part of Paper 1 (D1 dataset). F(p) = 0.5·f1 + 0.3·f2 + 0.2·f3 is independent of F1–F8; the taxonomy informs constraint repair in the GA.</div>
+      <div id="f8-items"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FAB: F1-F8 -->
+<button onclick="document.getElementById('f8-modal').style.display='flex'" style="position:fixed;bottom:20px;right:20px;z-index:5100;display:flex;align-items:center;gap:7px;background:#c8510a;color:#fff;font-family:var(--mono,monospace);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:8px 14px;border-radius:8px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(200,81,10,.4);transition:transform .15s;" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform=''">
+  <span style="font-size:13px;">📋</span><span>F1–F8 Taxonomy</span>
+</button>
+
+
+<!-- Reference modal: Mollahosseini et al. 2019 -->
+<div id="ref-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:9500;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:14px;width:min(92vw,680px);max-height:88vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.35);">
+    <!-- Modal header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid #e5e7eb;position:sticky;top:0;background:#fff;border-radius:14px 14px 0 0;z-index:1;">
+      <div>
+        <div style="font-family:var(--mono),monospace;font-size:8.5px;font-weight:700;letter-spacing:.12em;color:#4338ca;margin-bottom:5px;">CITED REFERENCE</div>
+        <div style="font-size:14px;font-weight:700;color:#0e1117;line-height:1.35;max-width:540px;">AffectNet: A Database for Facial Expression, Valence, and Arousal Computing in the Wild</div>
+        <div style="font-size:12px;color:#6b7280;margin-top:4px;">Mollahosseini, A., Hasani, B., &amp; Mahoor, M. H. · <em>IEEE Transactions on Affective Computing</em>, 10(1), 18–31 · 2019</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="font-family:monospace;font-size:9px;font-weight:700;background:#eef2ff;color:#4338ca;padding:2px 8px;border-radius:4px;">DOI: 10.1109/TAFFC.2017.2740923</span>
+          <span style="font-family:monospace;font-size:9px;font-weight:700;background:#f0fdf4;color:#065f46;padding:2px 8px;border-radius:4px;">450K manually annotated</span>
+          <span style="font-family:monospace;font-size:9px;font-weight:700;background:#fff7ed;color:#92400e;padding:2px 8px;border-radius:4px;">1M+ images total</span>
+        </div>
+      </div>
+      <button onclick="document.getElementById('ref-modal').style.display='none'" style="background:#f3f4f6;border:none;color:#6b7280;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:12px;flex-shrink:0;margin-left:12px;">✕</button>
+    </div>
+
+    <!-- Modal body -->
+    <div style="padding:18px 22px;">
+
+      <!-- Abstract summary -->
+      <div style="background:#f8f7f4;border-radius:8px;padding:12px 16px;margin-bottom:18px;font-size:12.5px;color:#374151;line-height:1.7;">
+        <strong>Abstract (summary):</strong> AffectNet is the largest available database of facial expressions in the wild, collected by querying six search engines using 1,250 emotion-related keywords in six languages. Of 1,250,000 images retrieved, 450,000 were manually annotated by expert annotators for the presence of eight discrete emotion categories. The paper also proposes a deep neural network (DNN) baseline for both discrete and continuous emotion prediction.
+      </div>
+
+      <!-- Table 6 -->
+      <div style="font-family:var(--mono),monospace;font-size:9px;font-weight:700;letter-spacing:.12em;color:#9ca3af;margin-bottom:10px;">TABLE 6 — RECOGNITION ACCURACY ON AffectNet TEST SET (8-CLASS)</div>
+      <div style="overflow-x:auto;margin-bottom:16px;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="background:#0e1117;color:#fff;">
+              <th style="padding:8px 12px;text-align:left;font-family:monospace;font-size:10px;font-weight:700;letter-spacing:.08em;border-radius:6px 0 0 0;">Emotion Class</th>
+              <th style="padding:8px 12px;text-align:center;font-family:monospace;font-size:10px;font-weight:700;letter-spacing:.08em;">AffectNet Label</th>
+              <th style="padding:8px 12px;text-align:center;font-family:monospace;font-size:10px;font-weight:700;letter-spacing:.08em;">Test Samples</th>
+              <th style="padding:8px 12px;text-align:center;font-family:monospace;font-size:10px;font-weight:700;letter-spacing:.08em;">DNN Accuracy</th>
+              <th style="padding:8px 12px;text-align:left;font-family:monospace;font-size:10px;font-weight:700;letter-spacing:.08em;border-radius:0 6px 0 0;">Relevance to EVAtAR-IDEA</th>
+            </tr>
+          </thead>
+          <tbody id="ref-table-body"></tbody>
+        </table>
+      </div>
+
+      <!-- Inter-annotator agreement note -->
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;color:#065f46;margin-bottom:4px;">Inter-annotator Agreement (Table 6, footnote)</div>
+        <div style="font-size:12px;color:#374151;line-height:1.65;">The paper reports <strong>60.7% agreement</strong> between two independent annotators across all 8 classes, measured using Cohen's Kappa. This is the ground-truth validation cited in Paper 1 of EVAtAR-IDEA. DeepFace (using AffectNet weights) achieves <strong>0.64 normalised F1</strong> on this same test set — marginally above human annotator agreement, confirming AffectNet as a credible scorer.</div>
+      </div>
+
+      <!-- EVAtAR-IDEA usage note -->
+      <div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:12px 16px;">
+        <div style="font-size:11px;font-weight:700;color:#3730a3;margin-bottom:4px;">How EVAtAR-IDEA uses this paper</div>
+        <div style="font-size:12px;color:#374151;line-height:1.65;">F(p) = 0.5·f1 + 0.3·f2 + 0.2·f3 where <strong>f1 = mean P(Happy) across frames</strong> — directly computed using AffectNet's Happy class (Class 3). The 60.7% inter-annotator agreement provides the validity floor: our DeepFace scorer is at least as reliable as human expert agreement on the same taxonomy. Pre-registered at OSF before any P1 data collection.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

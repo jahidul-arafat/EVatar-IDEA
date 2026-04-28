@@ -1,0 +1,734 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{microtype}
+
+% --- Colours ---
+\definecolor{auburn}{RGB}{200,81,10}
+\definecolor{navy}{RGB}{26,79,138}
+\definecolor{forestgreen}{RGB}{26,107,60}
+\definecolor{purple}{RGB}{74,26,122}
+\definecolor{amber}{RGB}{122,82,0}
+\definecolor{lightbg}{RGB}{250,249,246}
+\definecolor{notebg}{RGB}{255,252,235}
+\definecolor{warnbg}{RGB}{255,245,245}
+
+% --- Page style ---
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textcolor{auburn}{\small EVAtAR-IDEA · Speech Script}}
+\lhead{\small Jahidul Arafat · Auburn University CSSE}
+\cfoot{\thepage}
+
+% --- Section styles ---
+\titleformat{\section}{\large\bfseries\color{navy}}{}{0em}{\thesection\quad}[\vspace{-4pt}\rule{\linewidth}{1pt}]
+\titleformat{\subsection}{\normalsize\bfseries\color{auburn}}{}{0em}{}
+\titleformat{\subsubsection}{\small\bfseries\color{forestgreen}}{}{0em}{}
+
+% --- Custom environments ---
+\newmdenv[backgroundcolor=lightbg,linecolor=navy,linewidth=1.5pt,
+  innerleftmargin=14pt,innerrightmargin=14pt,innertopmargin=10pt,
+  innerbottommargin=10pt,skipabove=8pt,skipbelow=8pt]{speechbox}
+
+\newmdenv[backgroundcolor=notebg,linecolor=amber,linewidth=1pt,
+  innerleftmargin=10pt,innerrightmargin=10pt,innertopmargin=6pt,
+  innerbottommargin=6pt,skipabove=6pt,skipbelow=6pt]{cuebox}
+
+\newmdenv[backgroundcolor=warnbg,linecolor=auburn,linewidth=1pt,
+  innerleftmargin=10pt,innerrightmargin=10pt,innertopmargin=6pt,
+  innerbottommargin=6pt,skipabove=6pt,skipbelow=6pt]{warnbox}
+
+\onehalfspacing
+
+\begin{document}
+
+%% ─── Title page ────────────────────────────────────────────────────
+\begin{titlepage}\centering
+\vspace*{1.5cm}
+{\huge\bfseries\color{navy}EVAtAR-IDEA}\\[0.5cm]
+{\Large\color{auburn}Interactive Distributed Evolutionary Algorithm\\
+for Scripted Avatar Video Generation}\\[1cm]
+\rule{0.65\linewidth}{0.6pt}\\[0.8cm]
+{\LARGE\bfseries Detailed Presentation Speech Script}\\[0.4cm]
+{\large With Component Notes, Worked Examples, and Committee Q\&A}\\[1cm]
+\rule{0.65\linewidth}{0.4pt}\\[0.8cm]
+{\large\textbf{Jahidul Arafat}}\\[0.2cm]
+{\normalsize PhD Candidate, Computer Science \& Software Engineering}\\
+{\normalsize Auburn University, Auburn, Alabama}\\[0.5cm]
+{\normalsize\textit{Supervisor:} \textbf{Prof.\ Gerry Dozier}}\\[0.3cm]
+{\normalsize Domain: Interactive Distributed Evolutionary Computation (IDEC)}\\
+{\normalsize Target: Three peer-reviewed papers}\\[1.2cm]
+\begin{tabular}{ll}
+\textbf{Total delivery time:} & $\approx$ 8 minutes 15 seconds \\
+\textbf{Slides:} & 6 intro + interactive playground \\
+\textbf{Platforms:} & HeyGen · D-ID · Akool \\
+\textbf{Ground truth:} & AffectNet (Mollahosseini et al., 2019) \\
+\textbf{Algorithm:} & Dozier (2005) IDEA \\
+\end{tabular}\\[1.5cm]
+{\small\textcolor{gray}{For internal use only --- PhD Research Proposal Defence}}
+\end{titlepage}
+
+%% ─── Contents ───────────────────────────────────────────────────────
+\tableofcontents\newpage
+
+%% ════════════════════════════════════════════════════════════════════
+\section{Slide 1 --- Project Title}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{cuebox}
+\textbf{Delivery cue:} Stand. Pause 2 seconds. Make eye contact with each committee member before
+you begin. This is your only chance for a first impression. Speak at 70\% of your normal speed.
+\textbf{Estimated time: 45 seconds.}
+\end{cuebox}
+
+\begin{speechbox}
+Good morning, members of the committee. My name is Jahidul Arafat --- I am a PhD candidate in
+the Department of Computer Science and Software Engineering here at Auburn University, and I am
+advised by Professor Gerry Dozier.
+
+The research I am presenting today is called \textbf{EVAtAR-IDEA}: the Interactive Distributed
+Evolutionary Algorithm for Optimising Expression Tag Sequences in Scripted Avatar Video Generation.
+
+This work sits at the intersection of three fields: \textbf{evolutionary computation},
+\textbf{affective computing}, and \textbf{AI-driven media production}. The central question is:
+can a systematic algorithm automatically decide which expression tags to place at which words
+in a script, for how long, in order to maximise the measurable perceptual quality of an AI
+avatar's facial expression?
+
+The research targets three peer-reviewed papers and tests the algorithm across three avatar
+platforms --- HeyGen, D-ID, and Akool. All scoring uses \textbf{AffectNet} as ground truth:
+the largest publicly available facial expression database in the wild, published in
+\textit{IEEE Transactions on Affective Computing} in 2019, with over one million images and
+450{,}000 manually annotated faces across eight emotion classes.
+\end{speechbox}
+
+\subsection{Component Notes}
+
+\subsubsection{What is AffectNet?}
+Mollahosseini, Hasani, \& Mahoor (2019). \textit{IEEE TAFFC 10}(1), 18--31.
+DOI: 10.1109/TAFFC.2017.2740923.
+The eight categorical classes (Table 3 of the paper): Neutral, Happy, Sad, Surprise, Fear,
+Anger, Disgust, Contempt. Note: AffectNet also defines ``None'', ``Uncertain'', and
+``Non-Face'' categories, but only the eight expression classes are used for classification.
+DeepFace (Serengil \& Ozpinar, 2020) uses AffectNet weights as its emotion recognition backbone.
+
+\subsubsection{What is IDEA?}
+Interactive Distributed Evolutionary Algorithm. Introduced by Dozier (2005) in the IDEC
+(Interactive Distributed Evolutionary Computation) domain. EVAtAR-IDEA is the first application
+of IDEA to affective avatar expression optimisation.
+
+\newpage
+%% ════════════════════════════════════════════════════════════════════
+\section{Slide 2 --- The Problem}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{cuebox}
+\textbf{Delivery cue:} Slow down here. The committee needs to \textit{feel} the problem before
+hearing the solution. Speak in first person throughout. Pause 1 second after every statistic.
+Let the numbers land. \textbf{Estimated time: 90 seconds.}
+\end{cuebox}
+
+\begin{speechbox}
+Let me ground this research in a concrete, first-hand experience.
+
+During February to May 2026, I was producing scripted speeches using \textbf{Aubria} ---
+HeyGen's AI avatar --- as part of the \textbf{AI@AU/Team Since Series initiative} at Auburn University.
+Aubria delivered keynote speeches at \textbf{Auburn Board of Trustees meetings}, programme
+briefings for the \textbf{DCSITE} detection canine science initiative, and the
+\textbf{AI Ethics Iron Bowl} event, where Aubria addressed students, faculty, and
+industry professionals live. A typical speech script is 500 to 800 words long.
+Each word is a potential tag placement point. Tags like \texttt{[serious]}, \texttt{[excited]},
+\texttt{[pause: 2s]}, placed manually, word by word, clip by clip.
+
+The problem I encountered was that every attempt broke something different. In one iteration,
+the avatar's face would \textbf{freeze mid-sentence} --- a classic F1 "no emotion tag" failure — the "no emotion tag" failure, where no expression tag was present at all, where no emotion
+tag was present for the first half of the clip. In another, the expression would \textbf{peak
+too late} --- I placed \texttt{[excited]} at word 14 of a 16-word sentence, but the avatar's
+rendering engine needs to fire the expression \textit{before} the corresponding audio peak.
+That is the F3 — the late-onset failure mode, where the expression fires after the audio peak.
+
+In the worst cases, I placed two emotion tags within three words of each other. For example:
+\texttt{[serious]} at word 4 and \texttt{[excited]} at word 6. The avatar engine cannot transition
+between two emotion states that close together --- both degrade into a neutral blank expression.
+That is \textbf{F2 — tag stacking, where two emotion tags are placed too close together} --- one of eight failure modes I later formalised.
+
+The result, in aggregate: \textbf{more than 200 hours} of manual iteration, across \textbf{more
+than 100 re-renders}, to produce a single polished video. Token cost: approximately 12 HeyGen
+credits per clip, at \$0.004 per credit = \textbf{\$0.048 per render}. For a 500-word script,
+that is 35 clips. At 100 re-renders per clip, the token cost exceeds \textbf{\$166 per video}.
+
+Now, HeyGen offers Auto-Enhance: a button that places tags automatically. I want to be precise
+about why that is insufficient. Auto-Enhance places tags typically at 30\%, 65\%, and 80\%
+of sentence length. The 65\% and 80\% positions almost always trigger F3 late-onset late-onset — meaning the expression fires after the audio peak — meaning the expression fires after the audio has already peaked --- the
+expression fires after the audio peak. There is no perceptual fitness function, no AffectNet
+validation, no failure taxonomy, and no published methodology.
+
+\textbf{Worked example:} Given the sentence \textit{``In twelve months, three papers, one hundred
+and sixty-six dollars, two hundred hours --- and it is finally done,''} Auto-Enhance places
+\texttt{[enthusiastic]} at word 3 and again at word 13 --- position 68\% of 19 words.
+F3 late-onset — meaning the expression fires after the audio peak — meaning the expression fires after the audio has already peaked is triggered because the emotional peak arrives at word 16: \textit{``finally done.''}
+The avatar expresses enthusiasm before the sentence reaches its emotional content.
+
+EVAtAR-IDEA addresses this systematically --- not with rules, but with rigorous evolutionary
+search, a pre-registered fitness function, and AffectNet validation.
+\end{speechbox}
+
+\subsection{The Eight Failure Modes (F1--F8 — the sub-perceptual failure)}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Code} & \textbf{Name} & \textbf{Criterion / Example} \\
+\midrule
+F1 & No emotion tag & No T1 token present; avatar renders neutral \\
+   & & \textit{Example: ``Today we will explore calculus.'' --- no tag} \\
+F2 & Tag stacking & Two emotion tags within 2 word positions \\
+   & & \textit{Example: [serious] word 4 + [excited] word 6 → both degrade} \\
+F3 & Late onset & Primary tag fires after 60\% of sentence length \\
+   & & \textit{Example: 12-word sentence, tag at word 9 = 75\% → F3 triggered} \\
+F4 & Overloading & More than 3 emotion tags in one clip \\
+F5 & Gesture overload & More than 2 gesture tokens in one clip \\
+F6 & Amplitude fatigue & \texttt{[excited]} used more than twice in one clip \\
+F7 & Timing overflow & Total pause duration exceeds 3 seconds \\
+F8 & Sub-perceptual & \texttt{[curious]} → Fear proxy; mean f1 = 0.31 \\
+   & & \textit{Note: [curious] is not an AffectNet category --- researcher inference} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{warnbox}
+\textbf{Critical transparency note for committee (F8 — the sub-perceptual failure):}
+The HeyGen tag \texttt{[curious]} has no equivalent in AffectNet's 8-class taxonomy (Table 3,
+Mollahosseini et al.\ 2019). EVAtAR-IDEA maps it to the \textit{Fear} class as the closest
+proxy in Russell's circumplex: curiosity shares high arousal and low-to-negative dominance with
+Fear. This is a \textbf{researcher inference, not an AffectNet definition}. It is pre-registered
+as a threat to validity in Paper 1.
+\end{warnbox}
+
+\subsection{Auto-Enhance vs.\ EVAtAR-IDEA}
+
+\begin{center}
+\begin{tabular}{@{}p{6cm}p{7cm}@{}}
+\toprule
+\textbf{HeyGen Auto-Enhance} & \textbf{EVAtAR-IDEA} \\
+\midrule
+Rule-based / LLM-prompted & Evolutionary search; 21-token vocabulary \\
+No perceptual fitness function & $F(p) = 0.5 \cdot f_1 + 0.3 \cdot f_2 + 0.2 \cdot f_3$ \\
+Not AffectNet validated & DeepFace + AffectNet 8-class scoring \\
+No failure taxonomy applied & Constraint repair for F2, F3, F5 \\
+No pre-registration & Wilcoxon + Cohen $d$ + OSF pre-registration \\
+Heuristic tag placement (30/65/80\%) & Optimised position from 1,000+ search space \\
+HeyGen-only & P3: HeyGen $\star\star\star$, D-ID $\star\star$, Akool $\star$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+%% ════════════════════════════════════════════════════════════════════
+\section{Slide 3 --- Research Objective}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{cuebox}
+\textbf{Delivery cue:} Technical but accessible. Write the formula on the board if available.
+Emphasise ``pre-registered'' as a methodological strength --- it protects both you and the finding.
+\textbf{Estimated time: 75 seconds.}
+\end{cuebox}
+
+\begin{speechbox}
+The core insight of EVAtAR-IDEA is that manual expression tag placement is, at its heart,
+a \textbf{combinatorial optimisation problem}.
+
+Given a sentence, a vocabulary of 21 confirmed expression tokens, the possible word positions,
+and hold durations from 0.5 to 3 seconds, the search space exceeds \textbf{one thousand distinct
+combinations per sentence}. No human can explore that space systematically.
+
+I formalise the optimisation target as:
+\[
+F(p) = 0.5 \cdot f_1 + 0.3 \cdot f_2 + 0.2 \cdot f_3
+\]
+Where:
+\begin{itemize}[leftmargin=2em,itemsep=2pt]
+  \item $f_1$ = AffectNet class accuracy: mean probability across all video frames that DeepFace
+    detects the intended emotion class. Example: for a sentence tagged \texttt{[excited]},
+    $f_1$ = mean P(Happy) from DeepFace, because \texttt{[excited]} maps to AffectNet Happy.
+  \item $f_2$ = Timing alignment: does the peak of the detected expression coincide with the
+    audio peak position in the sentence?
+  \item $f_3$ = Expression consistency: is the detected emotion stable across all frames,
+    or does it flicker below the threshold mid-sentence?
+\end{itemize}
+
+The weights --- 50\%, 30\%, 20\% --- are pre-registered at OSF before data collection.
+Getting the right emotion class is the primary criterion. Timing is secondary.
+Consistency is tertiary. Paper 2 includes a sensitivity analysis.
+
+Three baselines are compared: \textbf{$p_{auto}$} (Auto-Enhance), \textbf{$p_{manual}$}
+(expert human), and \textbf{$p^*$} (EVAtAR-IDEA). Pre-registered success threshold:
+$F(p^*) \geq 0.75$, Wilcoxon signed-rank $p < 0.05$, Cohen's $d \geq 0.5$.
+\end{speechbox}
+
+\subsection{The 21-Token Vocabulary}
+
+The vocabulary was derived empirically before P1 data collection:
+
+\begin{center}
+\begin{tabular}{@{}llp{7cm}@{}}
+\toprule
+\textbf{Tier} & \textbf{Count} & \textbf{Tokens \& Notes} \\
+\midrule
+T1 — AffectNet-Confirmed & 6 &
+  \texttt{[excited]}$\to$Happy, \texttt{[serious]}$\to$Neutral,
+  \texttt{[surprised]}$\to$Surprise, \texttt{[curious]}$\to$Fear\textsuperscript{*},
+  \texttt{[sad]}$\to$Sad, \texttt{[angry]}$\to$Anger \\[4pt]
+T2 — Excluded & 6 &
+  \texttt{[warm]}, \texttt{[confident]}, \texttt{[thoughtful]}, \texttt{[calm]},
+  \texttt{[nervous]}, \texttt{[frustrated]} --- each excluded with documented reason \\[4pt]
+T3 — Gesture/Delivery/Timing & 9+ &
+  \texttt{[smile]}, \texttt{[nod]}, \texttt{[lean:forward]}, \texttt{[eyebrow:raise]},
+  \texttt{[head:tilt]}, \texttt{[emphasis]}, \texttt{[pause:0.5s--3s]}, etc. \\
+\bottomrule
+\multicolumn{3}{l}{\small \textsuperscript{*}\texttt{[curious]} mapped to Fear by researcher inference; not an AffectNet definition.}\\
+\end{tabular}
+\end{center}
+
+\newpage
+%% ════════════════════════════════════════════════════════════════════
+\section{Slide 4 --- Three Prototypes · Three Papers}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{cuebox}
+\textbf{Delivery cue:} Pause between each prototype. Point to P1, P2, P3 on screen.
+Emphasise ``sequential'' --- P2 cannot begin without P1 data; P3 cannot begin without P2 sequences.
+\textbf{Estimated time: 105 seconds.}
+\end{cuebox}
+
+\begin{speechbox}
+EVAtAR-IDEA is structured across three sequential prototypes, each targeting a peer-reviewed paper.
+
+\textbf{Prototype 1 --- Baseline Measurement.}
+I collect 50 sentences across the 8 AffectNet emotion classes. Each sentence is assigned a
+difficulty level using a three-factor rubric:
+(1)~Flesch-Kincaid grade for syntactic complexity;
+(2)~Russell \& Mehrabian's VAD model for emotional ambiguity;
+(3)~F3 late-onset — meaning the expression fires after the audio peak — meaning the expression fires after the audio has already peaked risk from the position of the primary emotion cue word.
+
+Worked example: ``Today we will explore the fundamental theorem of calculus'' --- 9 words,
+FK grade 8, emotion cue at word 4 = 44\% of sentence, low F3 late-onset late-onset late-onset — meaning the expression fires after the audio peak risk — how likely the expression is to fire after the audio peak $\Rightarrow$ \textbf{Easy}.
+Versus: ``In twelve months, three papers, two hundred hours --- and it is finally done'' ---
+19 words, FK grade 11, emotion cue at word 16 = 84\% $\Rightarrow$ \textbf{Hard}.
+
+\textbf{Transparency note:} \texttt{[curious]} has no AffectNet equivalent. Mapped to Fear
+as closest VAD proxy. Pre-registered as threat to validity. Output: \textbf{D1 dataset}.
+Targets \textbf{Paper 1: Vocabulary and Corpus Study}.
+
+\textbf{Prototype 2 --- EVAtAR-IDEA Engine.}
+For each of 50 sentences: initialise 8 random candidate sequences, evolve across 8 generations.
+Each generation: render 8 clips via HeyGen ($\approx$60s per render), score via DeepFace
+(AffectNet weights), tournament select ($k=3$), mutate (shift\_pos, change\_tag, add, remove,
+change\_dur), constraint repair (fix F2 tag-stacking tag-stacking and F3 late-onset — meaning the expression fires after the audio peak — meaning the expression fires after the audio has already peaked violations). That is \textbf{64 renders per
+sentence}. Sequences with $F(p^*) \geq 0.70$ enter the Meme Space, seeding same-emotion
+sentences and reducing cost from $\sim$64 to $\sim$20 renders.
+Targets \textbf{Paper 2: Optimisation Study}.
+
+\textbf{Prototype 3 --- Cross-Platform Portability.}
+The same $p^*$ from P2 is tested on HeyGen (inline tags, full control), D-ID (NL motion hints,
+expected 15--25\% degradation), and Akool (audio-driven only, lower bound). Same DeepFace
+scoring pipeline throughout. Answers: is EVAtAR-IDEA platform-specific or generalisable?
+Targets \textbf{Paper 3: Portability Study}.
+\end{speechbox}
+
+\subsection{GA Parameter Table}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Justification} \\
+\midrule
+Population size & 8 & Balances diversity with render cost (64 renders/gen) \\
+Generations & 8 & Sufficient convergence observed in pilot; pre-registered \\
+Tournament $k$ & 3 & Maintains diversity while applying selection pressure \\
+Meme threshold & $F(p^*) \geq 0.70$ & Conservative; below pre-registered success threshold \\
+Mutation ops & 5 & shift\_pos, change\_tag, add\_tag, remove\_tag, change\_dur \\
+Constraint repair & Post-mutation & Fixes F2 stacking and F3 late-onset violations \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Corpus Difficulty Rubric (Paper 1)}
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Level} & \textbf{Word count} & \textbf{FK grade} & \textbf{F3 risk / cue position} \\
+\midrule
+Easy & $\leq 10$ & $\leq 6$ & Cue $< 40\%$ of sentence \\
+Medium & 11--16 & 7--10 & Cue $40\text{--}65\%$ \\
+Hard & $\geq 17$ & $\geq 11$ & Cue $> 65\%$ or multiple competing cues \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+References: Flesch (1948); Russell \& Mehrabian (1977); Mohammad \& Turney (2013) NRC Lexicon.
+
+\newpage
+%% ════════════════════════════════════════════════════════════════════
+\section{Slide 5 --- What You Are About to Experience}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{cuebox}
+\textbf{Delivery cue:} Conversational. You are a guide, not a lecturer.
+Invite the committee to follow along. Make it feel like an experience.
+\textbf{Estimated time: 90 seconds.}
+\end{cuebox}
+
+\begin{speechbox}
+Before you interact with the playground, let me map what each stage demonstrates and which
+paper it corresponds to.
+
+\textbf{Stage 1 --- Select Script} (P1 corpus collection): Choose from 32 sentences, 4 per
+emotion category, across all 8 AffectNet classes. When you select a category, three panels
+appear: the corpus design rationale explaining why 8 categories and how difficulty was assigned;
+a paragraph-to-clips explainer showing how a real Auburn Canine Science script breaks into 35
+individual render units; and a live Auto-Enhance preview showing exactly which tags HeyGen
+would place and which failure modes they would trigger.
+
+For example, selecting ``Rhetorical'' and picking the sentence ``Can a computer really learn
+to be more expressive than a human researcher?'' --- Auto-Enhance would place
+\texttt{[curious]} at word 3 and \texttt{[thoughtful]} at word 9. The preview flags this
+as F2 near-stacking, where two tags are placed dangerously close together — two tags placed dangerously close together and F3 moderate risk, with a simulated F($p_{auto}$) of 0.57.
+
+\textbf{Stage 2 --- Build Tags Manually} (P1 baseline): Click any word to add a tag.
+The F1 through F8, our eight documented avatar expression failure modes — the sub-perceptual failure where a tag produces too weak a signal for DeepFace to detect reliably — eight documented failure modes failure taxonomy panel on the right updates in real time. Place a tag at position 9
+of a 12-word sentence and F3 late-onset — meaning the expression fires after the audio peak — meaning the expression fires after the audio has already peaked fires immediately --- you watch it happen. Your final
+$F(p_{manual})$ is stored as the baseline the GA must beat.
+
+\textbf{Stage 3 --- Run GA} (P2): Choose 1--5 independent runs. Watch convergence across 8
+generations. The red dashed line is your $F(p_{manual})$. The Meme Space fills as solutions
+exceed 0.70. Each generation shows the mutation applied and the best candidate sequence.
+
+\textbf{Stage 4 --- Results} (P2 + P3): Three-way comparison table: Auto-Enhance vs your
+manual sequence vs GA-optimised $p^*$. Pre-registered threshold check. Cross-platform
+projection for HeyGen, D-ID, and Akool. D1 CSV export.
+\end{speechbox}
+
+\newpage
+%% ════════════════════════════════════════════════════════════════════
+\section{Slide 6 --- Full Pipeline, Pseudocode, and Algorithm}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{cuebox}
+\textbf{Delivery cue:} Use the three tab buttons --- Pipeline SVG (30s), Pseudocode (30s),
+Plain English (30s). Never read pseudocode line by line; summarise the structure.
+\textbf{Estimated time: 90 seconds.}
+\end{cuebox}
+
+\begin{speechbox}
+This slide presents the complete EVAtAR-IDEA algorithm from three angles.
+
+\textbf{Pipeline View --- left to right.}
+P1, in orange on the left, takes the corpus, runs both Auto-Enhance and human labelling,
+renders both via HeyGen, scores both via DeepFace, and produces the D1 dataset.
+The baseline arrow carries $F(p_{manual})$ and $F(p_{auto})$ into P2.
+P2, in the central green box, contains the inner GA loop inside a dashed border ---
+64 renders per sentence. Each of 8 candidates is rendered, scored, selected, mutated, and
+repaired. Sequences above 0.70 enter the Meme Space. After 8 generations, $p^*$ moves right
+into P3, where the same sequence is tested on HeyGen, D-ID, and Akool.
+The pre-registered threshold dashed line at the bottom ---
+$F(p^*) \geq 0.75$, Wilcoxon $p < 0.05$, Cohen's $d \geq 0.5$ ---
+is the primary success criterion for Paper 2.
+
+\textbf{Pseudocode View.}
+The algorithm opens with \texttt{PRE-REGISTER at OSF} before any data collection.
+P1 runs \texttt{AutoEnhance} and \texttt{Human.LabelTags} in parallel, renders and scores both.
+P2's inner loop: for each candidate, render, score, store if $\geq 0.70$, tournament select,
+mutate, constraint repair. The final line is a three-way Wilcoxon signed-rank test.
+P3 applies $p^*$ to three platforms and reports degradation.
+
+\textbf{Plain English View.}
+P1 asks: where does human expertise break down, and where does Auto-Enhance fail?
+P2 asks: can an evolutionary algorithm beat both, by a statistically meaningful margin?
+P3 asks: does that improvement transfer across platforms, or is it locked to HeyGen?
+
+This is the first application of Dozier's 2005 IDEA framework to affective avatar expression
+optimisation --- and the first work to formally compare evolutionary tag optimisation against
+a commercially deployed heuristic baseline.
+\end{speechbox}
+
+\newpage
+%% ════════════════════════════════════════════════════════════════════
+\section{Anticipated Committee Questions and Responses --- Complete}
+%% ════════════════════════════════════════════════════════════════════
+
+\subsection*{Section A --- Research Design \& Methodology}
+
+\paragraph{Q1 --- Why exactly 8 emotion categories?}
+AffectNet defines exactly 8 classes in its categorical model: Neutral, Happy, Sad, Surprise, Fear, Anger, Disgust, Contempt (Table 3, Mollahosseini et al., 2019). DeepFace uses these exact 8 classes. A 9th category would have no $f_1$ score --- the scoring oracle would break. The categories are determined by the measurement infrastructure, not by convenience.
+
+\paragraph{Q2 --- Why F(p) weights 0.5, 0.3, 0.2 and not equal thirds?}
+Pre-registered before data collection. $f_1$ at 50\%: wrong emotion class is categorical failure regardless of timing. $f_2$ at 30\%: timing determines perceived synchrony. $f_3$ at 20\%: flickering is visible but less disruptive. Paper 2 includes sensitivity analysis varying each weight by $\pm 0.1$.
+
+\paragraph{Q3 --- Why not a data-driven learned reward model instead of hand-designed F(p)?}
+A learned reward model requires a large labelled dataset of human perceptual ratings of avatar expressions --- that dataset does not exist yet. The hand-designed formula with pre-registered weights is methodologically stronger: it makes the success criterion falsifiable before data collection, prevents post-hoc weight tuning, and produces an interpretable decomposition. A learned model would be a black box the committee cannot interrogate.
+
+\paragraph{Q4 --- You map [curious] to Fear --- how do you defend that?}
+\texttt{[curious]} is not in AffectNet. I chose Fear as the closest proxy using Russell's VAD circumplex: both share high arousal and low-to-negative dominance. This is a researcher inference, pre-registered as a threat to validity in Paper 1. The GA compensates by pairing \texttt{[curious]} with \texttt{[head:tilt]} and \texttt{[eyebrow:raise]} tokens.
+
+\paragraph{Q5 --- Is there circularity --- F1--F8 failure modes derived from the same observations?}
+The F1--F8 taxonomy was derived from exploratory production work (Feb--May 2026), then treated as a fixed pre-registered framework before P1 data collection. Critically, the taxonomy informs the constraint repair module and diagnostic reporting --- it does \textit{not} compute $F(p)$. The fitness function is entirely AffectNet-grounded and independent of the taxonomy. Search space and evaluation are cleanly separated.
+
+\paragraph{Q6 --- How do you account for inter-rater reliability in difficulty assignments?}
+The difficulty rubric is algorithmic, not subjective --- it applies the Flesch-Kincaid formula, NRC Emotion Lexicon VAD scores, and a deterministic cue-position calculation. These are reproducible computations. Any researcher applying the same rubric to the same sentence obtains the same difficulty label. No inter-rater variance arises.
+
+\subsection*{Section B --- Algorithm Design}
+
+\paragraph{Q7 --- Why IDEA (Dozier 2005) and not NSGA-II or CMA-ES?}
+Three reasons: (1) IDEA is designed for Interactive Distributed Evolutionary Computation, explicitly incorporating human-in-the-loop interaction --- architecturally consistent with EVAtAR-IDEA's design. (2) Prof.\ Dozier, my supervisor, authored IDEA. (3) The tag sequence problem has a small, structured search space that does not require CMA-ES parameter adaptation or NSGA-II multi-objective decomposition.
+
+\paragraph{Q8 --- Why tournament selection k=3?}
+With population size 8, $k=3$ samples 37.5\% per tournament --- sufficient selection pressure without eliminating diversity. Roulette wheel selection is near-uniform for fitness values in the 0.50--0.85 range. The constraint repair ensures weak candidates are corrected before competition, maintaining diversity.
+
+\paragraph{Q9 --- Why 8 generations?}
+Determined by two constraints: (1) render cost --- 8 gens $\times$ 8 pop $= 64$ renders per sentence $\times$ \$0.048 $= \$3.07$/sentence, acceptable for a 50-sentence corpus; (2) pilot testing showed convergence by generation 5--6 for this vocabulary size. Paper 2 reports convergence curves.
+
+\paragraph{Q10 --- Mutation rate and convergence sensitivity?}
+Each generation applies exactly one mutation operator (uniformly selected from 5) per survivor --- effectively mutation probability = 1.0. Standard for small populations requiring diversity maintenance. Sensitivity analysis in Paper 2 reports convergence curves across 5 trial runs. Constraint repair acts as a second-order selection mechanism --- invalid mutations are repaired rather than discarded.
+
+\paragraph{Q11 --- Meme Space threshold 0.70 vs success threshold 0.75 --- why the gap?}
+The 0.05 gap is deliberate. If the Meme Space only stored solutions above 0.75, it would rarely fill during early runs. The conservative 0.70 threshold ensures stored solutions are genuinely good (well above 0.50 neutral baseline) while giving the GA room to improve seeded solutions toward 0.75 through further mutation.
+
+\paragraph{Q12 --- What if the GA finds p* but F(p*) < F(p\_manual)?}
+This is a valid and reportable outcome --- documented in D2 as a negative case. The Wilcoxon test operates on the full distribution across 50 sentences; a few negative cases contribute to variance estimation, not invalidation. Negative cases clustered by emotion class (e.g., \texttt{[curious]} sentences) would themselves be informative findings reported in the per-class failure analysis of Paper 2.
+
+\subsection*{Section C --- Evaluation \& Statistics}
+
+\paragraph{Q13 --- What is the statistical power of n=50?}
+G*Power 3.1 Wilcoxon signed-rank: $n=50$, two-tailed $\alpha=0.05$, $d=0.5$ (pre-registered medium effect) yields power $\approx 0.78$ --- below the 0.80 convention. This limitation is acknowledged and pre-registered. Mitigations: (1) $d=0.5$ is conservative; pilot observations suggest larger effect; (2) corpus is stratified across 8 classes and 3 difficulty levels for variance coverage; (3) class-level analysis increases local power to $n \approx 6$ per emotion class.
+
+\paragraph{Q14 --- Why Wilcoxon signed-rank rather than a paired t-test?}
+$F(p)$ scores are bounded in $[0,1]$ and unlikely to be normally distributed --- particularly for extreme failure cases where $F(p_{manual})$ clusters near 0.3--0.5. Wilcoxon makes no distributional assumptions and is standard for paired bounded continuous data in HCI and affective computing evaluation. A paired t-test is included as a secondary analysis.
+
+\paragraph{Q15 --- How do you validate DeepFace/AffectNet scores against human perception?}
+AffectNet was validated against 60.7\% inter-annotator agreement across 36,000 images (Table 6, Mollahosseini et al.\ 2019). DeepFace achieves 0.64 normalised F1-score on this test set (Table 9). I use $F(p)$ as a proxy for perceptual quality, not a direct measure. Paper 1 includes a perceptual validation: 10 human raters view a subset of clips and rate expression quality on a Likert scale. Spearman correlation between $F(p)$ and human ratings is reported.
+
+\paragraph{Q16 --- Is the Auto-Enhance comparison fair?}
+Yes, for the following reasons: Auto-Enhance is the tool practitioners actually use when they choose not to tag manually --- it is the de facto alternative baseline. The comparison is not ``EVAtAR-IDEA beats a research system'' but ``EVAtAR-IDEA outperforms the best available automated alternative.'' Auto-Enhance's behaviour is documented empirically. Its algorithm being unpublished means the comparison is behavioural, not architectural.
+
+\subsection*{Section D --- Technical \& Scope}
+
+\paragraph{Q17 --- What if HeyGen changes their API?}
+Mitigations: (1) all P1/P2 data collection is scheduled for a defined time window (2026) to minimise API version variance; (2) API version is documented as a methodological variable; (3) $F(p)$ is platform-agnostic; (4) P3 explicitly tests D-ID and Akool, demonstrating framework independence from HeyGen.
+
+\paragraph{Q18 --- How does the research scale to other avatars?}
+Scalability is P3's contribution. If $F(p)$ degrades gracefully ($\leq$25\%) across D-ID and Akool, the framework generalises. Beyond P3: any scriptable expression interface (Synthesia, Colossyan, Unity avatars) could adopt the same vocabulary, fitness function, and evolutionary architecture. The 21-token vocabulary would require re-validation per platform.
+
+\paragraph{Q19 --- How do you define word position?}
+Token index in the whitespace-tokenised sentence. Each whitespace-separated token = one position, regardless of syllable count. Contractions treated as single tokens. Punctuation stripped before tokenisation. Consistent with HeyGen's script parser. Documented as a methodological simplification.
+
+\paragraph{Q20 --- Does tag order matter? Can two tags share the same position?}
+Two tags at the same position are valid in the representation (list of position, tag, duration tuples --- not a dictionary). Two \textit{emotion} tags at the same position trigger F2 tag-stacking and are repaired by constraint repair. An emotion tag + gesture tag at the same position (e.g., \texttt{[excited]} + \texttt{[smile]} at position 2) is valid and often beneficial for $f_1$.
+
+\paragraph{Q21 --- What is the novelty claim vs existing work?}
+Three novel claims: (1) First application of Dozier (2005) IDEA to avatar expression optimisation in the IDEC domain. (2) First systematic F1--F8 failure taxonomy for scripted avatar expression tags, grounded in empirical production experience and AffectNet-validated. (3) First three-way empirical comparison of evolutionary optimisation vs human expert vs commercial heuristic (Auto-Enhance) using a pre-registered AffectNet-grounded fitness function. Existing avatar expression control work (gesture synthesis, head motion) does not address the expression tag placement problem for commercial text-to-avatar platforms.
+
+\subsection*{Section E --- Pre-Registration \& OSF}
+
+\paragraph{Q22 --- Are P1 and P2 pre-registrations separate?}
+Yes. P1 pre-reg: filed before any data collection; covers 8 categories, 50-sentence corpus, difficulty rubric, F1--F8 taxonomy, $F(p)$ formula and weights, \texttt{[curious]}$\to$Fear mapping as threat to validity. P2 pre-reg: filed after P1 data collection is complete; covers GA parameters (pop=8, gen=8, $k=3$), Meme Space threshold (0.70), success criterion ($F(p^*)\geq 0.75$), Wilcoxon+Cohen $d$ thresholds, three-way comparison design. Separating them prevents P1 data from being used to optimise P2 parameters post-hoc.
+
+\paragraph{Q23 --- What is pre-registered vs decided after data collection?}
+Pre-registered before P1: measurement framework. Pre-registered before P2: all GA parameters and statistical thresholds. Decided after P1 (documented as exploratory): secondary analyses, per-class breakdowns, meme space efficiency observations. This separation is standard and explicitly stated in both OSF filings.
+
+\subsection*{Section F --- Playground Questions}
+
+\paragraph{Q24 --- Why are playground scores simulated?}
+The playground is explicitly labelled throughout as a simulation with research-validated mock values. Live HeyGen calls would: (1) expose API authentication tokens; (2) take 30--90 seconds per render, making the playground unusable for committee demonstration. Mock values are calibrated from observed DeepFace output distributions. The architectural logic is identical to the real system.
+
+\paragraph{Q25 --- Why 32 sentences in playground but 50 in real study?}
+32 sentences (4 per category $\times$ 8 categories) is a completable representative subset for a committee session ($\sim$5--10 minutes per sentence to tag, render, assess, and run GA). The full 50-sentence corpus includes additional sentences per class for statistical power and edge-case coverage.
+
+\paragraph{Q26 --- Is the GA exploiting the mock data?}
+No. Mock $F(p)$ values include calibrated stochastic noise matching real DeepFace variance per emotion class and difficulty level. The GA calls the same fitness computation as the real system. Crucially, the mock data is calibrated to show realistic improvement curves --- for Hard sentences in the \texttt{[curious]} category (F8 risk), the playground accurately shows the GA struggling to exceed 0.68--0.72, reflecting the real research challenge.
+
+%% ─── References ─────────────────────────────────────────────────────
+\newpage
+\section*{Key References}
+\addcontentsline{toc}{section}{Key References}
+
+\begin{itemize}[leftmargin=2em, itemsep=6pt]
+  \item Mollahosseini, A., Hasani, B., \& Mahoor, M.~H. (2019).
+    AffectNet: A database for facial expression, valence, and arousal computing in the wild.
+    \textit{IEEE Transactions on Affective Computing}, \textit{10}(1), 18--31.
+    \href{https://doi.org/10.1109/TAFFC.2017.2740923}{DOI: 10.1109/TAFFC.2017.2740923}
+
+  \item Serengil, S.~I., \& Ozpinar, A. (2020).
+    LightFace: A hybrid deep face recognition framework.
+    \textit{2020 Innovations in Intelligent Systems and Applications Conference (ASYU)}, IEEE.
+
+  \item Dozier, G. (2005).
+    Interactive Distributed Evolutionary Computation.
+    \textit{Proceedings of GECCO}, ACM.
+
+  \item Russell, J.~A., \& Mehrabian, A. (1977).
+    Evidence for a three-factor theory of emotions.
+    \textit{Journal of Research in Personality}, \textit{11}(3), 273--294.
+
+  \item Flesch, R. (1948).
+    A new readability yardstick.
+    \textit{Journal of Applied Psychology}, \textit{32}(3), 221--233.
+
+  \item Kincaid, J.~P., Fishburne, R.~P., Rogers, R.~L., \& Chissom, B.~S. (1975).
+    Derivation of new readability formulas for Navy enlisted personnel.
+    \textit{Navy Technical Report}.
+
+  \item Mohammad, S., \& Turney, P. (2013).
+    Crowdsourcing a word-emotion association lexicon.
+    \textit{Computational Intelligence}, \textit{29}(3), 436--465.
+\end{itemize}
+
+\end{document}
+
+\newpage
+%% ════════════════════════════════════════════════════════════════════
+\section{Playground --- Stage 1 (Select Script)}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{cuebox}
+\textbf{Context:} Shown when reviewer enters the playground and sees the sentence selector.
+Guides them through corpus design rationale and Auto-Enhance preview.
+\end{cuebox}
+
+\begin{speechbox}
+Welcome to Stage 1 --- selecting your script sentence. This corresponds directly to Paper 1
+data collection.
+
+In the real EVAtAR-IDEA study, Jahidul labelled 50 sentences drawn from real Aubria speech
+scripts --- keynote addresses for the Auburn Board of Trustees, DCSITE programme briefings,
+and the AI Ethics Iron Bowl event, all part of the AI@AU/Team Since Series initiative.
+
+Each sentence belongs to one of eight emotion categories, mapping one-to-one to AffectNet's
+eight categorical classes: Neutral, Happy, Sad, Surprise, Fear, Anger, Disgust, and Contempt
+--- exactly the classes DeepFace uses for scoring.
+
+When you pick a category, two panels appear. First: the corpus design rationale --- why exactly
+eight categories, how difficulty was assigned via Flesch-Kincaid grade and the VAD model, and
+why sentences are the unit of analysis. A 500-word script produces approximately 35 sentence-clips,
+each rendered and scored independently. Second: the Auto-Enhance preview --- the tags HeyGen
+would place automatically, and the failure modes they would trigger. You will compare against
+Auto-Enhance in Stage 4.
+\end{speechbox}
+
+%% ════════════════════════════════════════════════════════════════════
+\section{Playground --- Stage 2 (Build Tags Manually)}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{cuebox}
+\textbf{Context:} Shown while reviewer is placing expression tags word-by-word.
+\end{cuebox}
+
+\begin{speechbox}
+Welcome to Stage 2 --- placing expression tags manually. This is where you become the human
+baseline in Paper 1. Click on words and assign tags. You are building $p_{manual}$ --- your
+best attempt at tagging this sentence for maximum perceptual quality.
+
+The F1-through-F8 failure taxonomy panel on the right updates live. All eight:
+F1 is the no-emotion-tag failure --- leave it untagged and the avatar renders neutral.
+F2 is tag-stacking --- two emotion tags within two word positions cause both to degrade.
+F3 is late onset --- a tag placed after 60\% of sentence length fires after the audio peak.
+F4 is emotion overloading --- more than three emotion tags per clip.
+F5 is gesture overload --- more than two gesture tokens.
+F6 is amplitude fatigue --- \texttt{[excited]} more than twice.
+F7 is timing overflow --- pauses exceeding three seconds total.
+F8 is sub-perceptual --- \texttt{[curious]} maps to AffectNet Fear by researcher inference
+and produces too weak a signal for DeepFace to detect reliably.
+
+The Auto-Enhance callout shows HeyGen placing tags at 30, 65, and 80 percent --- almost always
+triggering F3 late-onset. Your goal: do better by knowing these rules.
+\end{speechbox}
+
+%% ════════════════════════════════════════════════════════════════════
+\section{Playground --- Render Stage}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{speechbox}
+Your tag sequence is serialised into a HeyGen API call. Aubria renders your tagged script as
+a video clip. In the real system: 30--90 seconds, approximately 12 credits per clip.
+
+The render pipeline: (1) parse and validate the 21-token vocabulary; (2) submit to HeyGen API;
+(3) render facial expressions via diffusion model; (4) synthesise ElevenLabs audio;
+(5) composite the final clip; (6) mark ready for assessment.
+
+In the real system: 50 sentences $\times$ 64 renders = 3{,}200 API calls, approximately
+53 hours of render time, and roughly \$154 in token credits for one Paper 2 run.
+\end{speechbox}
+
+%% ════════════════════════════════════════════════════════════════════
+\section{Playground --- Assessment Stage}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{speechbox}
+DeepFace analyses the clip frame by frame. For each frame: a probability distribution across
+all eight AffectNet classes. Three scores are computed.
+
+$f_1$ is AffectNet class accuracy --- mean probability of the target emotion class. Above 0.70
+is strong. $f_2$ is timing alignment --- does the expression peak coincide with the audio peak?
+Tags placed at 80\% of sentence length typically score 0.40 or below. $f_3$ is expression
+consistency --- stability across all 16 sampled frames.
+
+$F(p) = 0.5 \cdot f_1 + 0.3 \cdot f_2 + 0.2 \cdot f_3$. Pre-registered success threshold:
+$F(p^*) \geq 0.75$. This $F(p_{manual})$ score is now the baseline the GA must beat.
+\end{speechbox}
+
+%% ════════════════════════════════════════════════════════════════════
+\section{Playground --- Stage 3 (Run GA)}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{speechbox}
+Every generation of the real system: generate 8 candidate sequences $\rightarrow$ render each
+via HeyGen $\rightarrow$ score via DeepFace $\rightarrow$ tournament select ($k=3$) $\rightarrow$
+mutate (shift\_pos, change\_tag, add, remove, change\_dur) $\rightarrow$ constraint repair
+for F2 tag-stacking and F3 late-onset violations $\rightarrow$ repeat for 8 generations.
+
+Your $F(p_{manual})$ is the red baseline dashed line. Run 1--5 independent trials to assess
+convergence reliability. Meme Space stores candidates above $F(p^*) \geq 0.70$ and seeds
+future same-emotion sentences, reducing renders from $\sim$64 to $\sim$20.
+
+The playground uses research-validated mock values calibrated from real DeepFace output.
+The architecture is identical to the real system.
+\end{speechbox}
+
+%% ════════════════════════════════════════════════════════════════════
+\section{Playground --- Stage 4 (Results and Comparison)}
+%% ════════════════════════════════════════════════════════════════════
+
+\begin{speechbox}
+Three columns are shown. The amber column is $p_{auto}$ --- HeyGen Auto-Enhance. Reasonable
+$f_1$ (correct tag type) but weak $f_2$ (late placement triggers F3 late-onset). No constraint
+repair. No failure taxonomy. The critical analysis paragraph explains exactly where it failed.
+
+The red column is $p_{manual}$ --- your sequence. Expert human placement with F1-through-F8
+taxonomy knowledge. The green column is $p^*$ --- the GA-optimised sequence. The GA's advantage
+typically comes from $f_2$ timing: it finds earlier tag positions that fire the expression
+before the audio peak, which neither you nor Auto-Enhance reliably achieve.
+
+The ranking panel shows which baseline won and by what margin. The pre-registered threshold
+check shows whether $F(p^*) \geq 0.75$ was met.
+
+The cross-platform projection shows expected $F(p)$ on D-ID (expected 15--25\% degradation)
+and Akool (audio-driven lower bound). The D1 export downloads a CSV in the exact format used
+for real Paper 1 data collection.
+
+This is what EVAtAR-IDEA produces: a rigorously optimised expression tag sequence ---
+replacing 200 hours of manual iteration with approximately 64 automated renders per sentence.
+\end{speechbox}
